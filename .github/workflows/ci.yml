@@ -55,9 +55,9 @@ jobs:
         run: |
           fluvio version
           fluvio topic list
-          fluvio topic create "my-topic"
+          fluvio topic create foobar
           sleep 3
-          echo foo | fluvio produce "my-topic"
+          echo foo | fluvio produce foobar
           fluvio consume foobar -o 0 -d
       - name: Create Topic
         run: |
@@ -75,4 +75,5 @@ jobs:
           node-version: ${{ matrix.node }}
       - name: Test
         run: |
+          fluvio topic create my-topic
           make test
