@@ -1,0 +1,9 @@
+flake8==3.8.4
+maturin==0.9.4
+mccabe==0.6.1
+msgpack==1.0.2
+pycodestyle==2.6.0
+pyflakes==2.2.0
+semantic-version==2.8.5
+setuptools-rust==0.11.6
+toml==0.10.2
