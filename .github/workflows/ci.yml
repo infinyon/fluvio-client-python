@@ -59,9 +59,6 @@ jobs:
           sleep 3
           echo foo | fluvio produce foobar
           fluvio consume foobar -o 0 -d
-      - name: Create Topic
-        run: |
-          fluvio topic create -p 1 -r 1 my-topic
       - uses: actions/checkout@v2
       - name: Install ${{ matrix.rust }}
         uses: actions-rs/toolchain@v1
