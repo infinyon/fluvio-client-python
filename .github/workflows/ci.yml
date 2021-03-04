@@ -48,7 +48,7 @@ jobs:
         node: [ '12', '14' ]
     steps:
       - name: Install Fluvio Local Cluster
-        uses: infinyon/fluvio@master
+        uses: simlay/fluvio@composite-action-updates
         with:
           cluster-type: local
       - name: Check Fluvio Installation
