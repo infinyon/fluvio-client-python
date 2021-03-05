@@ -74,5 +74,4 @@ jobs:
           fluvio consume foobar -o 0 -d
       - name: Test
         run: |
-          fluvio topic create my-topic
           make test

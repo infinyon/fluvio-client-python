@@ -38,5 +38,5 @@ class TestFluvioMethods(unittest.TestCase):
         for i in PartitionConsumerStreamIterator(consumer.stream(0)):
             print("THIS IS IN AN ITERATOR! %s" % i)
             count += 1
-            if count > 10:
+            if count >= 10:
                 break
