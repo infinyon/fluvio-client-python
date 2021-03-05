@@ -47,6 +47,21 @@ jobs:
         rust: [stable]
         python-version: [3.5, 3.6, 3.7, 3.8, 3.9]
     steps:
+      - uses: actions/checkout@v2
+      - name: Install ${{ matrix.rust }}
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust }}
+          override: true
+      - name: Build
+        run: |
+          fluvio topic create my-topic
+          make build-dev
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
       - name: Install Fluvio Local Cluster
         uses: simlay/fluvio@composite-action-updates
         with:
@@ -59,17 +74,6 @@ jobs:
           sleep 3
           echo foo | fluvio produce foobar
           fluvio consume foobar -o 0 -d
-      - uses: actions/checkout@v2
-      - name: Install ${{ matrix.rust }}
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: ${{ matrix.rust }}
-          override: true
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
       - name: Test
         run: |
           fluvio topic create my-topic

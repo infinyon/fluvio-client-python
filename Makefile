@@ -17,6 +17,9 @@ build-dev: venv-pip
 	$(PYTHON) setup.py develop
 
 test: build-dev
+	fluvio topic create my-topic-iterator || true
+	fluvio topic create my-topic-while || true
+	fluvio topic create my-topic-produce || true
 	$(PYTHON) setup.py test
 
 clean:

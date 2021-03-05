@@ -6,9 +6,9 @@ use fluvio::{
     Offset,
     consumer::Record,
 };
-use async_std::{
-    task::block_on,
-    stream::{
+use fluvio_future::{
+    task::run_block_on,
+    io::{
         Stream,
         StreamExt,
     },
@@ -18,16 +18,16 @@ use std::pin::Pin;
 mod _Fluvio {
     use super::*;
     pub fn connect() -> Fluvio {
-        block_on(Fluvio::connect()).expect("Failed to connect to fluvio")
+        run_block_on(Fluvio::connect()).expect("Failed to connect to fluvio")
     }
     pub fn partition_consumer(fluvio: &Fluvio, topic: String, partition: i32) -> Result<PartitionConsumer, FluvioError> {
-        block_on(fluvio.partition_consumer(topic, partition))
+        run_block_on(fluvio.partition_consumer(topic, partition))
     }
     pub fn topic_producer(
         fluvio: &Fluvio,
         topic: String,
     ) -> Result<TopicProducer, FluvioError> {
-        block_on(fluvio.topic_producer(topic))
+        run_block_on(fluvio.topic_producer(topic))
     }
 }
 
@@ -47,7 +47,7 @@ mod _PartitionConsumer {
         offset: u32,
     ) -> Result<PartitionConsumerStream, FluvioError> {
         Ok(PartitionConsumerStream {
-            inner: Box::pin(block_on(consumer.stream(Offset::from_beginning(offset)))?)
+            inner: Box::pin(run_block_on(consumer.stream(Offset::from_beginning(offset)))?)
         })
     }
 }
@@ -66,7 +66,7 @@ pub struct PartitionConsumerStream {
 impl PartitionConsumerStream {
     pub fn next(&mut self) -> Result<Option<String>, FluvioError> {
          use std::convert::TryFrom;
-        if let Some(record) = block_on(self.inner.next()) {
+        if let Some(record) = run_block_on(self.inner.next()) {
             let record = record?;
             if let Ok(record) = String::try_from(record) {
                 Ok(Some(record))
@@ -92,7 +92,7 @@ mod _TopicProducer {
         buffer: String,
         partition: i32,
     ) -> Result<(), FluvioError> {
-        block_on(producer.send_record(buffer, partition))
+        run_block_on(producer.send_record(buffer, partition))
     }
 }
 foreign_class!(class TopicProducer {

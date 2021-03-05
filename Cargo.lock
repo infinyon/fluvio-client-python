@@ -606,11 +606,11 @@ dependencies = [
 name = "fluvio-rust"
 version = "0.1.0"
 dependencies = [
- "async-std",
  "cpython",
  "env_logger",
  "flapigen",
  "fluvio",
+ "fluvio-future",
  "log",
 ]
 
