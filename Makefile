@@ -22,5 +22,10 @@ test: build-dev
 	fluvio topic create my-topic-produce || true
 	$(PYTHON) setup.py test
 
+ci-build: build-wheel
+	$(PYTHON) -m pip install cibuildwheel==1.10.0
+	$(PYTHON) -m cibuildwheel --output-dir wheelhouse
+
+
 clean:
 	rm -r venv fluvio/fluvio_rust.*.so target
