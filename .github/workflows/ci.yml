@@ -53,14 +53,13 @@ jobs:
         with:
           toolchain: ${{ matrix.rust }}
           override: true
-      - name: Build
-        run: |
-          make build-dev
-
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Build
+        run: |
+          make build-dev
       - name: Install Fluvio Local Cluster
         uses: simlay/fluvio@composite-action-updates
         with:
