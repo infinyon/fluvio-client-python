@@ -55,7 +55,6 @@ jobs:
           override: true
       - name: Build
         run: |
-          fluvio topic create my-topic
           make build-dev
 
       - name: Set up Python ${{ matrix.python-version }}
