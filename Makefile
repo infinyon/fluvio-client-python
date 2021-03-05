@@ -7,6 +7,7 @@ venv:
 	python -m venv venv
 
 venv-pip: venv
+	$(PIP) install -U pip setuptools
 	$(PIP) install -r requirements.txt
 
 build-wheel: venv-pip
