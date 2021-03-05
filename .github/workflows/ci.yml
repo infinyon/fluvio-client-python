@@ -45,7 +45,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         rust: [stable]
-        python-version: [3.5, 3.6, 3.7, 3.8, 3.9]
+        python-version: [3.5.3, 3.6, 3.7, 3.8, 3.9]
     steps:
       - name: Install Fluvio Local Cluster
         uses: simlay/fluvio@composite-action-updates
