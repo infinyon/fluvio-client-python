@@ -1,0 +1,5 @@
+venv
+namespace_package.egg-info/
+namespace_package/rust.cpython-39-x86_64-linux-gnu.so
+fluvio.egg-info/
+target/
