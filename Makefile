@@ -8,7 +8,6 @@ venv:
 
 venv-pip: venv
 	$(PIP) install -U pip setuptools
-	$(PIP) install cibuildwheel==1.10.0
 	$(PIP) install -r requirements.txt
 
 build-wheel: venv-pip
