@@ -8,6 +8,7 @@ venv:
 
 venv-pip: venv
 	$(PIP) install -U pip setuptools
+	$(PIP) install cibuildwheel==1.10.0
 	$(PIP) install -r requirements.txt
 
 build-wheel: venv-pip
@@ -22,8 +23,7 @@ test: build-dev
 	fluvio topic create my-topic-produce || true
 	$(PYTHON) setup.py test
 
-ci-build: build-wheel
-	$(PYTHON) -m pip install cibuildwheel==1.10.0
+ci-build: venv-pip
 	$(PYTHON) -m cibuildwheel --output-dir wheelhouse
 
 
