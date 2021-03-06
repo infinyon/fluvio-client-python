@@ -4,7 +4,7 @@ from setuptools_rust import Binding, RustExtension, Strip
 
 setup(
     name='fluvio',
-    version="0.1.0",
+    version="0.0.1",
     author = "Fluvio Contributors",
     author_email = "team@fluvio.io",
     packages=find_namespace_packages(include=['fluvio.*']),
