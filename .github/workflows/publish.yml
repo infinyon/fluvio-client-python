@@ -20,17 +20,28 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: 3.5
-      - name: Run cibuildwheel
-        run: |
-          make ci-build
-          #- name: Install cibuildwheel
-          #  run: python -m pip install cibuildwheel==1.10.0
 
-          #- name: Build wheels
-          #  run: python -m cibuildwheel --output-dir wheelhouse
-          #  # to supply options, put them in 'env', like:
-          #  # env:
-          #  #   CIBW_SOME_OPTION: value
+      - if: runner.os != 'Linux'
+        name: Setup env when not using docker
+        run: |
+          python -m pip install --upgrade wheel setuptools setuptools-rust
+
+      - if: runner.os == 'Linux'
+        name: Set up QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v1
+        with:
+          image: tonistiigi/binfmt:latest
+          platforms: arm64
+
+	  - name: Install cibuildwheel
+		run: python -m pip install cibuildwheel==1.10.0
+
+	  - name: Build wheels
+		run: python -m cibuildwheel --output-dir wheelhouse
+		# to supply options, put them in 'env', like:
+		# env:
+		#   CIBW_SOME_OPTION: value
 
       - uses: actions/upload-artifact@v2
         with:

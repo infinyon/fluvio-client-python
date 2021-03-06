@@ -24,7 +24,7 @@ test: build-dev
 	$(PYTHON) setup.py test
 
 ci-build: venv-pip
-	$(PYTHON) -m cibuildwheel --output-dir wheelhouse
+	CIBW_SKIP="cp27-*" $(PYTHON) -m cibuildwheel --platform linux --output-dir wheelhouse
 
 
 clean:
