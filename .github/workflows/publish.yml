@@ -6,23 +6,81 @@ on:
     tags:
       - 'v*'
 jobs:
-  build_and_upload_artifacts:
-    name: Publish Using github
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
-        node: ['14']
+        os: [ubuntu-20.04, macOS-10.15] # TODO: add windows-2019,
+
     steps:
       - uses: actions/checkout@v2
+
+      # Used to host cibuildwheel
+      - uses: actions/setup-python@v2
         with:
-          persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
-          fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
-  publish-to-npm-with-artifacts:
-    runs-on: [ubuntu-latest]
-    needs: [build_and_upload_artifacts]
+          python-version: 3.6
+
+      - if: runner.os != 'Linux'
+        name: Setup env when not using docker
+        run: |
+          python -m pip install --upgrade wheel setuptools setuptools-rust
+
+      - if: runner.os == 'Linux'
+        name: Set up QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v1
+        with:
+          image: tonistiigi/binfmt:latest
+          platforms: arm64
+
+      - name: Install cibuildwheel
+        run: python -m pip install cibuildwheel==1.10.0
+
+      - name: Build wheels
+        run: python -m cibuildwheel --output-dir wheelhouse
+        # to supply options, put them in 'env', like:
+        env:
+          CIBW_SKIP: "cp27-* cp34-* cp35-* pp* *-win32"
+          CIBW_BEFORE_ALL_LINUX: "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y && yum install -y openssl-devel"
+          CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin"'
+
+      - uses: actions/upload-artifact@v2
+        with:
+          path: ./wheelhouse/*.whl
+
+  build_sdist:
+    name: Build source distribution
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v2
+        name: Install Python
         with:
-          persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
-          fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+          python-version: '3.7'
+
+      - name: Install setuptools and setuptools-rust
+        run: |
+          python -m pip install --upgrade wheel setuptools setuptools-rust
+      - name: Build sdist
+        run: python setup.py sdist
+
+      - uses: actions/upload-artifact@v2
+        with:
+          path: dist/*.tar.gz
+
+  upload_pypi:
+    needs: [build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: artifact
+          path: dist
+
+      - uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_ACCESS_TOKEN }}

@@ -61,7 +61,7 @@ jobs:
         run: |
           make build-dev
       - name: Install Fluvio Local Cluster
-        uses: simlay/fluvio@composite-action-updates
+        uses: infinyon/fluvio@master
         with:
           cluster-type: local
       - name: Check Fluvio Installation

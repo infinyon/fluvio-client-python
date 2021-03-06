@@ -22,5 +22,9 @@ test: build-dev
 	fluvio topic create my-topic-produce || true
 	$(PYTHON) setup.py test
 
+ci-build: venv-pip
+	CIBW_SKIP="cp27-*" $(PYTHON) -m cibuildwheel --platform linux --output-dir wheelhouse
+
+
 clean:
 	rm -r venv fluvio/fluvio_rust.*.so target
