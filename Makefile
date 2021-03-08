@@ -4,7 +4,7 @@ PYTHON=./venv/bin/python
 PIP=./venv/bin/pip
 
 venv:
-	python -m venv venv
+	python3 -m venv venv
 
 venv-pip: venv
 	$(PIP) install -U pip setuptools
@@ -14,7 +14,8 @@ build-wheel: venv-pip
 	$(PYTHON) setup.py bdist_wheel
 
 build-dev: venv-pip
-	$(PYTHON) setup.py develop
+	#$(PYTHON) setup.py develop
+	$(PYTHON) setup.py install
 
 test: build-dev
 	fluvio topic create my-topic-iterator || true
