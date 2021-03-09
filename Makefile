@@ -35,4 +35,4 @@ ci-build: venv-pip
 
 
 clean:
-	rm -r venv fluvio/*.so target
+	rm -rf venv fluvio/*.so target
