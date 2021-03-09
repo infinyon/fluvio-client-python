@@ -1,4 +1,4 @@
-from .fluvio_rust import *
+from .fluvio_python import *
 
 class PartitionConsumerStreamIterator:
     def __init__(self, stream):

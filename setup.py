@@ -4,7 +4,6 @@ from setuptools_rust import Binding, RustExtension, Strip
 setup(
     name='fluvio',
     version="0.0.1",
-    packages=["fluvio"],
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     author = "Fluvio Contributors",
@@ -38,8 +37,9 @@ setup(
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3 :: Only',
     ],
-    rust_extensions=[RustExtension("fluvio.fluvio_rust", path="Cargo.toml", binding=Binding.RustCPython, debug=False)],
 
+    rust_extensions=[RustExtension("fluvio.fluvio_python", path="Cargo.toml", binding=Binding.RustCPython, debug=False)],
+    packages=["fluvio"],
     # rust extensions are not zip safe, just like C-extensions.
     zip_safe=False,
 )
