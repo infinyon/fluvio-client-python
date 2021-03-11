@@ -1,5 +1,3 @@
-'%s' % open('README.md').read()
-
 from ._fluvio_python import (
     Fluvio as _Fluvio,
     PartitionConsumer as _PartitionConsumer,
