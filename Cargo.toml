@@ -1,12 +1,12 @@
 [package]
-name = "fluvio-python"
+name = "_fluvio_python"
 version = "0.0.1"
 edition = "2018"
 authors = ["Fluvio Contributors <team@fluvio.io>"]
 
 [lib]
 crate-type = ["cdylib"]
-name = "fluvio_python"
+name = "_fluvio_python"
 
 [build-dependencies]
 flapigen = "0.6.0-pre7"

@@ -16,7 +16,6 @@ setup(
     setup_requires=['wheel'],
     project_urls={  # Optional
         'Bug Reports': 'https://github.com/infinyon/fluvio-client-python/issues',
-        'Say Thanks!': 'http://saythanks.io/to/example',
         'Source': 'https://github.com/infinyon/fluvio-client-python',
     },
     # For a list of valid classifiers, see https://pypi.org/classifiers/
@@ -38,7 +37,7 @@ setup(
         'Programming Language :: Python :: 3 :: Only',
     ],
 
-    rust_extensions=[RustExtension("fluvio.fluvio_python", path="Cargo.toml", binding=Binding.RustCPython, debug=False)],
+    rust_extensions=[RustExtension("fluvio._fluvio_python", path="Cargo.toml", binding=Binding.RustCPython, debug=False)],
     packages=["fluvio"],
     # rust extensions are not zip safe, just like C-extensions.
     zip_safe=False,
