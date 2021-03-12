@@ -19,7 +19,6 @@ build-wheel: venv-pip
 	$(PYTHON) setup.py bdist_wheel
 
 install-wheel: build-wheel
-	#rm -r ./venv/lib/python3.9/site-packages/fluvio*
 	$(PIP) install --upgrade --force-reinstall --no-index --pre --find-links=dist/ fluvio
 
 build-dev: venv-pip
@@ -41,4 +40,4 @@ docs-serve: venv-pip build-dev
 	$(PYTHON) -m pdoc fluvio
 
 clean:
-	rm -rf venv fluvio/*.so target
+	rm -rf venv fluvio/*.so target dist build

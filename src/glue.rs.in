@@ -129,21 +129,11 @@ use std::string::FromUtf8Error;
 mod _Record {
     use super::*;
     pub fn value_string(record: &Record) -> Result<String, FromUtf8Error> {
-        println!(
-            "VALUE_STRING: key - {:?}, value - {:?}",
-            record.key(),
-            record.value(),
-        );
         String::from_utf8(record.value().to_vec())
     }
     pub fn key_string(
         record: &Record
     ) -> Option<Result<String, FromUtf8Error>> {
-        println!(
-            "KEY_STRING: key - {:?}, value - {:?}",
-            record.key(),
-            record.value(),
-        );
         let key = record.key()?;
         Some(String::from_utf8(key.to_vec()))
     }

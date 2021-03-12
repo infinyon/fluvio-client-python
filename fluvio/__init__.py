@@ -5,6 +5,7 @@ from ._fluvio_python import (
     TopicProducer as _TopicProducer,
     Record as _Record,
 )
+from ._fluvio_python import Error as FluviorError  # noqa: F401
 
 
 class Record:

@@ -1,4 +1,4 @@
-from fluvio import Fluvio
+from fluvio import (Fluvio, FluviorError)
 import unittest
 
 
@@ -13,6 +13,17 @@ class TestFluvioMethods(unittest.TestCase):
         producer = fluvio.topic_producer('my-topic-produce')
         for i in range(10):
             producer.send_record_string("FOOBAR %s " % i, 0)
+
+    def test_produce_on_uncreated_topic(self):
+        fluvio = Fluvio.connect()
+
+        producer = fluvio.topic_producer('a-topic-that-does-not-exist')
+        try:
+            producer.send_record_string("THIS SHOULD FAIL", 0)
+        except FluviorError as e:
+
+            self.assertEqual(e.args, ('Partition not found: a-topic-that-does-not-exist-0',))
+            print('ERROR: %s' % e)
 
     def test_consume_with_iterator(self):
         fluvio = Fluvio.connect()
