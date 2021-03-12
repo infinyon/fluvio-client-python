@@ -22,7 +22,10 @@ class TestFluvioMethods(unittest.TestCase):
             producer.send_record_string("THIS SHOULD FAIL", 0)
         except FluviorError as e:
 
-            self.assertEqual(e.args, ('Partition not found: a-topic-that-does-not-exist-0',))
+            self.assertEqual(
+                e.args,
+                ('Partition not found: a-topic-that-does-not-exist-0',)
+            )
             print('ERROR: %s' % e)
 
     def test_consume_with_iterator(self):
