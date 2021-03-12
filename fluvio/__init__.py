@@ -6,6 +6,7 @@ from ._fluvio_python import (
     Record as _Record,
 )
 from ._fluvio_python import Error as FluviorError  # noqa: F401
+import typing
 
 
 class Record:
@@ -21,7 +22,7 @@ class Record:
         '''
         return self._inner.offset()
 
-    def value(self) -> list[int]:
+    def value(self) -> typing.List[int]:
         '''Returns the contents of this Record's value
         '''
         return self._inner.value()
@@ -31,7 +32,7 @@ class Record:
         '''
         return self._inner.value_string()
 
-    def key(self) -> list[int]:
+    def key(self) -> typing.List[int]:
         '''Returns the contents of this Record's key, if it exists
         '''
         return self._inner.key()
@@ -62,7 +63,7 @@ class PartitionConsumerStream:
     def __iter__(self):
         return self
 
-    def __next__(self) -> Record:
+    def __next__(self) -> typing.Optional[Record]:
         return Record(self._inner.next())
 
 
@@ -115,12 +116,12 @@ class TopicProducer:
         '''
         return self._inner.send_record(buf.encode('utf-8'), partition)
 
-    def send_record(self, buf: list[int], partition: int) -> None:
+    def send_record(self, buf: typing.List[int], partition: int) -> None:
         '''Sends an event to a specific partition within this producer’s topic
         '''
         return self._inner.send_record(buf, partition)
 
-    def send(self, key: list[int], value: list[int]) -> None:
+    def send(self, key: typing.List[int], value: typing.List[int]) -> None:
         '''
         Sends a key/value record to this producer's Topic.
 
