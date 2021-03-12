@@ -15,7 +15,6 @@ log = "^0.4.6"
 
 [dependencies]
 cpython = { version = "0.5", features = ["extension-module"] }
-
-# TODO: Make this fluvio = { version = "0.5" }
+#fluvio = { version = "0.5" }
 fluvio = { git = "https://github.com/infinyon/fluvio", rev = "b7b3d2c16880ea21f1c67246ce9765368c991ebe" }
 fluvio-future = { vesrion = "0.1.15", features = ["task", "io"] }

@@ -38,15 +38,22 @@ class TestFluvioMethods(unittest.TestCase):
         for i in range(10):
             producer.send("foo".encode(), ("record-%s" % i).encode())
 
-        consumer = fluvio.partition_consumer('my-topic-iterator', 0)
+        consumer = fluvio.partition_consumer('my-topic-key-value-iterator', 0)
         count = 0
         for i in consumer.stream(0):
-            print("THIS IS IN AN ITERATOR! key - %s, value - %s" % (i.key(), i.value()))
+            print(
+                "THIS IS IN AN ITERATOR! key - %s, value - %s" % (
+                    i.key(),
+                    i.value()
+                )
+            )
             self.assertEqual(
                 bytearray(i.value()).decode(), 'record-%s' % count
             )
             self.assertEqual(i.value_string(), 'record-%s' % count)
             self.assertEqual(i.key_string(), 'foo')
+            self.assertEqual(i.key(), list('foo'.encode()))
+
             count += 1
             if count >= 10:
                 break

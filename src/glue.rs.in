@@ -59,7 +59,7 @@ mod _PartitionConsumer {
     ) -> Result<PartitionConsumerStream, FluvioError> {
         Ok(PartitionConsumerStream {
             inner: Box::pin(run_block_on(
-               consumer.stream(Offset::from_beginning(offset))
+               consumer.stream(Offset::beginning())
             )?)
         })
     }
@@ -130,9 +130,9 @@ mod _Record {
     use super::*;
     pub fn value_string(record: &Record) -> Result<String, FromUtf8Error> {
         println!(
-            "VALUE_STRING - value - {:?}, key - {:?}",
+            "VALUE_STRING: key - {:?}, value - {:?}",
+            record.key(),
             record.value(),
-            record.key()
         );
         String::from_utf8(record.value().to_vec())
     }
@@ -140,9 +140,9 @@ mod _Record {
         record: &Record
     ) -> Option<Result<String, FromUtf8Error>> {
         println!(
-            "RECORD value - {:?}, key - {:?}",
+            "KEY_STRING: key - {:?}, value - {:?}",
+            record.key(),
             record.value(),
-            record.key()
         );
         let key = record.key()?;
         Some(String::from_utf8(key.to_vec()))

@@ -7,10 +7,11 @@ venv:
 	python3 -m venv venv
 
 venv-pip: venv
-	$(PIP) install -U pip setuptools pdoc flake8
+	$(PIP) install -U pip setuptools pdoc flake8 ipdb
 	$(PIP) install -r requirements.txt
 
 lint: venv-pip
+	cargo fmt -- --check
 	$(PYTHON) -m flake8 fluvio tests
 
 build-wheel: venv-pip
