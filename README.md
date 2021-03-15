@@ -6,7 +6,10 @@
 </div>
 <br />
 
-[![Build Status](https://github.com/infinyon/fluvio-client-python/workflows/CI/badge.svg)](https://github.com/infinyon/flv-client-python/actions) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/infinyon/flv-client-python/blob/master/LICENSE-APACHE) [![PyPi](https://img.shields.io/pypi/v/fluvio.svg)](https://img.shields.io/pypi/v/fluvio.svg)
+[![Build
+Status](https://github.com/infinyon/fluvio-client-python/workflows/CI/badge.svg)](https://github.com/infinyon/flv-client-python/actions)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/infinyon/flv-client-python/blob/master/LICENSE-APACHE)
+[![PyPi](https://img.shields.io/pypi/v/fluvio.svg)](https://img.shields.io/pypi/v/fluvio.svg)
 
 # Usage
 
@@ -24,21 +27,12 @@ from fluvio import Fluvio
 fluvio = Fluvio.connect()
 consumer = fluvio.partition_consumer('my-topic-while', 0)
 stream = consumer.stream(0)
-```
-Given the `stream` instance, you can use it by calling `.next()` like this:
-```python
-curr = stream.next()
-while curr is not None:
-    print(curr)
+
+for i in stream:
+    print(i.value_string())
 ```
 
-Or we've added an iterator wrapped around it:
-```python
-for i in PartitionConsumerStreamIterator(stream):
-    print(i)
-```
-
-# Development Notes
+# Developer Notes
 
 This project uses [flapigen](https://github.com/Dushistov/flapigen-rs) to
 genate the C static library and

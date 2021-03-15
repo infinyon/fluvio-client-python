@@ -7,7 +7,7 @@ fn main() {
     let out_dir = env::var("OUT_DIR").unwrap();
     let out_src = Path::new(&out_dir).join("glue.rs");
 
-    let python_cfg = PythonConfig::new("fluvio_python".to_owned());
+    let python_cfg = PythonConfig::new("_fluvio_python".to_owned());
     let flap_gen =
         flapigen::Generator::new(LanguageConfig::PythonConfig(python_cfg)).rustfmt_bindings(true);
     flap_gen.expand("python bindings", &in_src, &out_src);

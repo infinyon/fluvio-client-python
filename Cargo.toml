@@ -1,12 +1,12 @@
 [package]
-name = "fluvio-python"
-version = "0.0.1"
+name = "_fluvio_python"
+version = "0.0.2"
 edition = "2018"
 authors = ["Fluvio Contributors <team@fluvio.io>"]
 
 [lib]
 crate-type = ["cdylib"]
-name = "fluvio_python"
+name = "_fluvio_python"
 
 [build-dependencies]
 flapigen = "0.6.0-pre7"
@@ -15,5 +15,6 @@ log = "^0.4.6"
 
 [dependencies]
 cpython = { version = "0.5", features = ["extension-module"] }
-fluvio = { version = "0.5" }
+#fluvio = { version = "0.5" }
+fluvio = { git = "https://github.com/infinyon/fluvio", rev = "b7b3d2c16880ea21f1c67246ce9765368c991ebe" }
 fluvio-future = { vesrion = "0.1.15", features = ["task", "io"] }
