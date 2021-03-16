@@ -3,8 +3,7 @@ name: Docs
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
-  push:
+    branches: [ main, docs-ci]
     tags:
       - 'v*'
 jobs:
@@ -14,36 +13,47 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        node: ['14']
+        python-version: [3.9]
     steps:
+      cancel_previous_runs:
+        name: Cancel Previous Runs
+        runs-on: ubuntu-latest
+        steps:
+          - uses: styfle/cancel-workflow-action@0.4.1
+            with:
+              access_token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@v2
         with:
           persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
           fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+      - name: "Git Fetch & Checkout"
+        run: |
+          git config --local user.email "team@fluvio.io"
+          git config --local user.name "Fluvio Authors"
+          git fetch --all
+          git checkout -b docs --track origin/docs
+          git merge -X theirs origin/master -m "Merge remote-tracking branch 'origin/master' into docs"
+      - name: Build docs
+        run: |
+          make docs-build
+          touch docs/.nojekyll
+      - name: Commit files
+        run: |
+          git add --force docs
+          git commit -m "Updated Fluvio Node.js client docs" -a
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: docs
 #      - name: Use Node.js ${{ matrix.node }}
 #        uses: actions/setup-node@v1
 #        with:
 #          node-version: ${{ matrix.node }}
-#      - name: "Git Fetch & Checkout"
-#        run: |
-#          git config --local user.email "team@fluvio.io"
-#          git config --local user.name "Fluvio Authors"
-#          git fetch --all
-#          git checkout -b docs --track origin/docs
-#          git merge -X theirs origin/master -m "Merge remote-tracking branch 'origin/master' into docs"
 #      - name: Install Build Dependencies
 #        run: |
 #          npm install
-#      - name: Build docs
-#        run: |
-#          make run_docs
-#          touch docs/.nojekyll
-#      - name: Commit files
-#        run: |
-#          git add --force docs
-#          git commit -m "Updated Fluvio Node.js client docs" -a
-#      - name: Push changes
-#        uses: ad-m/github-push-action@master
-#        with:
-#          github_token: ${{ secrets.GITHUB_TOKEN }}
-#          branch: docs

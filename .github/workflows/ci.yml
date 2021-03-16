@@ -29,7 +29,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      # TODO: run pyflakes
       - name: Install ${{ matrix.rust }}
         uses: actions-rs/toolchain@v1
         with:

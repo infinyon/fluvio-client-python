@@ -4,3 +4,4 @@ fluvio.egg-info/
 target/
 build/
 dist/
+docs/
