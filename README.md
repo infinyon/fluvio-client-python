@@ -11,7 +11,11 @@ Status](https://github.com/infinyon/fluvio-client-python/workflows/CI/badge.svg)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/infinyon/flv-client-python/blob/master/LICENSE-APACHE)
 [![PyPi](https://img.shields.io/pypi/v/fluvio.svg)](https://img.shields.io/pypi/v/fluvio.svg)
 
-# Usage
+## Documentation
+
+Fluvio client uses [pdoc](https://github.com/mitmproxy/pdoc) to generate the client API [documentation](https://infinyon.github.io/fluvio-client-python/fluvio.html).
+
+# Example Usage
 
 ## Producer
 ```python
