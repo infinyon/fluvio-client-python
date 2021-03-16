@@ -7,8 +7,8 @@
 <br />
 
 [![Build
-Status](https://github.com/infinyon/fluvio-client-python/workflows/CI/badge.svg)](https://github.com/infinyon/flv-client-python/actions)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/infinyon/flv-client-python/blob/master/LICENSE-APACHE)
+Status](https://github.com/infinyon/fluvio-client-python/workflows/CI/badge.svg)](https://github.com/infinyon/fluvio-client-python/actions)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/infinyon/fluvio-client-python/blob/master/LICENSE-APACHE)
 [![PyPi](https://img.shields.io/pypi/v/fluvio.svg)](https://img.shields.io/pypi/v/fluvio.svg)
 
 ## Documentation
