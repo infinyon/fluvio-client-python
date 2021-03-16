@@ -39,5 +39,8 @@ ci-build: venv-pip
 docs-serve: venv-pip build-dev
 	$(PYTHON) -m pdoc fluvio
 
+docs-build: venv-pip build-dev
+	$(PYTHON) -m pdoc fluvio -o docs
+
 clean:
 	rm -rf venv fluvio/*.so target dist build
