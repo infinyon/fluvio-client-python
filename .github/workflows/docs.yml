@@ -3,7 +3,7 @@ name: Docs
 on:
   workflow_dispatch:
   push:
-    branches: [ main, docs-ci]
+    branches: [ main ]
     tags:
       - 'v*'
 jobs:
@@ -36,7 +36,7 @@ jobs:
           git config --local user.name "Fluvio Authors"
           git fetch --all
           git checkout -b docs --track origin/docs
-          git merge -X theirs origin/docs-ci -m "Merge remote-tracking branch 'origin/docs-ci' into docs" --allow-unrelated-histories
+          git merge -X theirs origin/main -m "Merge remote-tracking branch 'origin/main into docs" --allow-unrelated-histories
       - name: Build docs
         run: |
           make docs-build
@@ -44,7 +44,7 @@ jobs:
       - name: Commit files
         run: |
           git add --force docs
-          git commit -m "Updated Fluvio Node.js client docs" -a
+          git commit -m "Updated Fluvio Node.js client docs" -a || true
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
