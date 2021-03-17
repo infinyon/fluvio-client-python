@@ -44,7 +44,7 @@ jobs:
       - name: Commit files
         run: |
           git add --force docs
-          git commit -m "Updated Fluvio Node.js client docs" -a
+          git commit -m "Updated Fluvio Node.js client docs" -a || true
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
