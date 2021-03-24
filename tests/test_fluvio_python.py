@@ -1,4 +1,4 @@
-from fluvio import (Fluvio, FluviorError)
+from fluvio import (Fluvio, FluviorError, Offset)
 import unittest
 
 
@@ -36,7 +36,7 @@ class TestFluvioMethods(unittest.TestCase):
 
         consumer = fluvio.partition_consumer('my-topic-iterator', 0)
         count = 0
-        for i in consumer.stream(0):
+        for i in consumer.stream(Offset.beginning()):
             print("THIS IS IN AN ITERATOR! %s" % i.value())
             self.assertEqual(
                 bytearray(i.value()).decode(), 'record-%s' % count
@@ -54,7 +54,7 @@ class TestFluvioMethods(unittest.TestCase):
 
         consumer = fluvio.partition_consumer('my-topic-key-value-iterator', 0)
         count = 0
-        for i in consumer.stream(0):
+        for i in consumer.stream(Offset.beginning()):
             print(
                 "THIS IS IN AN ITERATOR! key - %s, value - %s" % (
                     i.key(),
