@@ -75,3 +75,7 @@ jobs:
       - name: Test
         run: |
           make test
+
+      - name: Verify Docs generate
+        run: |
+          make docs-build
