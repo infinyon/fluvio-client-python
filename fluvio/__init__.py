@@ -4,6 +4,7 @@ from ._fluvio_python import (
     PartitionConsumerStream as _PartitionConsumerStream,
     TopicProducer as _TopicProducer,
     Record as _Record,
+    Offset as _Offset
 )
 from ._fluvio_python import Error as FluviorError  # noqa: F401
 import typing
@@ -42,6 +43,44 @@ class Record:
         '''
         return self._inner.key_string()
 
+class Offset:
+    '''Describes the location of an event stored in a Fluvio partition.
+    '''
+    _inner: _Offset
+
+    @classmethod
+    def absolute(cls, index: int):
+        '''Creates an absolute offset with the given index'''
+        return cls(_Offset.absolute(index))
+
+    @classmethod
+    def beginning(cls):
+        '''Creates a relative offset starting at the beginning of the saved log
+        '''
+        return cls(_Offset.beginning())
+
+    @classmethod
+    def end(cls):
+        '''Creates a relative offset pointing to the newest log entry
+        '''
+        return cls(_Offset.end())
+
+    @classmethod
+    def from_beginning(cls, offset: int):
+        '''Creates a relative offset a fixed distance after the oldest log
+        entry
+        '''
+        return cls(_Offset.from_beginning(offset))
+
+    @classmethod
+    def from_end(cls, offset: int):
+        '''Creates a relative offset a fixed distance before the newest log
+        entry
+        '''
+        return cls(_Offset.from_end(offset))
+
+    def __init__(self, inner: _Offset):
+        self._inner = inner
 
 class PartitionConsumerStream:
     '''An iterator for `PartitionConsumer.stream` method where each `__next__`
@@ -84,7 +123,7 @@ class PartitionConsumer:
     def __init__(self, inner: _PartitionConsumer):
         self._inner = inner
 
-    def stream(self, offset: int) -> PartitionConsumerStream:
+    def stream(self, offset: Offset) -> PartitionConsumerStream:
         '''
         Continuously streams events from a particular offset in the consumer’s
         partition. This returns a `PartitionConsumerStream` which is an
@@ -96,7 +135,7 @@ class PartitionConsumer:
         using an Offset and periodically receive events, either individually or
         in batches.
         '''
-        return PartitionConsumerStream(self._inner.stream(offset))
+        return PartitionConsumerStream(self._inner.stream(offset._inner))
 
 
 class TopicProducer:
