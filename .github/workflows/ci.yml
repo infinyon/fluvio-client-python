@@ -37,9 +37,6 @@ jobs:
           components: clippy
       - name: check fmt and flake8
         run: make lint
-      - name: Verify Docs generate
-        run: |
-          make docs-build
   smoke_test:
     name: Smoke test
     runs-on: ${{ matrix.os }}
