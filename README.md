@@ -27,10 +27,10 @@ producer.send_record("FOOBAR", 0)
 
 ## Consumer
 ```python
-from fluvio import Fluvio
+from fluvio import (Fluvio, Offset)
 fluvio = Fluvio.connect()
 consumer = fluvio.partition_consumer('my-topic-while', 0)
-stream = consumer.stream(0)
+stream = consumer.stream(Offset.beginning())
 
 for i in stream:
     print(i.value_string())

@@ -55,11 +55,11 @@ mod _PartitionConsumer {
     use super::*;
     pub fn stream(
         consumer: &PartitionConsumer,
-        offset: u32,
+        offset: &Offset,
     ) -> Result<PartitionConsumerStream, FluvioError> {
         Ok(PartitionConsumerStream {
             inner: Box::pin(run_block_on(
-               consumer.stream(Offset::beginning())
+               consumer.stream(offset.clone())
             )?)
         })
     }
@@ -68,7 +68,7 @@ foreign_class!(class PartitionConsumer {
     self_type PartitionConsumer;
     private constructor = empty;
     fn _PartitionConsumer::stream(
-        &self, _: u32
+        &self, _: &Offset
     ) -> Result<PartitionConsumerStream, FluvioError>;
 });
 
@@ -147,4 +147,13 @@ foreign_class!(class Record {
     fn Record::key(&self) -> Option<&[u8]>;
     fn _Record::value_string(&self) -> Result<String, FromUtf8Error>;
     fn _Record::key_string(&self) -> Option<Result<String, FromUtf8Error>>;
+});
+foreign_class!(class Offset {
+    self_type Offset;
+    private constructor = empty;
+    fn Offset::absolute(_ :i64) -> Result<Offset, FluvioError>;
+    fn Offset::beginning() -> Offset;
+    fn Offset::from_beginning(_: u32) -> Offset;
+    fn Offset::end() -> Offset;
+    fn Offset::from_end(_: u32) -> Offset;
 });
