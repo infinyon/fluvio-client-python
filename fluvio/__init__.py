@@ -43,6 +43,7 @@ class Record:
         '''
         return self._inner.key_string()
 
+
 class Offset:
     '''Describes the location of an event stored in a Fluvio partition.
     '''
@@ -81,6 +82,7 @@ class Offset:
 
     def __init__(self, inner: _Offset):
         self._inner = inner
+
 
 class PartitionConsumerStream:
     '''An iterator for `PartitionConsumer.stream` method where each `__next__`
