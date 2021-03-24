@@ -20,7 +20,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest]
         rust: [stable]
         python-version: [3.9]
     steps:
@@ -37,6 +37,9 @@ jobs:
           components: clippy
       - name: check fmt and flake8
         run: make lint
+      - name: Verify Docs generate
+        run: |
+          make docs-build
   smoke_test:
     name: Smoke test
     runs-on: ${{ matrix.os }}
@@ -75,7 +78,3 @@ jobs:
       - name: Test
         run: |
           make test
-
-      - name: Verify Docs generate
-        run: |
-          make docs-build
