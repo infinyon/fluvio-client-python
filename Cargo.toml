@@ -15,5 +15,6 @@ log = "^0.4.6"
 
 [dependencies]
 cpython = { version = "0.5", features = ["extension-module"] }
-fluvio = { version = "0.6" }
+#fluvio = { version = "0.6" }
+fluvio = { git = "https://github.com/nicholastmosher/fluvio/", branch = "batch-produce" }
 fluvio-future = { vesrion = "0.1.15", features = ["task", "io"] }
