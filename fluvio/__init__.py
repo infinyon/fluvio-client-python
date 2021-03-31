@@ -3,6 +3,7 @@ from ._fluvio_python import (
     PartitionConsumer as _PartitionConsumer,
     PartitionConsumerStream as _PartitionConsumerStream,
     TopicProducer as _TopicProducer,
+    ProducerBatchRecord as _ProducerBatchRecord,
     Record as _Record,
     Offset as _Offset
 )
@@ -169,6 +170,14 @@ class TopicProducer:
         The partition that the record will be sent to is derived from the Key.
         '''
         return self._inner.send(key, value)
+
+    def send_all(self, records: typing.List[typing.Tuple[bytes, bytes]]):
+        '''
+        Sends a list of key/value records as a batch to this producer's Topic.
+        :param records: The list of records to send
+        '''
+        records_inner = [_ProducerBatchRecord(x, y) for (x, y) in records]
+        return self._inner.send_all(records_inner)
 
 
 class Fluvio:

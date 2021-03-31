@@ -92,6 +92,28 @@ foreign_class!(class PartitionConsumerStream{
     ) -> Option<Result<Record, FluvioError>>;
 });
 
+#[derive(Clone)]
+pub struct ProducerBatchRecord {
+    pub key: Option<Vec<u8>>,
+    pub value: Vec<u8>,
+}
+impl ProducerBatchRecord {
+    pub fn new(key: Option<Vec<u8>>, value: Vec<u8>) -> Self {
+        Self {
+            key,
+            value,
+        }
+    }
+}
+foreign_class!(
+    #[derive(Clone)]
+    class ProducerBatchRecord {
+        self_type ProducerBatchRecord;
+        constructor ProducerBatchRecord::new(_: Option<Vec<u8>>, _: Vec<u8>) -> ProducerBatchRecord;
+        fn ProducerBatchRecord::clone(&self) -> ProducerBatchRecord;
+    }
+);
+
 mod _TopicProducer {
     use super::*;
     pub fn send_record(
@@ -108,7 +130,20 @@ mod _TopicProducer {
     ) -> Result<(), FluvioError> {
         run_block_on(producer.send(key, value))
     }
+    pub fn send_all(
+        producer: &TopicProducer,
+        records: &[ProducerBatchRecord],
+    ) -> Result<(), FluvioError> {
+        run_block_on(
+            producer.send_all(
+                records.iter().map(|record| -> (Option<Vec<u8>>, Vec<u8>) {
+                    (record.key.clone(), record.value.clone())
+                })
+            )
+        )
+    }
 }
+
 foreign_class!(class TopicProducer {
     self_type TopicProducer;
     private constructor = empty;
@@ -121,6 +156,10 @@ foreign_class!(class TopicProducer {
         &self,
         _: &[u8],
         _ : &[u8]
+    ) -> Result<(), FluvioError>;
+    fn _TopicProducer::send_all(
+        &self,
+        records: &[ProducerBatchRecord],
     ) -> Result<(), FluvioError>;
 });
 

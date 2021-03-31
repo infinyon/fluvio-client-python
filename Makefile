@@ -28,10 +28,12 @@ test: install-wheel
 	fluvio topic create my-topic-iterator || true
 	fluvio topic create my-topic-produce || true
 	fluvio topic create my-topic-key-value-iterator || true
+	fluvio topic create my-topic-batch-producer || true
 	cd tests && ../venv/bin/python -m unittest
 	fluvio topic delete my-topic-iterator || true
 	fluvio topic delete my-topic-produce || true
 	fluvio topic delete my-topic-key-value-iterator || true
+	fluvio topic delete my-topic-batch-producer || true
 
 ci-build: venv-pip
 	CIBW_SKIP="cp27-*" $(PYTHON) -m cibuildwheel --platform linux --output-dir wheelhouse
