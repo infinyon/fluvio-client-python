@@ -108,10 +108,11 @@ impl ProducerBatchRecord {
 foreign_class!(
     #[derive(Clone)]
     class ProducerBatchRecord {
-    self_type ProducerBatchRecord;
-    constructor ProducerBatchRecord::new(_: Option<Vec<u8>>, _: Vec<u8>) -> ProducerBatchRecord;
-    fn ProducerBatchRecord::clone(&self) -> ProducerBatchRecord;
-});
+        self_type ProducerBatchRecord;
+        constructor ProducerBatchRecord::new(_: Option<Vec<u8>>, _: Vec<u8>) -> ProducerBatchRecord;
+        fn ProducerBatchRecord::clone(&self) -> ProducerBatchRecord;
+    }
+);
 
 mod _TopicProducer {
     use super::*;

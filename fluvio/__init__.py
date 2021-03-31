@@ -3,6 +3,7 @@ from ._fluvio_python import (
     PartitionConsumer as _PartitionConsumer,
     PartitionConsumerStream as _PartitionConsumerStream,
     TopicProducer as _TopicProducer,
+    ProducerBatchRecord as _ProducerBatchRecord,
     Record as _Record,
     Offset as _Offset
 )
@@ -140,6 +141,13 @@ class PartitionConsumer:
         return PartitionConsumerStream(self._inner.stream(offset._inner))
 
 
+class ProducerBatchRecord:
+    _inner: _ProducerBatchRecord
+
+    def __init__(self, key: bytes, value: bytes) -> None:
+        self._inner = _ProducerBatchRecord(key, value)
+
+
 class TopicProducer:
     '''An interface for producing events to a particular topic.
 
@@ -169,6 +177,13 @@ class TopicProducer:
         The partition that the record will be sent to is derived from the Key.
         '''
         return self._inner.send(key, value)
+
+    def send_all(self, records: typing.List[ProducerBatchRecord]) -> None:
+        '''
+        Sends a list of key/value records as a batch to this producer's Topic.
+        :param records: The list of records to send
+        '''
+        return self._inner.send_all([x._inner for x in records])
 
 
 class Fluvio:

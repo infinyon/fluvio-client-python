@@ -460,14 +460,15 @@ dependencies = [
 
 [[package]]
 name = "fluvio"
-version = "0.6.0"
-source = "git+https://github.com/nicholastmosher/fluvio/?branch=batch-produce#18700bdcba56fe012cc01fab3b96156e9f340d84"
+version = "0.6.1-alpha.1"
+source = "git+https://github.com/infinyon/fluvio?rev=8c151f8a4ae0825c38706faa088d0940264e1bef#8c151f8a4ae0825c38706faa088d0940264e1bef"
 dependencies = [
  "async-channel",
  "async-mutex",
  "async-rwlock",
  "async-trait",
  "base64",
+ "bytes",
  "dirs",
  "event-listener",
  "fluvio-dataplane-protocol",
@@ -493,7 +494,7 @@ dependencies = [
 [[package]]
 name = "fluvio-controlplane-metadata"
 version = "0.7.0"
-source = "git+https://github.com/nicholastmosher/fluvio/?branch=batch-produce#18700bdcba56fe012cc01fab3b96156e9f340d84"
+source = "git+https://github.com/infinyon/fluvio?rev=8c151f8a4ae0825c38706faa088d0940264e1bef#8c151f8a4ae0825c38706faa088d0940264e1bef"
 dependencies = [
  "async-trait",
  "fluvio-dataplane-protocol",
@@ -508,10 +509,11 @@ dependencies = [
 
 [[package]]
 name = "fluvio-dataplane-protocol"
-version = "0.4.0"
-source = "git+https://github.com/nicholastmosher/fluvio/?branch=batch-produce#18700bdcba56fe012cc01fab3b96156e9f340d84"
+version = "0.4.1"
+source = "git+https://github.com/infinyon/fluvio?rev=8c151f8a4ae0825c38706faa088d0940264e1bef#8c151f8a4ae0825c38706faa088d0940264e1bef"
 dependencies = [
  "bytes",
+ "cfg-if 1.0.0",
  "content_inspector",
  "crc32c",
  "fluvio-future 0.2.0",
@@ -521,6 +523,7 @@ dependencies = [
  "log",
  "once_cell",
  "semver",
+ "tracing",
 ]
 
 [[package]]
@@ -561,8 +564,8 @@ dependencies = [
 
 [[package]]
 name = "fluvio-protocol"
-version = "0.4.0"
-source = "git+https://github.com/nicholastmosher/fluvio/?branch=batch-produce#18700bdcba56fe012cc01fab3b96156e9f340d84"
+version = "0.4.1"
+source = "git+https://github.com/infinyon/fluvio?rev=8c151f8a4ae0825c38706faa088d0940264e1bef#8c151f8a4ae0825c38706faa088d0940264e1bef"
 dependencies = [
  "bytes",
  "fluvio-future 0.2.0",
@@ -576,7 +579,7 @@ dependencies = [
 [[package]]
 name = "fluvio-protocol-api"
 version = "0.3.0"
-source = "git+https://github.com/nicholastmosher/fluvio/?branch=batch-produce#18700bdcba56fe012cc01fab3b96156e9f340d84"
+source = "git+https://github.com/infinyon/fluvio?rev=8c151f8a4ae0825c38706faa088d0940264e1bef#8c151f8a4ae0825c38706faa088d0940264e1bef"
 dependencies = [
  "fluvio-protocol-core",
  "fluvio-protocol-derive",
@@ -587,7 +590,7 @@ dependencies = [
 [[package]]
 name = "fluvio-protocol-codec"
 version = "0.3.0"
-source = "git+https://github.com/nicholastmosher/fluvio/?branch=batch-produce#18700bdcba56fe012cc01fab3b96156e9f340d84"
+source = "git+https://github.com/infinyon/fluvio?rev=8c151f8a4ae0825c38706faa088d0940264e1bef#8c151f8a4ae0825c38706faa088d0940264e1bef"
 dependencies = [
  "bytes",
  "fluvio-protocol-core",
@@ -598,7 +601,7 @@ dependencies = [
 [[package]]
 name = "fluvio-protocol-core"
 version = "0.3.0"
-source = "git+https://github.com/nicholastmosher/fluvio/?branch=batch-produce#18700bdcba56fe012cc01fab3b96156e9f340d84"
+source = "git+https://github.com/infinyon/fluvio?rev=8c151f8a4ae0825c38706faa088d0940264e1bef#8c151f8a4ae0825c38706faa088d0940264e1bef"
 dependencies = [
  "bytes",
  "log",
@@ -607,7 +610,7 @@ dependencies = [
 [[package]]
 name = "fluvio-protocol-derive"
 version = "0.2.0"
-source = "git+https://github.com/nicholastmosher/fluvio/?branch=batch-produce#18700bdcba56fe012cc01fab3b96156e9f340d84"
+source = "git+https://github.com/infinyon/fluvio?rev=8c151f8a4ae0825c38706faa088d0940264e1bef#8c151f8a4ae0825c38706faa088d0940264e1bef"
 dependencies = [
  "log",
  "proc-macro2",
@@ -618,7 +621,7 @@ dependencies = [
 [[package]]
 name = "fluvio-sc-schema"
 version = "0.7.0"
-source = "git+https://github.com/nicholastmosher/fluvio/?branch=batch-produce#18700bdcba56fe012cc01fab3b96156e9f340d84"
+source = "git+https://github.com/infinyon/fluvio?rev=8c151f8a4ae0825c38706faa088d0940264e1bef#8c151f8a4ae0825c38706faa088d0940264e1bef"
 dependencies = [
  "fluvio-controlplane-metadata",
  "fluvio-dataplane-protocol",
@@ -633,7 +636,7 @@ dependencies = [
 [[package]]
 name = "fluvio-socket"
 version = "0.7.0"
-source = "git+https://github.com/nicholastmosher/fluvio/?branch=batch-produce#18700bdcba56fe012cc01fab3b96156e9f340d84"
+source = "git+https://github.com/infinyon/fluvio?rev=8c151f8a4ae0825c38706faa088d0940264e1bef#8c151f8a4ae0825c38706faa088d0940264e1bef"
 dependencies = [
  "async-channel",
  "async-mutex",
@@ -658,7 +661,7 @@ dependencies = [
 [[package]]
 name = "fluvio-spu-schema"
 version = "0.5.0"
-source = "git+https://github.com/nicholastmosher/fluvio/?branch=batch-produce#18700bdcba56fe012cc01fab3b96156e9f340d84"
+source = "git+https://github.com/infinyon/fluvio?rev=8c151f8a4ae0825c38706faa088d0940264e1bef#8c151f8a4ae0825c38706faa088d0940264e1bef"
 dependencies = [
  "bytes",
  "fluvio-dataplane-protocol",
@@ -672,7 +675,7 @@ dependencies = [
 [[package]]
 name = "fluvio-stream-model"
 version = "0.5.1"
-source = "git+https://github.com/nicholastmosher/fluvio/?branch=batch-produce#18700bdcba56fe012cc01fab3b96156e9f340d84"
+source = "git+https://github.com/infinyon/fluvio?rev=8c151f8a4ae0825c38706faa088d0940264e1bef#8c151f8a4ae0825c38706faa088d0940264e1bef"
 dependencies = [
  "async-rwlock",
  "event-listener",
@@ -683,7 +686,7 @@ dependencies = [
 [[package]]
 name = "fluvio-types"
 version = "0.2.3"
-source = "git+https://github.com/nicholastmosher/fluvio/?branch=batch-produce#18700bdcba56fe012cc01fab3b96156e9f340d84"
+source = "git+https://github.com/infinyon/fluvio?rev=8c151f8a4ae0825c38706faa088d0940264e1bef#8c151f8a4ae0825c38706faa088d0940264e1bef"
 dependencies = [
  "event-listener",
  "tracing",
