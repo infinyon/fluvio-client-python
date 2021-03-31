@@ -86,7 +86,9 @@ class TestFluvioMethods(unittest.TestCase):
         consumer = fluvio.partition_consumer('my-topic-batch-producer', 0)
         count = 0
         for i in consumer.stream(Offset.beginning()):
-            self.assertEqual(bytearray(i.value()).decode(), 'record-%s' % count)
+            self.assertEqual(
+                bytearray(i.value()).decode(), 'record-%s' % count
+            )
             self.assertEqual(i.value_string(), 'record-%s' % count)
             self.assertEqual(i.key_string(), ('%s' % count))
             self.assertEqual(i.key(), list(('%s' % count).encode()))
