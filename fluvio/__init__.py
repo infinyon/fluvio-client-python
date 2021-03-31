@@ -141,13 +141,6 @@ class PartitionConsumer:
         return PartitionConsumerStream(self._inner.stream(offset._inner))
 
 
-class ProducerBatchRecord:
-    _inner: _ProducerBatchRecord
-
-    def __init__(self, key: bytes, value: bytes) -> None:
-        self._inner = _ProducerBatchRecord(key, value)
-
-
 class TopicProducer:
     '''An interface for producing events to a particular topic.
 
@@ -178,12 +171,13 @@ class TopicProducer:
         '''
         return self._inner.send(key, value)
 
-    def send_all(self, records: typing.List[ProducerBatchRecord]) -> None:
+    def send_all(self, records: typing.List[tuple[bytes, bytes]]) -> None:
         '''
         Sends a list of key/value records as a batch to this producer's Topic.
         :param records: The list of records to send
         '''
-        return self._inner.send_all([x._inner for x in records])
+        records_inner = [_ProducerBatchRecord(x, y) for (x, y) in records]
+        return self._inner.send_all(records_inner)
 
 
 class Fluvio:

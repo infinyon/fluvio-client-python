@@ -1,4 +1,4 @@
-from fluvio import (Fluvio, FluviorError, Offset, ProducerBatchRecord)
+from fluvio import (Fluvio, FluviorError, Offset)
 import unittest
 
 
@@ -78,7 +78,7 @@ class TestFluvioMethods(unittest.TestCase):
 
         records = []
         for i in range(10):
-            record = ProducerBatchRecord(("%s" % i).encode(), ("record-%s" % i).encode())
+            record = (("%s" % i).encode(), ("record-%s" % i).encode())
             records.append(record)
 
         producer.send_all(records)
