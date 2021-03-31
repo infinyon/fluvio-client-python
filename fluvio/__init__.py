@@ -171,7 +171,7 @@ class TopicProducer:
         '''
         return self._inner.send(key, value)
 
-    def send_all(self, records: typing.List[typing.Tuple[bytes, bytes]]) -> None:
+    def send_all(self, records: typing.List[typing.Tuple[bytes, bytes]]):
         '''
         Sends a list of key/value records as a batch to this producer's Topic.
         :param records: The list of records to send
