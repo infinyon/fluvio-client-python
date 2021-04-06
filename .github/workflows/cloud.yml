@@ -1,0 +1,52 @@
+name: Fluvio Cloud CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, cloud-test-ci ]
+  pull_request:
+    branches: [ main, cloud-test-ci ]
+
+jobs:
+  cancel_previous_runs:
+    name: Cancel Previous Runs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: styfle/cancel-workflow-action@0.4.1
+        with:
+          access_token: ${{ secrets.GITHUB_TOKEN }}
+
+  smoke_test:
+    name: Smoke test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        rust: [stable]
+    steps:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+      - uses: actions/checkout@v2
+      - name: Install ${{ matrix.rust }}
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust }}
+          override: true
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install fluvio
+        run: |
+          curl -fsS https://packages.fluvio.io/v1/install.sh | bash
+          echo "${HOME}/.fluvio/bin" >> $GITHUB_PATH
+
+      - name: Login to fluvio cloud
+        run: |
+          fluvio cloud login --email ${FLUVIO_CLOUD_TEST_USERNAME} --password ${FLUVIO_CLOUD_TEST_PASSWORD}
+        env:
+          FLUVIO_CLOUD_TEST_USERNAME: ${{ secrets.FLUVIO_CLOUD_TEST_USERNAME }}
+          FLUVIO_CLOUD_TEST_PASSWORD: ${{ secrets.FLUVIO_CLOUD_TEST_PASSWORD }}
+
+      - name: Run unit tests
+        run: |
+          make test
