@@ -1,7 +1,8 @@
 from fluvio import (Fluvio, FluviorError, Offset)
 import unittest
-
 import platform
+
+
 def topic_prefix(topic_suffix):
     return (
         '%s-%s-%s-%s' % (
@@ -12,13 +13,16 @@ def topic_prefix(topic_suffix):
         )
     )
 
+
 def create_topic(topic):
     import subprocess
     subprocess.run("fluvio topic create %s" % topic, shell=True)
 
+
 def delete_topic(topic):
     import subprocess
     subprocess.run("fluvio topic delete %s" % topic, shell=True)
+
 
 class TestFluvioMethods(unittest.TestCase):
     @classmethod
