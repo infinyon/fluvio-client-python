@@ -3,9 +3,9 @@ name: Fluvio Cloud CI
 on:
   workflow_dispatch:
   push:
-    branches: [ main, cloud-test-ci ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, cloud-test-ci ]
+    branches: [ main ]
 
 jobs:
   cancel_previous_runs:
@@ -21,11 +21,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        #os: [ubuntu-latest, macos-latest]
-        os: [macos-latest]
+        os: [ubuntu-latest, macos-latest]
         rust: [stable]
-        python-version: [3.9]
-          #python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.6, 3.7, 3.8, 3.9]
     steps:
       - uses: actions/checkout@v2
       - name: Install ${{ matrix.rust }}
