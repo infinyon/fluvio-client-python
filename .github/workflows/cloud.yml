@@ -6,8 +6,6 @@ on:
     branches: [ main ]
   schedule:
     - cron:  '0 14 * * *'
-  pull_request:
-    branches: [ main ]
 
 jobs:
   cancel_previous_runs:

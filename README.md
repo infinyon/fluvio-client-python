@@ -61,9 +61,4 @@ If you'd like more rapid testing, once you've got the virtual environment
 activated, `python setup.py test` will compile the rust as a static library and
 put it as `fluvio/fluvio_python.cpython-39-x86_64-linux-gnu.so`. This filename
 is dependent on the host OS and python version.
-
-## CI
-
-For now the composite action for github is a bit flakey. To run CI on your own
-fork, you need to add secrets of `FLUVIO_CLOUD_TEST_USERNAME` and
-`FLUVIO_CLOUD_TEST_PASSWORD` to your fork's secrets.
+FLUVIO_CLOUD_TEST_PASSWORD` to your fork's secrets.
