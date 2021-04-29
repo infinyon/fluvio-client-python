@@ -121,6 +121,6 @@ class TestFluvioErrors(unittest.TestCase):
         self.assertEqual(
             error.args,
             (
-                'timed out searching metadata Partition failed due to timeout: 60000 ms',  # noqa: E501
+                'timed out searching metadata Topic failed due to timeout: 60000 ms',  # noqa: E501
             )
         )
