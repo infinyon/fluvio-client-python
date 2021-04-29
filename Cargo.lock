@@ -460,9 +460,9 @@ dependencies = [
 
 [[package]]
 name = "fluvio"
-version = "0.6.1"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0f2ebb20a7063802615141f431db96001a12cf9a1c322dced4893cfde9d766f7"
+checksum = "8e87c941034d690e54b562fd320a17d407b3e376e16776c9712c69ce58424df3"
 dependencies = [
  "async-channel",
  "async-mutex",
@@ -485,6 +485,7 @@ dependencies = [
  "semver",
  "serde",
  "serde_json",
+ "siphasher",
  "thiserror",
  "tokio",
  "toml",
@@ -494,9 +495,9 @@ dependencies = [
 
 [[package]]
 name = "fluvio-controlplane-metadata"
-version = "0.7.0"
+version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3d26e61543e331e1a6c72f9eeda22de72c710619c8b262b783a6f23b56a3f359"
+checksum = "5f2f81e2428905bfdea4341f96d52a26cdef000eee621ce398566cd112dac59f"
 dependencies = [
  "async-trait",
  "fluvio-dataplane-protocol",
@@ -628,9 +629,9 @@ dependencies = [
 
 [[package]]
 name = "fluvio-sc-schema"
-version = "0.7.0"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d1dea58a416db8d34d94d609d55f2646e9679b9aa0af1a9cdd2b8ac03f93f2b3"
+checksum = "8bf8dd91325beece6051b159306bee41645486f7c9753b80910c83212630b7ef"
 dependencies = [
  "fluvio-controlplane-metadata",
  "fluvio-dataplane-protocol",
@@ -1522,6 +1523,12 @@ checksum = "16f1d0fef1604ba8f7a073c7e701f213e056707210e9020af4528e0101ce11a6"
 dependencies = [
  "libc",
 ]
+
+[[package]]
+name = "siphasher"
+version = "0.3.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cbce6d4507c7e4a3962091436e56e95290cb71fa302d0d270e32130b75fbff27"
 
 [[package]]
 name = "slab"
