@@ -94,11 +94,11 @@ foreign_class!(class PartitionConsumerStream{
 
 #[derive(Clone)]
 pub struct ProducerBatchRecord {
-    pub key: Option<Vec<u8>>,
+    pub key: Vec<u8>,
     pub value: Vec<u8>,
 }
 impl ProducerBatchRecord {
-    pub fn new(key: Option<Vec<u8>>, value: Vec<u8>) -> Self {
+    pub fn new(key: Vec<u8>, value: Vec<u8>) -> Self {
         Self {
             key,
             value,
@@ -109,7 +109,7 @@ foreign_class!(
     #[derive(Clone)]
     class ProducerBatchRecord {
         self_type ProducerBatchRecord;
-        constructor ProducerBatchRecord::new(_: Option<Vec<u8>>, _: Vec<u8>) -> ProducerBatchRecord;
+        constructor ProducerBatchRecord::new(_: Vec<u8>, _: Vec<u8>) -> ProducerBatchRecord;
         fn ProducerBatchRecord::clone(&self) -> ProducerBatchRecord;
     }
 );
@@ -136,7 +136,7 @@ mod _TopicProducer {
     ) -> Result<(), FluvioError> {
         run_block_on(
             producer.send_all(
-                records.iter().map(|record| -> (Option<Vec<u8>>, Vec<u8>) {
+                records.iter().map(|record| -> (Vec<u8>, Vec<u8>) {
                     (record.key.clone(), record.value.clone())
                 })
             )
