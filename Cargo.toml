@@ -14,6 +14,6 @@ env_logger = "^0.7"
 log = "^0.4.6"
 
 [dependencies]
-cpython = { version = "0.5", features = ["extension-module"] }
+cpython = { version = "0.6", features = ["extension-module"] }
 fluvio = { version = "0.8.4" }
 fluvio-future = { version = "0.1.15", features = ["task", "io"] }
