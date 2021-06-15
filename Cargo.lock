@@ -8,7 +8,7 @@ dependencies = [
  "env_logger",
  "flapigen",
  "fluvio",
- "fluvio-future 0.1.15",
+ "fluvio-future",
  "log",
 ]
 
@@ -440,7 +440,7 @@ dependencies = [
  "dirs",
  "event-listener",
  "fluvio-dataplane-protocol",
- "fluvio-future 0.3.5",
+ "fluvio-future",
  "fluvio-protocol",
  "fluvio-sc-schema",
  "fluvio-socket",
@@ -468,7 +468,7 @@ checksum = "ed5027dbdf4a0c99058f92b8c0546cd0a95768378bc750a575185f89a5f61dbc"
 dependencies = [
  "async-trait",
  "fluvio-dataplane-protocol",
- "fluvio-future 0.3.5",
+ "fluvio-future",
  "fluvio-protocol",
  "fluvio-stream-model",
  "fluvio-types",
@@ -487,27 +487,12 @@ dependencies = [
  "cfg-if",
  "content_inspector",
  "crc32c",
- "fluvio-future 0.3.5",
+ "fluvio-future",
  "fluvio-protocol",
  "flv-util",
  "futures-util",
  "once_cell",
  "semver 0.11.0",
- "tracing",
-]
-
-[[package]]
-name = "fluvio-future"
-version = "0.1.15"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b9b245085efed04cb1239532e0328fff08ba0aac05effd143827b1be6e53d3c7"
-dependencies = [
- "async-io",
- "async-std",
- "futures-lite",
- "log",
- "pin-project",
- "thiserror",
  "tracing",
 ]
 
@@ -541,7 +526,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b3c1306a303cbd11a762f5a640b5323eaaaaa515f07bce8ddd13449aa591542e"
 dependencies = [
  "bytes",
- "fluvio-future 0.3.5",
+ "fluvio-future",
  "fluvio-protocol-api",
  "fluvio-protocol-codec",
  "fluvio-protocol-core",
@@ -623,7 +608,7 @@ dependencies = [
  "bytes",
  "cfg-if",
  "event-listener",
- "fluvio-future 0.3.5",
+ "fluvio-future",
  "fluvio-protocol",
  "futures-util",
  "log",
