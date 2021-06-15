@@ -10,7 +10,7 @@ name = "_fluvio_python"
 
 [build-dependencies]
 flapigen = "0.6.0-pre7"
-env_logger = "^0.7"
+env_logger = "^0.8"
 log = "^0.4.6"
 
 [dependencies]
