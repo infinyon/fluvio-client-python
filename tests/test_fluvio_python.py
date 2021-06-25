@@ -109,10 +109,9 @@ class TestFluvioErrors(unittest.TestCase):
     def test_produce_on_uncreated_topic(self):
         fluvio = Fluvio.connect()
 
-        producer = fluvio.topic_producer(self.topic)
         error = None
         try:
-            producer.send_record_string("THIS SHOULD FAIL", 0)
+            fluvio.topic_producer(self.topic)
         except FluviorError as e:
             error = e
             print('ERROR: %s' % e)
@@ -121,6 +120,6 @@ class TestFluvioErrors(unittest.TestCase):
         self.assertEqual(
             error.args,
             (
-                'timed out searching metadata Topic failed due to timeout: 60000 ms',  # noqa: E501
+                'timed out searching metadata Partition failed due to timeout: 60000 ms',  # noqa: E501
             )
         )
