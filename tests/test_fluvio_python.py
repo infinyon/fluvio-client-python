@@ -111,7 +111,7 @@ class TestFluvioErrors(unittest.TestCase):
 
         error = None
         try:
-            producer = fluvio.topic_producer(self.topic)
+            fluvio.topic_producer(self.topic)
         except FluviorError as e:
             error = e
             print('ERROR: %s' % e)
