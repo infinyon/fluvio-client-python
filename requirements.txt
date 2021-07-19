@@ -1,8 +1,8 @@
-flake8==3.8.4
+flake8==3.9.2
 mccabe==0.6.1
 msgpack==1.0.2
-pycodestyle==2.6.0
-pyflakes==2.2.0
+pycodestyle==2.7.0
+pyflakes==2.3.1
 semantic-version==2.8.5
 setuptools-rust==0.12.1
 toml==0.10.2
