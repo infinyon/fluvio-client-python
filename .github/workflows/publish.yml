@@ -21,6 +21,14 @@ jobs:
         with:
           python-version: 3.9
 
+      - if: runner.os == 'macOS'
+        name: Install Rust Stable
+        uses: actions-rs/toolchain@v1
+        with:
+          target: aarch64-apple-darwin
+          toolchain: stable
+          override: true
+
       - if: runner.os != 'Linux'
         name: Setup env when not using docker
         run: |
