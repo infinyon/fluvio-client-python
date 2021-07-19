@@ -28,6 +28,7 @@ test: install-wheel
 	cd tests && ../venv/bin/python -m unittest
 
 ci-build: venv-pip
+	$(PIP) install -r requirements-publish.txt
 	CIBW_SKIP="cp27-*" $(PYTHON) -m cibuildwheel --platform linux --output-dir wheelhouse
 
 docs-serve: venv-pip build-dev
