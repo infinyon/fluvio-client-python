@@ -14,6 +14,15 @@
 
 Fluvio client uses [pdoc](https://github.com/mitmproxy/pdoc) to generate the client API [documentation](https://infinyon.github.io/fluvio-client-python/fluvio.html).
 
+## Non-prebuilt installation
+
+We publish to pypi with wheels but we don't publish for every os/architecture
+out there. To build from source, do:
+```
+pip install git+https://github.com/infinyon/fluvio-client-python
+```
+You will need the rust compiler and maybe some operating system sources.
+
 # Example Usage
 
 ## Producer
@@ -61,3 +70,4 @@ activated, `python setup.py test` will compile the rust as a static library and
 put it as `fluvio/fluvio_python.cpython-39-x86_64-linux-gnu.so`. This filename
 is dependent on the host OS and python version.
 FLUVIO_CLOUD_TEST_PASSWORD` to your fork's secrets.
+
