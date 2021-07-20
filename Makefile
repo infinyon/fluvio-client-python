@@ -1,7 +1,7 @@
 .PHONY: venv venv-pip
 
-PYTHON=./venv/bin/python
-PIP=./venv/bin/pip
+PYTHON=./venv/bin/python.exe
+PIP=./venv/bin/pip.exe
 
 venv:
 	python -m venv venv
