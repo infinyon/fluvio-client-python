@@ -64,11 +64,13 @@ jobs:
         run: |
           make build-dev
       - name: Install Fluvio Local Cluster
+        if: runner.os != 'Windows'
         uses: infinyon/fluvio@master
         with:
           cluster-type: local
             #version: latest
       - name: Check Fluvio Installation
+        if: runner.os != 'Windows'
         run: |
           fluvio version
           fluvio topic list
@@ -77,5 +79,6 @@ jobs:
           echo foo | fluvio produce foobar
           fluvio consume foobar -o 0 -d
       - name: Test
+        if: runner.os != 'Windows'
         run: |
           make test
