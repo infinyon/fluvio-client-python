@@ -4,7 +4,7 @@ PYTHON=./venv/bin/python
 PIP=./venv/bin/pip
 
 venv:
-	python3 -m venv venv
+	python -m venv venv
 
 venv-pip: venv
 	$(PIP) install -U pip setuptools pdoc flake8 ipdb
