@@ -3,6 +3,7 @@ name = "_fluvio_python"
 version = "0.0.2"
 edition = "2018"
 authors = ["Fluvio Contributors <team@fluvio.io>"]
+resolver = "2"
 
 [lib]
 crate-type = ["cdylib"]
