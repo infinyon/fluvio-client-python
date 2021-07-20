@@ -1,7 +1,12 @@
 .PHONY: venv venv-pip
 
+ifeq ($(OS),Windows_NT)
+PYTHON=.\venv\bin\python.exe
+PIP=.\venv\bin\pip.exe
+else
 PYTHON=./venv/bin/python.exe
 PIP=./venv/bin/pip.exe
+endif
 
 venv:
 	python -m venv venv
