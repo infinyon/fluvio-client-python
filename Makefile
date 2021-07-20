@@ -1,11 +1,11 @@
 .PHONY: venv venv-pip
 
 ifeq ($(OS),Windows_NT)
-PYTHON=.\venv\bin\python.exe
-PIP=.\venv\bin\pip.exe
+PYTHON=python
+PIP=pip
 else
-PYTHON=./venv/bin/python.exe
-PIP=./venv/bin/pip.exe
+PYTHON=./venv/bin/python
+PIP=./venv/bin/pip
 endif
 
 venv:
