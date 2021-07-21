@@ -1,10 +1,15 @@
 .PHONY: venv venv-pip
 
+ifeq ($(OS),Windows_NT)
+PYTHON=python
+PIP=pip
+else
 PYTHON=./venv/bin/python
 PIP=./venv/bin/pip
+endif
 
 venv:
-	python3 -m venv venv
+	python -m venv venv
 
 venv-pip: venv
 	$(PIP) install -U pip setuptools pdoc flake8 ipdb

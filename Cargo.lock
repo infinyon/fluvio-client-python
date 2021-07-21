@@ -428,8 +428,7 @@ dependencies = [
 [[package]]
 name = "fluvio"
 version = "0.8.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ed74e11146398bf9397bbcf64d7f99170fe84e839d43af2ca171215ce8c204e7"
+source = "git+https://github.com/simlay/fluvio?branch=windows-cli-build#afb96b3a0687e6e42fdc9bfdf7659d2175fbfe3e"
 dependencies = [
  "async-channel",
  "async-lock",
@@ -463,8 +462,7 @@ dependencies = [
 [[package]]
 name = "fluvio-controlplane-metadata"
 version = "0.9.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ed5027dbdf4a0c99058f92b8c0546cd0a95768378bc750a575185f89a5f61dbc"
+source = "git+https://github.com/simlay/fluvio?branch=windows-cli-build#afb96b3a0687e6e42fdc9bfdf7659d2175fbfe3e"
 dependencies = [
  "async-trait",
  "fluvio-dataplane-protocol",
@@ -479,9 +477,8 @@ dependencies = [
 
 [[package]]
 name = "fluvio-dataplane-protocol"
-version = "0.5.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a579535c1c2b95073fa814af08cc9d721f85fb17285e75040c0dc898206628cb"
+version = "0.5.2"
+source = "git+https://github.com/simlay/fluvio?branch=windows-cli-build#afb96b3a0687e6e42fdc9bfdf7659d2175fbfe3e"
 dependencies = [
  "bytes",
  "cfg-if",
@@ -522,8 +519,7 @@ dependencies = [
 [[package]]
 name = "fluvio-protocol"
 version = "0.5.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b3c1306a303cbd11a762f5a640b5323eaaaaa515f07bce8ddd13449aa591542e"
+source = "git+https://github.com/simlay/fluvio?branch=windows-cli-build#afb96b3a0687e6e42fdc9bfdf7659d2175fbfe3e"
 dependencies = [
  "bytes",
  "fluvio-future",
@@ -537,8 +533,7 @@ dependencies = [
 [[package]]
 name = "fluvio-protocol-api"
 version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "073574e905be69f14a3a1962d90cf3e353d02d2242985a453d78ea67d839f08a"
+source = "git+https://github.com/simlay/fluvio?branch=windows-cli-build#afb96b3a0687e6e42fdc9bfdf7659d2175fbfe3e"
 dependencies = [
  "fluvio-protocol-core",
  "fluvio-protocol-derive",
@@ -549,8 +544,7 @@ dependencies = [
 [[package]]
 name = "fluvio-protocol-codec"
 version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "27bef31413b2148dae748ca609bb6b7d490ea4277ac7a10aaaf3fd2809149833"
+source = "git+https://github.com/simlay/fluvio?branch=windows-cli-build#afb96b3a0687e6e42fdc9bfdf7659d2175fbfe3e"
 dependencies = [
  "bytes",
  "fluvio-protocol-core",
@@ -561,8 +555,7 @@ dependencies = [
 [[package]]
 name = "fluvio-protocol-core"
 version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "197b15a522fe85abdfbe0f925d3293de32358c7b5f27f934e2acdfadc2632c2c"
+source = "git+https://github.com/simlay/fluvio?branch=windows-cli-build#afb96b3a0687e6e42fdc9bfdf7659d2175fbfe3e"
 dependencies = [
  "bytes",
  "log",
@@ -571,8 +564,7 @@ dependencies = [
 [[package]]
 name = "fluvio-protocol-derive"
 version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c7a5d62992277733fed40e8c9166f3c4843e9df35023dd74b644f3a6354b0212"
+source = "git+https://github.com/simlay/fluvio?branch=windows-cli-build#afb96b3a0687e6e42fdc9bfdf7659d2175fbfe3e"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -583,8 +575,7 @@ dependencies = [
 [[package]]
 name = "fluvio-sc-schema"
 version = "0.8.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4195c895ddaa0615927daea33c5a82b65600ee7bcea8546e294eda4095956171"
+source = "git+https://github.com/simlay/fluvio?branch=windows-cli-build#afb96b3a0687e6e42fdc9bfdf7659d2175fbfe3e"
 dependencies = [
  "fluvio-controlplane-metadata",
  "fluvio-dataplane-protocol",
@@ -599,8 +590,7 @@ dependencies = [
 [[package]]
 name = "fluvio-socket"
 version = "0.8.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "49894491bfd6507b515128c79202edf4ae4aec98fbd29f1b79a345528675d829"
+source = "git+https://github.com/simlay/fluvio?branch=windows-cli-build#afb96b3a0687e6e42fdc9bfdf7659d2175fbfe3e"
 dependencies = [
  "async-channel",
  "async-lock",
@@ -623,8 +613,7 @@ dependencies = [
 [[package]]
 name = "fluvio-spu-schema"
 version = "0.6.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6b994d019a664f422064ba639608a937101e274bddf906d6ba79229e4e22da09"
+source = "git+https://github.com/simlay/fluvio?branch=windows-cli-build#afb96b3a0687e6e42fdc9bfdf7659d2175fbfe3e"
 dependencies = [
  "bytes",
  "fluvio-dataplane-protocol",
@@ -637,9 +626,8 @@ dependencies = [
 
 [[package]]
 name = "fluvio-stream-model"
-version = "0.5.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2ad47fd2cd14d75ea98228f049185732a676aa1390e38d9ad858b7b12b9dd610"
+version = "0.5.2"
+source = "git+https://github.com/simlay/fluvio?branch=windows-cli-build#afb96b3a0687e6e42fdc9bfdf7659d2175fbfe3e"
 dependencies = [
  "async-rwlock",
  "event-listener",
@@ -649,12 +637,12 @@ dependencies = [
 
 [[package]]
 name = "fluvio-types"
-version = "0.2.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "591ae978fa5451502e6065fbc717ef92a334d9281ec8179caf21fe2c7c8adf34"
+version = "0.2.4"
+source = "git+https://github.com/simlay/fluvio?branch=windows-cli-build#afb96b3a0687e6e42fdc9bfdf7659d2175fbfe3e"
 dependencies = [
  "event-listener",
  "tracing",
+ "tracing-futures",
 ]
 
 [[package]]

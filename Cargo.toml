@@ -3,6 +3,7 @@ name = "_fluvio_python"
 version = "0.0.2"
 edition = "2018"
 authors = ["Fluvio Contributors <team@fluvio.io>"]
+resolver = "2"
 
 [lib]
 crate-type = ["cdylib"]
@@ -17,3 +18,6 @@ log = "^0.4.6"
 cpython = { version = "0.6", features = ["extension-module"] }
 fluvio = { version = "0.8.5" }
 fluvio-future = { version = "0.3.5", features = ["task", "io"] }
+
+[patch.crates-io]
+fluvio = { git = "https://github.com/simlay/fluvio", branch = "windows-cli-build"}
