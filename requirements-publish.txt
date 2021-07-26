@@ -1,2 +1,2 @@
 -r requirements.txt
-cibuildwheel==2.0.0
+cibuildwheel==2.0.1
