@@ -17,8 +17,8 @@ use std::pin::Pin;
 
 mod _Fluvio {
     use super::*;
-    pub fn connect() -> Fluvio {
-        run_block_on(Fluvio::connect()).expect("Failed to connect to fluvio")
+    pub fn connect() -> Result<Fluvio, FluvioError> {
+        run_block_on(Fluvio::connect())
     }
     pub fn partition_consumer(
         fluvio: &Fluvio,
@@ -38,7 +38,7 @@ mod _Fluvio {
 foreign_class!(class Fluvio {
     self_type Fluvio;
     private constructor = empty;
-    fn _Fluvio::connect() -> Fluvio;
+    fn _Fluvio::connect() -> Result<Fluvio, FluvioError>;
     fn _Fluvio::partition_consumer(
         &self,
         _: String,
@@ -116,13 +116,6 @@ foreign_class!(
 
 mod _TopicProducer {
     use super::*;
-    pub fn send_record(
-        producer: &TopicProducer,
-        buffer: &[u8],
-        partition: i32,
-    ) -> Result<(), FluvioError> {
-        run_block_on(producer.send_record(buffer, partition))
-    }
     pub fn send(
         producer: &TopicProducer,
         key: &[u8],
@@ -147,11 +140,6 @@ mod _TopicProducer {
 foreign_class!(class TopicProducer {
     self_type TopicProducer;
     private constructor = empty;
-    fn _TopicProducer::send_record(
-        &self,
-        _: &[u8],
-        _ : i32
-    ) -> Result<(), FluvioError>;
     fn _TopicProducer::send(
         &self,
         _: &[u8],
