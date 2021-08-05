@@ -45,7 +45,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest]
         rust: [stable]
         python-version: [3.6, 3.7, 3.8, 3.9]
     steps:
@@ -62,11 +62,15 @@ jobs:
       - name: Build
         run: |
           make build-dev
+      - uses: AbsaOSS/k3d-action@v1.5.0
+        name: "Create fluvio k3d Cluster"
+        with:
+          cluster-name: "fluvio"
       - name: Install Fluvio Local Cluster
         uses: infinyon/fluvio@master
         with:
           cluster-type: local
-            #version: latest
+          version: latest
       - name: Check Fluvio Installation
         run: |
           fluvio version
@@ -77,4 +81,31 @@ jobs:
           fluvio consume foobar -o 0 -d
       - name: Test
         run: |
-          make test
+          make integration-tests
+
+  macos_simple_tests:
+    name: MacOS Simple test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest]
+        rust: [stable]
+        python-version: [3.6, 3.7, 3.8, 3.9]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install ${{ matrix.rust }}
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust }}
+          override: true
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Build
+        run: |
+          make build-dev
+
+      - name: Test macOS failing to connect
+        run: |
+          make macos-ci-tests

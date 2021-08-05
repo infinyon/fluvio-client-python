@@ -12,7 +12,7 @@ venv-pip: venv
 
 lint: venv-pip
 	cargo fmt -- --check
-	$(PYTHON) -m flake8 fluvio tests
+	$(PYTHON) -m flake8 fluvio integration-tests macos-ci-tests
 
 build-wheel: venv-pip
 	rm -rf ./fluvio.egg-info/
@@ -24,8 +24,11 @@ install-wheel: build-wheel
 build-dev: venv-pip
 	$(PYTHON) setup.py develop
 
-test: install-wheel
-	cd tests && ../venv/bin/python -m unittest
+integration-tests: install-wheel
+	cd integration-tests && ../venv/bin/python -m unittest
+
+macos-ci-tests: install-wheel
+	cd macos-ci-tests && ../venv/bin/python -m unittest
 
 ci-build: venv-pip
 	$(PIP) install -r requirements-publish.txt

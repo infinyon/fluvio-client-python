@@ -17,8 +17,8 @@ use std::pin::Pin;
 
 mod _Fluvio {
     use super::*;
-    pub fn connect() -> Fluvio {
-        run_block_on(Fluvio::connect()).expect("Failed to connect to fluvio")
+    pub fn connect() -> Result<Fluvio, FluvioError> {
+        run_block_on(Fluvio::connect())
     }
     pub fn partition_consumer(
         fluvio: &Fluvio,
@@ -38,7 +38,7 @@ mod _Fluvio {
 foreign_class!(class Fluvio {
     self_type Fluvio;
     private constructor = empty;
-    fn _Fluvio::connect() -> Fluvio;
+    fn _Fluvio::connect() -> Result<Fluvio, FluvioError>;
     fn _Fluvio::partition_consumer(
         &self,
         _: String,
