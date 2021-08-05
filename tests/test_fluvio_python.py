@@ -30,13 +30,13 @@ class TestFluvioMethods(unittest.TestCase):
 
         producer = fluvio.topic_producer(self.topic)
         for i in range(10):
-            producer.send_record_string("FOOBAR %s " % i, 0)
+            producer.send_string("FOOBAR %s " % i)
 
     def test_consume_with_iterator(self):
         fluvio = Fluvio.connect()
         producer = fluvio.topic_producer(self.topic)
         for i in range(10):
-            producer.send_record_string("record-%s" % i, 0)
+            producer.send_string("record-%s" % i)
 
         consumer = fluvio.partition_consumer(self.topic, 0)
         count = 0
@@ -120,6 +120,6 @@ class TestFluvioErrors(unittest.TestCase):
         self.assertEqual(
             error.args,
             (
-                'timed out searching metadata Partition failed due to timeout: 60000 ms',  # noqa: E501
+                'Topic not found: %s' % self.topic,  # noqa: E501
             )
         )

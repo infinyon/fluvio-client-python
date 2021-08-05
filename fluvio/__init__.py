@@ -153,15 +153,10 @@ class TopicProducer:
     def __init__(self, inner: _TopicProducer):
         self._inner = inner
 
-    def send_record_string(self, buf: str, partition: int) -> None:
-        '''Sends an event to a specific partition within this producer’s topic
+    def send_string(self, buf: str) -> None:
+        '''Sends a string to this producer’s topic
         '''
-        return self._inner.send_record(buf.encode('utf-8'), partition)
-
-    def send_record(self, buf: typing.List[int], partition: int) -> None:
-        '''Sends an event to a specific partition within this producer’s topic
-        '''
-        return self._inner.send_record(buf, partition)
+        return self.send([], buf.encode('utf-8'))
 
     def send(self, key: typing.List[int], value: typing.List[int]) -> None:
         '''
