@@ -45,7 +45,52 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest]
+        rust: [stable]
+        python-version: [3.6, 3.7, 3.8, 3.9]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install ${{ matrix.rust }}
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust }}
+          override: true
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: AbsaOSS/k3d-action@v1.5.0
+        name: "Create fluvio k3d Cluster"
+        with:
+          cluster-name: "fluvio"
+      - name: Sleep 20 to ensure k3d cluster is ready
+        run: sleep 20
+      - name: Install Fluvio Local Cluster
+        uses: infinyon/fluvio@master
+        with:
+          cluster-type: local
+          version: latest
+      - name: Check Fluvio Installation
+        run: |
+          fluvio version
+          fluvio topic list
+          fluvio topic create foobar
+          sleep 3
+          echo foo | fluvio produce foobar
+          fluvio consume foobar -o 0 -d
+      - name: Build
+        run: |
+          make build-dev
+      - name: Test
+        run: |
+          make integration-tests
+
+  macos_simple_tests:
+    name: MacOS Simple test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest]
         rust: [stable]
         python-version: [3.6, 3.7, 3.8, 3.9]
     steps:
@@ -62,19 +107,7 @@ jobs:
       - name: Build
         run: |
           make build-dev
-      - name: Install Fluvio Local Cluster
-        uses: infinyon/fluvio@master
-        with:
-          cluster-type: local
-            #version: latest
-      - name: Check Fluvio Installation
+
+      - name: Test macOS failing to connect
         run: |
-          fluvio version
-          fluvio topic list
-          fluvio topic create foobar
-          sleep 3
-          echo foo | fluvio produce foobar
-          fluvio consume foobar -o 0 -d
-      - name: Test
-        run: |
-          make test
+          make macos-ci-tests
