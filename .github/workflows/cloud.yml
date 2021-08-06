@@ -49,7 +49,7 @@ jobs:
 
       - name: Run unit tests
         run: |
-          make test
+          make integration-tests
 
       - name: Slack Notification
         uses: 8398a7/action-slack@v3
