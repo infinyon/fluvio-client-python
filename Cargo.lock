@@ -483,9 +483,9 @@ dependencies = [
 
 [[package]]
 name = "fluvio"
-version = "0.9.0"
+version = "0.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "010e54a0c0d4ce30190249c80fc59d374676ca5b6c5580692d5babc4e4e071d3"
+checksum = "0554c7ae628dc31c655690d0bf900784ebaac9153684885be48d08928090fbd2"
 dependencies = [
  "async-channel",
  "async-lock",
@@ -693,9 +693,9 @@ dependencies = [
 
 [[package]]
 name = "fluvio-spu-schema"
-version = "0.7.0"
+version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e5af63d6c070c31ad428a4952d9540677fc14bb0fb98226c1328d543f408e0a6"
+checksum = "94ea6afa8ce1732570cd1466e5bf4a7641b3a467b14e4a11442502ca97daf8ae"
 dependencies = [
  "bytes",
  "fluvio-dataplane-protocol",
