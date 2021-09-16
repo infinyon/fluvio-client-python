@@ -24,10 +24,10 @@ install-wheel: build-wheel
 build-dev: venv-pip
 	$(PYTHON) setup.py develop
 
-integration-tests: install-wheel
+integration-tests: build-dev
 	cd integration-tests && ../venv/bin/python -m unittest
 
-macos-ci-tests: install-wheel
+macos-ci-tests: build-dev
 	cd macos-ci-tests && ../venv/bin/python -m unittest
 
 ci-build: venv-pip

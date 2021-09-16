@@ -18,10 +18,10 @@ class TestFluvioCannotConnect(unittest.TestCase):
             print('ERROR: %s' % e)
 
         self.assertTrue(error is not None)
-        self.assertTrue(
-            error.args == (
-                'Fluvio config error\nCaused by:\nConfig has no active profile',  # noqa: E501
-            ) or error.args == (
-                'Fluvio socket error\nCaused by:\nConnection refused (os error 111)',  # noqa: E501
-            )
+        self.assertIn(
+            error.args,
+            [
+                ('Fluvio config error: Config has no active profile\nCaused by:\nConfig has no active profile',), # noqa: E501
+                ('Fluvio socket error: Connection refused (os error 61)\nCaused by:\nConnection refused (os error 61)',),  # noqa: E501
+            ]
         )
