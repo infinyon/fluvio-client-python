@@ -3,7 +3,7 @@ from setuptools_rust import Binding, RustExtension, Strip
 
 setup(
     name='fluvio',
-    version="0.9.5",
+    version="0.9.6-beta-0",
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     author = "Fluvio Contributors",
