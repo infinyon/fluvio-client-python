@@ -4,5 +4,5 @@ msgpack==1.0.2
 pycodestyle==2.7.0
 pyflakes==2.3.1
 semantic-version==2.8.5
-setuptools-rust==0.12.1
+git+https://github.com/infinyon/setuptools-rust.git@59ef903b247eef75fc17e78b361ef067f0c47737#egg=setuptools_rust
 toml==0.10.2
