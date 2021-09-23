@@ -88,8 +88,8 @@ jobs:
     strategy:
       matrix:
           platform: [
-              { name: linux_armv7l, target: armv7-unknown-linux-gnueabihf }
-              { name: linux_armv6l, target: arm-unknown-linux-gnueabihf }
+              { name: "linux_armv7l", target: "armv7-unknown-linux-gnueabihf" },
+              { name: "linux_armv6l", target: "arm-unknown-linux-gnueabihf" }
           ]
     steps:
       - uses: actions/checkout@v2
