@@ -79,8 +79,40 @@ jobs:
         with:
           path: dist/*.tar.gz
 
+  build_cc_wheels:
+    name: Build wheels for Raspberry PI
+    runs-on: ubuntu-latest
+    env:
+        CARGO: cross
+        CARGO_BUILD_TARGET: ${{ matrix.platform.target }}
+    strategy:
+      matrix:
+          platform: [
+              { name: linux_armv7l, target: armv7-unknown-linux-gnueabihf }
+              { name: linux_armv6l, target: arm-unknown-linux-gnueabihf }
+          ]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        name: Install Python
+        with:
+          python-version: '3.9'
+      - name: Install cross
+        run: cargo install cross
+      - name: Install setuptools and setuptools-rust
+        run: |
+          python -m pip install --upgrade wheel setuptools git+https://github.com/infinyon/setuptools-rust.git@59ef903b247eef75fc17e78b361ef067f0c47737#egg=setuptools_rust
+      - name: Build cross image
+        run: |
+          docker build -f cross/Dockerfile.${{ matrix.platform.target }} -t  fluvio-cross-python:${{ matrix.platform.target }} cross
+      - name: Build bdist
+        run: python setup.py bdist_wheel --py-limited-api=cp36 --plat-name ${{ matrix.platform.name }}
+      - uses: actions/upload-artifact@v2
+        with:
+          path: dist/*.whl
+
   upload_pypi:
-    needs: [build_wheels, build_sdist]
+    needs: [build_wheels, build_sdist, build_cc_wheels]
     runs-on: ubuntu-latest
 
     steps:
