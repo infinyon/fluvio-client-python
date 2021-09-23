@@ -14,14 +14,13 @@
 
 Fluvio client uses [pdoc](https://github.com/mitmproxy/pdoc) to generate the client API [documentation](https://infinyon.github.io/fluvio-client-python/fluvio.html).
 
-## Non-prebuilt installation
+## Installation
 
-We publish to pypi with wheels but we don't publish for every os/architecture
-out there. To build from source, do:
 ```
-pip install git+https://github.com/infinyon/fluvio-client-python
+pip install fluvio
 ```
-You will need the rust compiler and maybe some operating system sources.
+
+This will get the wheel for the os/architecture of the installation system if available, otherwise it will try to build from source. If building from source, you will need the rust compiler and maybe some operating system sources.
 
 # Example Usage
 
