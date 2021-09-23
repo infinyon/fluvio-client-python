@@ -96,6 +96,11 @@ jobs:
         name: Install Python
         with:
           python-version: '3.9'
+      - name: Install Rust ${{ matrix.platform.target }}
+        uses: actions-rs/toolchain@v1
+        with:
+          target: ${{ matrix.platform.target }}
+          profile: minimal
       - name: Install cross
         run: cargo install cross
       - name: Install setuptools and setuptools-rust
