@@ -101,6 +101,7 @@ jobs:
         with:
           target: ${{ matrix.platform.target }}
           profile: minimal
+          toolchain: stable
       - name: Install cross
         run: cargo install cross
       - name: Install setuptools and setuptools-rust
