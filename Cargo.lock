@@ -510,9 +510,9 @@ dependencies = [
 
 [[package]]
 name = "fluvio"
-version = "0.9.5"
+version = "0.9.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a3dddf55be8c05c09d39fa5abcdc0e3b92795a4903cd2e745c2b51ed855526b7"
+checksum = "e1451c6936f2bc13589737124216c4ee3a8da86c590482ca9ef00c8ab8bf53cb"
 dependencies = [
  "async-channel",
  "async-lock",
@@ -523,7 +523,7 @@ dependencies = [
  "derive_builder",
  "dirs",
  "event-listener",
- "fluvio-dataplane-protocol",
+ "fluvio-dataplane-protocol 0.7.0",
  "fluvio-future",
  "fluvio-protocol",
  "fluvio-sc-schema",
@@ -546,12 +546,12 @@ dependencies = [
 
 [[package]]
 name = "fluvio-controlplane-metadata"
-version = "0.11.1"
+version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ee403ac0924dfc8ea1ede654f2d0fff38a12781f63e935b8b96073dd7c28ac8f"
+checksum = "6ff2dce7b8031680af08f3c92fa8223e368213e35eced383a12f4ac62d0e655d"
 dependencies = [
  "async-trait",
- "fluvio-dataplane-protocol",
+ "fluvio-dataplane-protocol 0.7.0",
  "fluvio-future",
  "fluvio-protocol",
  "fluvio-stream-model",
@@ -566,6 +566,27 @@ name = "fluvio-dataplane-protocol"
 version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f1b437151cfcdc56c8d15de4b700a1026d18cc28a128af76aab34063134e16a5"
+dependencies = [
+ "bytes",
+ "cfg-if",
+ "content_inspector",
+ "crc32c",
+ "eyre",
+ "fluvio-future",
+ "fluvio-protocol",
+ "flv-util",
+ "futures-util",
+ "once_cell",
+ "semver 1.0.4",
+ "thiserror",
+ "tracing",
+]
+
+[[package]]
+name = "fluvio-dataplane-protocol"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "11f6b2407acc8bc8ad7a01cb8b5de00e074ef68c72c700b06788c714fc3db83d"
 dependencies = [
  "bytes",
  "cfg-if",
@@ -680,12 +701,12 @@ dependencies = [
 
 [[package]]
 name = "fluvio-sc-schema"
-version = "0.9.4"
+version = "0.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e9536d844d9107d8700b944e24eeeb4c0909055d6bb007dad1a3146d7f252947"
+checksum = "f3d266575533dbf90b66ae05edcba44edd9f870260cf623401501c66d44be240"
 dependencies = [
  "fluvio-controlplane-metadata",
- "fluvio-dataplane-protocol",
+ "fluvio-dataplane-protocol 0.7.0",
  "fluvio-protocol",
  "fluvio-types",
  "log",
@@ -725,7 +746,7 @@ checksum = "6e52061ce95fdd7c06988f2ed83af813d303a159b91f7d8fd0834ce8ae999c12"
 dependencies = [
  "bytes",
  "flate2",
- "fluvio-dataplane-protocol",
+ "fluvio-dataplane-protocol 0.6.0",
  "fluvio-protocol",
  "log",
  "serde",
