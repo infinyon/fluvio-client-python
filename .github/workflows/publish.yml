@@ -53,6 +53,7 @@ jobs:
           CIBW_BEFORE_ALL_LINUX: "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y && yum install -y openssl-devel"
           CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin"'
           CIBW_ARCHS_MACOS: x86_64 universal2
+          CIBW_ARCHS_LINUX: "auto aarch64"
 
       - uses: actions/upload-artifact@v2
         with:
