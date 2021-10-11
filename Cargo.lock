@@ -300,9 +300,9 @@ dependencies = [
 
 [[package]]
 name = "cpython"
-version = "0.6.0"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8094679a4e9bfc8035572162624bc800eda35b5f9eff2537b9cd9aacc3d9782e"
+checksum = "b7d46ba8ace7f3a1d204ac5060a706d0a68de6b42eafb6a586cc08bebcffe664"
 dependencies = [
  "libc",
  "num-traits",
@@ -413,9 +413,9 @@ dependencies = [
 
 [[package]]
 name = "dirs"
-version = "3.0.2"
+version = "4.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "30baa043103c9d0c2a57cf537cc2f35623889dc0d405e6c3cccfadbc81c71309"
+checksum = "ca3aa72a6f96ea37bbc5aa912f6788242832f75369bdfdadcb0e38423f100059"
 dependencies = [
  "dirs-sys",
 ]
@@ -510,9 +510,9 @@ dependencies = [
 
 [[package]]
 name = "fluvio"
-version = "0.9.7"
+version = "0.9.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f060bfc663458af31dfd0ab001364812951490a26a516e0e916121519dfbd96"
+checksum = "49c8d5625132a9327e58b059c95bf3def4fabfba4e92168f9d3760c66f7fe0a2"
 dependencies = [
  "async-channel",
  "async-lock",
@@ -1279,9 +1279,9 @@ dependencies = [
 
 [[package]]
 name = "python3-sys"
-version = "0.6.0"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b78af21b29594951a47fc3dac9b9eff0a3f077dec2f780ee943ae16a668f3b6a"
+checksum = "b18b32e64c103d5045f44644d7ddddd65336f7a0521f6fde673240a9ecceb77e"
 dependencies = [
  "libc",
  "regex",
