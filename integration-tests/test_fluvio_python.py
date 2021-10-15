@@ -12,8 +12,7 @@ def delete_topic(topic):
     import subprocess
     subprocess.run("fluvio topic delete %s" % topic, shell=True)
 
-
-class TestFluvioMethods(unittest.TestCase):
+class TestFluvioMethods(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         self.topic = str(uuid.uuid4())
         create_topic(self.topic)
@@ -21,26 +20,26 @@ class TestFluvioMethods(unittest.TestCase):
     def tearDown(self):
         delete_topic(self.topic)
 
-    def test_connect(self):
+    async def test_connect(self):
         # A very simple test
-        Fluvio.connect()
+        await Fluvio.connect()
 
-    def test_produce(self):
-        fluvio = Fluvio.connect()
+    async def test_produce(self):
+        fluvio = await Fluvio.connect()
 
-        producer = fluvio.topic_producer(self.topic)
+        producer = await fluvio.topic_producer(self.topic)
         for i in range(10):
-            producer.send_string("FOOBAR %s " % i)
+            await producer.send_string("FOOBAR %s " % i)
 
-    def test_consume_with_iterator(self):
-        fluvio = Fluvio.connect()
-        producer = fluvio.topic_producer(self.topic)
+    async def test_consume_with_iterator(self):
+        fluvio = await Fluvio.connect()
+        producer = await fluvio.topic_producer(self.topic)
         for i in range(10):
-            producer.send_string("record-%s" % i)
+            await producer.send_string("record-%s" % i)
 
-        consumer = fluvio.partition_consumer(self.topic, 0)
+        consumer = await fluvio.partition_consumer(self.topic, 0)
         count = 0
-        for i in consumer.stream(Offset.beginning()):
+        for i in await consumer.stream(Offset.beginning()):
             print("THIS IS IN AN ITERATOR! %s" % i.value())
             self.assertEqual(
                 bytearray(i.value()).decode(), 'record-%s' % count
@@ -50,15 +49,15 @@ class TestFluvioMethods(unittest.TestCase):
             if count >= 10:
                 break
 
-    def test_key_value(self):
-        fluvio = Fluvio.connect()
-        producer = fluvio.topic_producer(self.topic)
+    async def test_key_value(self):
+        fluvio = await Fluvio.connect()
+        producer = await fluvio.topic_producer(self.topic)
         for i in range(10):
-            producer.send("foo".encode(), ("record-%s" % i).encode())
+            await producer.send("foo".encode(), ("record-%s" % i).encode())
 
-        consumer = fluvio.partition_consumer(self.topic, 0)
+        consumer = await fluvio.partition_consumer(self.topic, 0)
         count = 0
-        for i in consumer.stream(Offset.beginning()):
+        for i in await consumer.stream(Offset.beginning()):
             print(
                 "THIS IS IN AN ITERATOR! key - %s, value - %s" % (
                     i.key(),
@@ -76,20 +75,20 @@ class TestFluvioMethods(unittest.TestCase):
             if count >= 10:
                 break
 
-    def test_batch_produce(self):
-        fluvio = Fluvio.connect()
-        producer = fluvio.topic_producer(self.topic)
+    async def test_batch_produce(self):
+        fluvio = await Fluvio.connect()
+        producer = await fluvio.topic_producer(self.topic)
 
         records = []
         for i in range(10):
             record = (("%s" % i).encode(), ("record-%s" % i).encode())
             records.append(record)
 
-        producer.send_all(records)
+        await producer.send_all(records)
 
-        consumer = fluvio.partition_consumer(self.topic, 0)
+        consumer = await fluvio.partition_consumer(self.topic, 0)
         count = 0
-        for i in consumer.stream(Offset.beginning()):
+        for i in await consumer.stream(Offset.beginning()):
             self.assertEqual(
                 bytearray(i.value()).decode(), 'record-%s' % count
             )
@@ -102,16 +101,16 @@ class TestFluvioMethods(unittest.TestCase):
                 break
 
 
-class TestFluvioErrors(unittest.TestCase):
+class TestFluvioErrors(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         self.topic = str(uuid.uuid4())
 
-    def test_produce_on_uncreated_topic(self):
-        fluvio = Fluvio.connect()
+    async def test_produce_on_uncreated_topic(self):
+        fluvio = await Fluvio.connect()
 
         error = None
         try:
-            fluvio.topic_producer(self.topic)
+            await fluvio.topic_producer(self.topic)
         except FluviorError as e:
             error = e
             print('ERROR: %s' % e)

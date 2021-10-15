@@ -9,6 +9,7 @@ from ._fluvio_python import (
 )
 from ._fluvio_python import Error as FluviorError  # noqa: F401
 import typing
+import asyncio
 
 
 class Record:
@@ -126,7 +127,7 @@ class PartitionConsumer:
     def __init__(self, inner: _PartitionConsumer):
         self._inner = inner
 
-    def stream(self, offset: Offset) -> PartitionConsumerStream:
+    async def stream(self, offset: Offset) -> PartitionConsumerStream:
         '''
         Continuously streams events from a particular offset in the consumer’s
         partition. This returns a `PartitionConsumerStream` which is an
@@ -138,7 +139,9 @@ class PartitionConsumer:
         using an Offset and periodically receive events, either individually or
         in batches.
         '''
-        return PartitionConsumerStream(self._inner.stream(offset._inner))
+        return PartitionConsumerStream(
+            await asyncio.to_thread(self._inner.stream, offset._inner)
+        )
 
 
 class TopicProducer:
@@ -153,26 +156,26 @@ class TopicProducer:
     def __init__(self, inner: _TopicProducer):
         self._inner = inner
 
-    def send_string(self, buf: str) -> None:
+    async def send_string(self, buf: str) -> None:
         '''Sends a string to this producer’s topic
         '''
-        return self.send([], buf.encode('utf-8'))
+        return await self.send([], buf.encode('utf-8'))
 
-    def send(self, key: typing.List[int], value: typing.List[int]) -> None:
+    async def send(self, key: typing.List[int], value: typing.List[int]) -> None:
         '''
         Sends a key/value record to this producer's Topic.
 
         The partition that the record will be sent to is derived from the Key.
         '''
-        return self._inner.send(key, value)
+        return await asyncio.to_thread(self._inner.send, key, value)
 
-    def send_all(self, records: typing.List[typing.Tuple[bytes, bytes]]):
+    async def send_all(self, records: typing.List[typing.Tuple[bytes, bytes]]):
         '''
         Sends a list of key/value records as a batch to this producer's Topic.
         :param records: The list of records to send
         '''
         records_inner = [_ProducerBatchRecord(x, y) for (x, y) in records]
-        return self._inner.send_all(records_inner)
+        return await asyncio.to_thread(self._inner.send_all, records_inner)
 
 
 class Fluvio:
@@ -183,7 +186,7 @@ class Fluvio:
         self._inner = inner
 
     @classmethod
-    def connect(cls):
+    async def connect(cls):
         '''Creates a new Fluvio client using the current profile from
         `~/.fluvio/config`
 
@@ -192,9 +195,9 @@ class Fluvio:
         set it as current, then try to connect to the cluster using those
         settings.
         '''
-        return cls(_Fluvio.connect())
+        return cls(await asyncio.to_thread(_Fluvio.connect))
 
-    def partition_consumer(
+    async def partition_consumer(
         self,
         topic: str,
         partition: int
@@ -208,10 +211,10 @@ class Fluvio:
         per partition.
         '''
         return PartitionConsumer(
-            self._inner.partition_consumer(topic, partition)
+            await asyncio.to_thread(self._inner.partition_consumer, topic, partition)
         )
 
-    def topic_producer(self, topic: str) -> TopicProducer:
+    async def topic_producer(self, topic: str) -> TopicProducer:
         '''
         Creates a new `TopicProducer` for the given topic name.
 
@@ -219,4 +222,6 @@ class Fluvio:
         when you send events via a producer, you must specify which partition
         each event should go to.
         '''
-        return TopicProducer(self._inner.topic_producer(topic))
+        return TopicProducer(
+            await asyncio.to_thread(self._inner.topic_producer, topic)
+        )
