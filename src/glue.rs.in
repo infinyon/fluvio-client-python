@@ -3,6 +3,7 @@ use fluvio::{
     PartitionConsumer,
     TopicProducer,
     FluvioError,
+    dataplane::ErrorCode,
     Offset,
     consumer::Record,
 };
@@ -58,9 +59,7 @@ mod _PartitionConsumer {
         offset: &Offset,
     ) -> Result<PartitionConsumerStream, FluvioError> {
         Ok(PartitionConsumerStream {
-            inner: Box::pin(run_block_on(
-               consumer.stream(offset.clone())
-            )?)
+            inner: Box::pin(run_block_on(consumer.stream(offset.clone()))?)
         })
     }
 }
@@ -73,13 +72,13 @@ foreign_class!(class PartitionConsumer {
 });
 
 type PartitionConsumerIteratorInner =
-    Pin<Box<dyn Stream<Item = Result<Record, FluvioError>> + Send>>;
+    Pin<Box<dyn Stream<Item = Result<Record, ErrorCode>> + Send>>;
 
 pub struct PartitionConsumerStream {
     pub inner: PartitionConsumerIteratorInner,
 }
 impl PartitionConsumerStream {
-    pub fn next(&mut self) -> Option<Result<Record, FluvioError>> {
+    pub fn next(&mut self) -> Option<Result<Record, ErrorCode>> {
         run_block_on(self.inner.next())
     }
 }
@@ -89,7 +88,7 @@ foreign_class!(class PartitionConsumerStream{
     private constructor = empty;
     fn PartitionConsumerStream::next(
         &mut self
-    ) -> Option<Result<Record, FluvioError>>;
+    ) -> Option<Result<Record, ErrorCode>>;
 });
 
 #[derive(Clone)]
