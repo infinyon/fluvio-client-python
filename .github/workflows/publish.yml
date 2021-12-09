@@ -50,7 +50,7 @@ jobs:
         # to supply options, put them in 'env', like:
         env:
           CIBW_SKIP: "cp27-* cp34-* cp35-* pp* *-win32"
-          CIBW_BEFORE_ALL_LINUX: "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y && yum install -y openssl-devel"
+          CIBW_BEFORE_ALL_LINUX: "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain stable -y && yum install -y openssl-devel perl-IPC-Run"
           CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin"'
           CIBW_ARCHS_MACOS: x86_64 universal2
           CIBW_ARCHS_LINUX: "auto aarch64"
