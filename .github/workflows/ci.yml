@@ -112,13 +112,12 @@ jobs:
         run: |
           make macos-ci-tests
   build_wheels:
-    name: Build wheels on ${{ matrix.os }} for Python ${{ matrix.python-version }} on architecture ${{matrix.build-architecture}}
+    name: Build wheels on ${{ matrix.os }} for Python ${{matrix.python-version}}.
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-20.04] # , macOS-10.15] # TODO: add windows-2019,
+        os: [ubuntu-20.04, macOS-10.15] # TODO: add windows-2019,
         python-version: ["36", "37", "38", "39", "310"]
-        build-architecture: [manylinux_x86_64, musllinux_x86_64] # , manylinux_i686, musllinux_i686] #, macosx_x86_64, macosx_universal2, macosx_arm64]
     env:
       CIBW_ARCHS_MACOS: x86_64 universal2
       CIBW_ARCHS_LINUX: auto aarch64
@@ -157,4 +156,4 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.3.0
         env:
-          CIBW_BUILD: "cp${{matrix.python-version}}-${{matrix.build-architecture}}"
+          CIBW_BUILD: "cp${{matrix.python-version}}-manylinux_x86_64 cp${{matrix.python-version}}-manylinux_i686 cp${{matrix.python-version}}-musllinux_x86_64 cp${{matrix.python-version}}-musllinux_i686 cp${{matrix.python-version}}-macosx_x86_64 cp${{matrix.python-version}}-macosx_universal2 cp${{matrix.python-version}}-macosx_arm64"
