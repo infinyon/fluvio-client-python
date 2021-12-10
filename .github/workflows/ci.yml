@@ -112,7 +112,7 @@ jobs:
         run: |
           make macos-ci-tests
   build_wheels:
-    name: Build wheels on ${{ matrix.os }} for Python ${{ matrix.python-version }} on architecture ${{matrix.architecture}}
+    name: Build wheels on ${{ matrix.os }} for Python ${{ matrix.python-version }} on architecture ${{matrix.build-architecture}}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
