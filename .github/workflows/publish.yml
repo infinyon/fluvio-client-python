@@ -16,7 +16,7 @@ jobs:
         os: [ubuntu-20.04, macOS-10.15] # TODO: add windows-2019,
         python-version: ["37", "38", "39", "310"]
     env:
-      CIBW_SKIP: "cp27-* cp34-* cp35-* pp* *-win32"
+      CIBW_SKIP: "cp27-* cp34-* cp35-* cp36-* pp* *-win32"
       CIBW_ARCHS_MACOS: x86_64 universal2
       CIBW_ARCHS_LINUX: auto aarch64
       CIBW_BEFORE_ALL_LINUX: "{package}/tools/cibw_before_all_linux.sh"
@@ -54,7 +54,7 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.3.0
         env:
-          CIBW_BUILD: "cp${{matrix.python-version}}-manylinux_x86_64 cp${{matrix.python-version}}-musllinux_x86_64 cp${{matrix.python-version}}-macosx_x86_64 cp${{matrix.python-version}}-macosx_universal2 cp${{matrix.python-version}}-macosx_arm64"
+          CIBW_BUILD: "cp${{matrix.python-version}}-manylinux_x86_64 cp${{matrix.python-version}}-macosx_x86_64 cp${{matrix.python-version}}-macosx_universal2 cp${{matrix.python-version}}-macosx_arm64" # cp${{matrix.python-version}}-musllinux_x86_64
 
   build_sdist:
     name: Build source distribution
