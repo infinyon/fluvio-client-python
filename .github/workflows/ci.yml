@@ -123,13 +123,6 @@ jobs:
       CIBW_ARCHS_LINUX: auto aarch64
       CIBW_BEFORE_ALL_LINUX: "yum install -y openssl-devel && {package}/tools/install_rust.sh"
       CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin"'
-      CIBW_ENVIRONMENT_LINUX: >-
-        PYTHON_ISAL_BUILD_CACHE=True
-        # This is in the docker container. So probably a '/tmp' will be available
-        PYTHON_ISAL_BUILD_CACHE_FILE=/tmp/build_cache
-      CIBW_ENVIRONMENT_MACOS: >-
-        PYTHON_ISAL_BUILD_CACHE=True
-        PYTHON_ISAL_BUILD_CACHE_FILE=${{ runner.temp }}/build_cache
 
     steps:
       - uses: actions/checkout@v2
