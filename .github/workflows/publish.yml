@@ -14,12 +14,12 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-20.04, macOS-10.15] # TODO: add windows-2019,
-        python-version: ["36", "37", "38", "39", "310"]
+        python-version: ["37", "38", "39", "310"]
     env:
       CIBW_SKIP: "cp27-* cp34-* cp35-* pp* *-win32"
       CIBW_ARCHS_MACOS: x86_64 universal2
       CIBW_ARCHS_LINUX: auto aarch64
-      CIBW_BEFORE_ALL_LINUX: "{package}tools/cibw_before_all_linux.sh"
+      CIBW_BEFORE_ALL_LINUX: "{package}/tools/cibw_before_all_linux.sh"
       CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin"'
 
     steps:
@@ -65,7 +65,7 @@ jobs:
       - uses: actions/setup-python@v2
         name: Install Python
         with:
-          python-version: "3.9"
+          python-version: "3.10"
 
       - name: Install setuptools and setuptools-rust
         run: |
