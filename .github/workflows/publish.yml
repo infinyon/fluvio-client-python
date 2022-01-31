@@ -104,8 +104,13 @@ jobs:
           target: ${{ matrix.platform.target }}
           profile: minimal
           toolchain: stable
+
       - name: Install cross
-        run: cargo install cross
+        uses: actions-rs/install@v0.1
+        with:
+          crate: cross
+          version: latest
+
       - name: Install setuptools and setuptools-rust
         run: |
           python -m pip install --upgrade wheel setuptools setuptools-rust
