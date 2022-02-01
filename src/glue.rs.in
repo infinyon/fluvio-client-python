@@ -120,7 +120,7 @@ mod _TopicProducer {
         key: &[u8],
         value: &[u8],
     ) -> Result<(), FluvioError> {
-        run_block_on(producer.send(key, value))
+        run_block_on(producer.send(key, value)).map(|_| ())
     }
     pub fn send_all(
         producer: &TopicProducer,
@@ -132,7 +132,7 @@ mod _TopicProducer {
                     (record.key.clone(), record.value.clone())
                 })
             )
-        )
+        ).map(|_| ())
     }
 }
 
