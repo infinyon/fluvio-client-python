@@ -23,7 +23,7 @@ jobs:
       CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin"'
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       # Used to host cibuildwheel
       - uses: actions/setup-python@v3
@@ -64,7 +64,7 @@ jobs:
     name: Build source distribution
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - uses: actions/setup-python@v3
         name: Install Python
@@ -93,7 +93,7 @@ jobs:
               { name: "linux_armv6l", target: "arm-unknown-linux-gnueabihf" }
           ]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
         name: Install Python
         with:
