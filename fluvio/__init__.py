@@ -166,6 +166,12 @@ class TopicProducer:
         '''
         return self._inner.send(key, value)
 
+    def flush(self) -> None:
+        '''
+        Send all the queued records in the producer batches.
+        '''
+        return self._inner.flush()
+
     def send_all(self, records: typing.List[typing.Tuple[bytes, bytes]]):
         '''
         Sends a list of key/value records as a batch to this producer's Topic.
