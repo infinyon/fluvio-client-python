@@ -134,6 +134,13 @@ mod _TopicProducer {
             )
         ).map(|_| ())
     }
+    pub fn flush(
+        producer: &TopicProducer,
+    ) -> Result<(), FluvioError> {
+        run_block_on(
+            producer.flush()
+        )
+    }
 }
 
 foreign_class!(class TopicProducer {
@@ -147,6 +154,9 @@ foreign_class!(class TopicProducer {
     fn _TopicProducer::send_all(
         &self,
         records: &[ProducerBatchRecord],
+    ) -> Result<(), FluvioError>;
+    fn _TopicProducer::flush(
+        &self,
     ) -> Result<(), FluvioError>;
 });
 

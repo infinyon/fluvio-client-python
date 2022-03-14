@@ -124,6 +124,7 @@ class TestFluvioErrors(unittest.TestCase):
             )
         )
 
+
 class TestFluvioProduceFlush(unittest.TestCase):
     def setUp(self):
         self.topic = str(uuid.uuid4())
@@ -134,16 +135,14 @@ class TestFluvioProduceFlush(unittest.TestCase):
 
     def test_produce_flush(self):
         expected_output = ["record-%s" % i for i in range(10)]
-        # Hopefully when the fluvio/producer variable goes out of scope, garbage is collected
-        if True:
-            fluvio = Fluvio.connect()
-            producer = fluvio.topic_producer(self.topic)
-            for i in expected_output:
-                producer.send("".encode(), i.encode())
+        # Hopefully when the fluvio/producer variable goes out of scope,
+        # garbage is collected
+        fluvio = Fluvio.connect()
+        producer = fluvio.topic_producer(self.topic)
+        for i in expected_output:
+            producer.send("".encode(), i.encode())
 
-        # Uncomment these lines to verify the test is correct.
-        # import time
-        # time.sleep(1)
+        producer.flush()
 
         import subprocess
         result = subprocess.run(
@@ -157,6 +156,6 @@ class TestFluvioProduceFlush(unittest.TestCase):
         # The CLI appends an extra newline to the output.
         expected_output.append('')
         expected_output = "\n".join(expected_output)
-        stdout= result.stdout
+        stdout = result.stdout
 
         self.assertEqual(expected_output, stdout)
