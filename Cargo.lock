@@ -534,9 +534,9 @@ dependencies = [
 
 [[package]]
 name = "fluvio"
-version = "0.12.4"
+version = "0.12.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1cf36334fd0a40eb360cabdc01005dd22a880b35afe10dfca414909cdfa63079"
+checksum = "681efc83857ac16895312c3b21d1d3685ab356d3aeee7591589f295444f4cfe5"
 dependencies = [
  "async-channel",
  "async-lock",
@@ -611,9 +611,9 @@ dependencies = [
 
 [[package]]
 name = "fluvio-future"
-version = "0.3.13"
+version = "0.3.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dc1cf2cf885d9872c9da76c6db9dd664b02d63ea69a237bac5c651fb6482cec7"
+checksum = "631ef3c6d2682640740296c24ae95f5cf98f3dcf86363f4c698a44d963bf516d"
 dependencies = [
  "async-io",
  "async-net",
