@@ -123,3 +123,40 @@ class TestFluvioErrors(unittest.TestCase):
                 'Topic not found: %s' % self.topic,  # noqa: E501
             )
         )
+
+class TestFluvioProduceFlush(unittest.TestCase):
+    def setUp(self):
+        self.topic = str(uuid.uuid4())
+        create_topic(self.topic)
+
+    def tearDown(self):
+        delete_topic(self.topic)
+
+    def test_produce_flush(self):
+        expected_output = ["record-%s" % i for i in range(10)]
+        # Hopefully when the fluvio/producer variable goes out of scope, garbage is collected
+        if True:
+            fluvio = Fluvio.connect()
+            producer = fluvio.topic_producer(self.topic)
+            for i in expected_output:
+                producer.send("".encode(), i.encode())
+
+        # Uncomment these lines to verify the test is correct.
+        # import time
+        # time.sleep(1)
+
+        import subprocess
+        result = subprocess.run(
+            "fluvio consume %s -B 0 -d" % self.topic,
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+
+        # The CLI appends an extra newline to the output.
+        expected_output.append('')
+        expected_output = "\n".join(expected_output)
+        stdout= result.stdout
+
+        self.assertEqual(expected_output, stdout)
