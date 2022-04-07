@@ -11,7 +11,7 @@ name = "_fluvio_python"
 [build-dependencies]
 flapigen = "0.6.0-pre7"
 env_logger = "^0.9"
-log = "^0.4.6"
+log = "^0.4.16"
 
 [dependencies]
 cpython = { version = "0.7", features = ["extension-module"] }
