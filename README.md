@@ -29,7 +29,7 @@ This will get the wheel for the os/architecture of the installation system if av
 from fluvio import Fluvio
 fluvio = Fluvio.connect()
 producer = fluvio.topic_producer('my-topic')
-producer.send_record("FOOBAR", 0)
+producer.send_string("FOOBAR")
 ```
 
 ## Consumer
