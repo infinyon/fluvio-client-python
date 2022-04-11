@@ -56,7 +56,7 @@ jobs:
         env:
           CIBW_BUILD: "cp${{matrix.python-version}}-manylinux_x86_64 cp${{matrix.python-version}}-macosx_x86_64 cp${{matrix.python-version}}-macosx_universal2 cp${{matrix.python-version}}-macosx_arm64" # cp${{matrix.python-version}}-musllinux_x86_64
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           path: ./wheelhouse/*.whl
 
@@ -77,7 +77,7 @@ jobs:
       - name: Build sdist
         run: python setup.py bdist_wheel sdist
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           path: dist/*.tar.gz
 
@@ -121,7 +121,7 @@ jobs:
         run: python setup.py bdist_wheel --py-limited-api=cp37 --plat-name ${{ matrix.platform.name }}
         env:
             CARGO_BUILD_TARGET: ${{ matrix.platform.target }}
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           path: dist/*.whl
 
