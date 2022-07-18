@@ -16,7 +16,7 @@ log = "^0.4.17"
 [dependencies]
 cpython = { version = "0.7", features = ["extension-module"] }
 fluvio = { version = "0.12.6" }
-fluvio-future = { version = "0.3.17", features = ["task", "io"] }
+fluvio-future = { version = "0.4.1", features = ["task", "io"] }
 
 [patch.crates-io]
 fluvio = { git = "http://github.com/infinyon/fluvio" }

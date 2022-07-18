@@ -10,7 +10,7 @@ dependencies = [
  "env_logger",
  "flapigen",
  "fluvio",
- "fluvio-future",
+ "fluvio-future 0.4.1",
  "log",
 ]
 
@@ -568,7 +568,7 @@ dependencies = [
  "event-listener",
  "fluvio-compression",
  "fluvio-dataplane-protocol",
- "fluvio-future",
+ "fluvio-future 0.3.18",
  "fluvio-protocol",
  "fluvio-sc-schema",
  "fluvio-socket",
@@ -607,7 +607,7 @@ dependencies = [
  "async-trait",
  "base64",
  "fluvio-dataplane-protocol",
- "fluvio-future",
+ "fluvio-future 0.3.18",
  "fluvio-protocol",
  "fluvio-stream-model",
  "fluvio-types",
@@ -628,7 +628,7 @@ dependencies = [
  "crc32c",
  "eyre",
  "fluvio-compression",
- "fluvio-future",
+ "fluvio-future 0.3.18",
  "fluvio-protocol",
  "fluvio-types",
  "flv-util",
@@ -663,12 +663,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "fluvio-future"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "daeda55da0ea44724a8aafc8b6af6d0ec08629df22b0200da06f7467008349a0"
+dependencies = [
+ "async-io",
+ "async-std",
+ "cfg-if",
+ "fluvio-wasm-timer",
+ "futures-lite",
+ "log",
+ "pin-project",
+ "thiserror",
+ "tracing",
+ "ws_stream_wasm",
+]
+
+[[package]]
 name = "fluvio-protocol"
 version = "0.7.7"
 source = "git+http://github.com/infinyon/fluvio#08aaab59660a274f43e0a78fa8a1d33a6f5e4031"
 dependencies = [
  "bytes",
- "fluvio-future",
+ "fluvio-future 0.3.18",
  "fluvio-protocol-derive",
  "tokio-util",
  "tracing",
@@ -712,7 +730,7 @@ dependencies = [
  "bytes",
  "cfg-if",
  "event-listener",
- "fluvio-future",
+ "fluvio-future 0.3.18",
  "fluvio-protocol",
  "futures-util",
  "once_cell",
