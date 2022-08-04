@@ -1,4 +1,4 @@
-flake8==4.0.1
+flake8==5.0.4
 mccabe==0.6.1
 msgpack==1.0.4
 pycodestyle==2.8.0
