@@ -15,6 +15,7 @@ log = "^0.4.17"
 
 [dependencies]
 cpython = { version = "0.7", features = ["extension-module"] }
+flate2 = "1.0.24"
 fluvio = { version = "0.12.6" }
 fluvio-future = { version = "0.4.1", features = ["task", "io"] }
 

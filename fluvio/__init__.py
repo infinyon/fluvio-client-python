@@ -100,6 +100,7 @@ class PartitionConsumerStream:
     _inner: _PartitionConsumerStream
 
     def __init__(self, inner: _PartitionConsumerStream):
+        print(inner)
         self._inner = inner
 
     def __iter__(self):
@@ -139,6 +140,24 @@ class PartitionConsumer:
         in batches.
         '''
         return PartitionConsumerStream(self._inner.stream(offset._inner))
+
+    def stream_with_config(self, offset: Offset, wasm_module_path: str) -> PartitionConsumerStream:
+        # print(wasm_module_path)
+        '''
+        Continuously streams events from a particular offset in the consumer’s
+        partition. This returns a `PartitionConsumerStream` which is an
+        iterator.
+
+        Streaming is one of the two ways to consume events in Fluvio. It is a
+        continuous request for new records arriving in a partition, beginning
+        at a particular offset. You specify the starting point of the stream
+        using an Offset and periodically receive events, either individually or
+        in batches.
+        '''
+        # consumer = self._inner.stream_with_config(offset._inner, wasm_module_path=wasm_module_path)
+        # print(dir(consumer))
+        # return PartitionConsumerStream(consumer)
+        return PartitionConsumerStream(self._inner.stream_with_config(offset._inner, wasm_module_path))
 
 
 class TopicProducer:
