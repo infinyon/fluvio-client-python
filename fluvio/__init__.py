@@ -142,9 +142,8 @@ class PartitionConsumer:
         return PartitionConsumerStream(self._inner.stream(offset._inner))
 
     def stream_with_config(self, offset: Offset, wasm_module_path: str) -> PartitionConsumerStream:
-        # print(wasm_module_path)
         '''
-        Continuously streams events from a particular offset in the consumer’s
+        Continuously streams events from a particular offset with a SmartModule WASM module in the consumer’s
         partition. This returns a `PartitionConsumerStream` which is an
         iterator.
 
@@ -153,10 +152,15 @@ class PartitionConsumer:
         at a particular offset. You specify the starting point of the stream
         using an Offset and periodically receive events, either individually or
         in batches.
+        
+        Args:
+            offset: Offset
+            wasm_module_path: str - The path to the WASM file
+
+        Returns:
+            PartionConsumerStream
+
         '''
-        # consumer = self._inner.stream_with_config(offset._inner, wasm_module_path=wasm_module_path)
-        # print(dir(consumer))
-        # return PartitionConsumerStream(consumer)
         return PartitionConsumerStream(self._inner.stream_with_config(offset._inner, wasm_module_path))
 
 
