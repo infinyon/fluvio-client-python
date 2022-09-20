@@ -56,16 +56,10 @@ class TestFluvioMethods(unittest.TestCase):
         records = []
 
         consumer = fluvio.partition_consumer(self.topic, 0)
-        for i in consumer.stream_with_config(Offset.beginning(), wasm_module_path):
-            print("THIS IS IN AN ITERATOR! %s" % bytearray(i.value()).decode())
-            records.append(bytearray(i.value()).decode())
-            # should only ever be one record to append
-            # feel's a little flakey open to suggestions on improvments
-            # TODO - review better break condition
-            break
+        records.append(bytearray(next(consumer.stream_with_config(Offset.beginning(), wasm_module_path)).value()).decode())
         
         self.assertEqual(len(records), 1)
-        self.assertEqual(records[0], "recors-a")
+        self.assertEqual(records[0], "record-a")
 
     def test_consumer_with_interator(self):
         fluvio = Fluvio.connect()
