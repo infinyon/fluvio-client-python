@@ -4,5 +4,5 @@ msgpack==1.0.4
 pycodestyle==2.8.0
 pyflakes==2.4.0
 semantic-version==2.10.0
-setuptools-rust==1.5.0
+setuptools-rust==1.5.2
 toml==0.10.2
