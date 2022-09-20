@@ -1,6 +1,8 @@
+from string import ascii_lowercase
 from fluvio import (Fluvio, FluviorError, Offset)
 import unittest
 import uuid
+import os
 
 
 def create_topic(topic):
@@ -32,7 +34,40 @@ class TestFluvioMethods(unittest.TestCase):
         for i in range(10):
             producer.send_string("FOOBAR %s " % i)
 
-    def test_consume_with_iterator(self):
+    def test_consume_with_smart_module_iterator(self):
+        """
+        Test adds a the alphabet into a topic in the format of record-[letter]
+
+        A wasm smart module is added to the filter and a all messages are retrieved and stored in the records list
+        We can then assert the following:
+
+        - There should be 1 item
+        - It should be record-a
+
+        """
+
+        wasm_module_path = os.path.abspath("integration-tests/smartmodule_filter_on_a.wasm")
+
+        fluvio = Fluvio.connect()
+        producer = fluvio.topic_producer(self.topic)
+        for i in list(ascii_lowercase):
+            producer.send_string(f"record-{i}")
+        
+        records = []
+
+        consumer = fluvio.partition_consumer(self.topic, 0)
+        for i in consumer.stream_with_config(Offset.beginning(), wasm_module_path):
+            print("THIS IS IN AN ITERATOR! %s" % bytearray(i.value()).decode())
+            records.append(bytearray(i.value()).decode())
+            # should only ever be one record to append
+            # feel's a little flakey open to suggestions on improvments
+            # TODO - review better break condition
+            break
+        
+        self.assertEqual(len(records), 1)
+        self.assertEqual(records[0], "recors-a")
+
+    def test_consumer_with_interator(self):
         fluvio = Fluvio.connect()
         producer = fluvio.topic_producer(self.topic)
         for i in range(10):

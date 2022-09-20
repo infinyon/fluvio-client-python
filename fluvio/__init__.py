@@ -100,7 +100,6 @@ class PartitionConsumerStream:
     _inner: _PartitionConsumerStream
 
     def __init__(self, inner: _PartitionConsumerStream):
-        print(inner)
         self._inner = inner
 
     def __iter__(self):
@@ -155,7 +154,14 @@ class PartitionConsumer:
         
         Args:
             offset: Offset
-            wasm_module_path: str - The path to the WASM file
+            wasm_module_path: str - The absolute path to the WASM file
+
+        Example:
+            import os
+
+            wasm_module_path = os.path.abspath("somefilter.wasm")
+            for i in consumer.stream_with_config(Offset.beginning(), wasm_module_path):
+                # do something with i
 
         Returns:
             PartionConsumerStream
