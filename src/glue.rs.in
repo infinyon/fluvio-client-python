@@ -99,13 +99,8 @@ mod _PartitionConsumer {
             kind: SmartModuleKind::Filter,
             params: Default::default()
         }));
-        let config = builder.build().expect("Failed to create config");
-        match run_block_on(consumer.stream_with_config(offset.clone(), config)) {
-            Ok(stream) => Ok(PartitionConsumerStream {
-                inner: Box::pin(stream),
-            }),
-            Err(e) => Err(e),
-        }
+        let config = builder.build().map_err(|err| FluvioError::Other(err.to_string()))?;
+        run_block_on(consumer.stream_with_config(offset.clone(), config)).map(|stream| PartitionConsumerStream { inner: Box::pin(stream) })
     }
 }
 foreign_class!(class PartitionConsumer {
