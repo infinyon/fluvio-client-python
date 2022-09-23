@@ -402,9 +402,9 @@ dependencies = [
 
 [[package]]
 name = "darling"
-version = "0.12.4"
+version = "0.14.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5f2c43f534ea4b0b049015d00269734195e6d3f0f6635cb692251aca6f9f8b3c"
+checksum = "4529658bdda7fd6769b8614be250cdcfc3aeb0ee72fe66f9e41e5e5eb73eac02"
 dependencies = [
  "darling_core",
  "darling_macro",
@@ -412,9 +412,9 @@ dependencies = [
 
 [[package]]
 name = "darling_core"
-version = "0.12.4"
+version = "0.14.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8e91455b86830a1c21799d94524df0845183fa55bafd9aa137b01c7d1065fa36"
+checksum = "649c91bc01e8b1eac09fb91e8dbc7d517684ca6be8ebc75bb9cafc894f9fdb6f"
 dependencies = [
  "fnv",
  "ident_case",
@@ -426,9 +426,9 @@ dependencies = [
 
 [[package]]
 name = "darling_macro"
-version = "0.12.4"
+version = "0.14.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "29b5acf0dea37a7f66f7b25d2c5e93fd46f8f6968b1a5d7a3e02e97768afc95a"
+checksum = "ddfc69c5bfcbd2fc09a0f38451d2daf0e372e367986a83906d1b0dbc88134fb5"
 dependencies = [
  "darling_core",
  "quote",
@@ -437,18 +437,18 @@ dependencies = [
 
 [[package]]
 name = "derive_builder"
-version = "0.10.2"
+version = "0.11.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d13202debe11181040ae9063d739fa32cfcaaebe2275fe387703460ae2365b30"
+checksum = "d07adf7be193b71cc36b193d0f5fe60b918a3a9db4dad0449f57bcfd519704a3"
 dependencies = [
  "derive_builder_macro",
 ]
 
 [[package]]
 name = "derive_builder_core"
-version = "0.10.2"
+version = "0.11.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "66e616858f6187ed828df7c64a6d71720d83767a7f19740b2d1b6fe6327b36e5"
+checksum = "1f91d4cfa921f1c05904dc3c57b4a32c38aed3340cce209f3a6fd1478babafc4"
 dependencies = [
  "darling",
  "proc-macro2",
@@ -458,9 +458,9 @@ dependencies = [
 
 [[package]]
 name = "derive_builder_macro"
-version = "0.10.2"
+version = "0.11.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "58a94ace95092c5acb1e97a7e846b310cfbd499652f72297da7493f618a98d73"
+checksum = "8f0314b72bed045f3a68671b3c86328386762c93f82d98c65c3cb5e5f573dd68"
 dependencies = [
  "derive_builder_core",
  "syn",
@@ -569,9 +569,9 @@ dependencies = [
 
 [[package]]
 name = "fluvio"
-version = "0.12.14"
+version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9a0cab7f75c6163d40a37263cd5bb0c611211e971e2b47b198fa2376d5509ea3"
+checksum = "ef9777bb3fcc752a0edebcdac91a285ad40ed0aeced5f5992e4efb16a5eb7555"
 dependencies = [
  "async-channel",
  "async-lock",
@@ -584,9 +584,9 @@ dependencies = [
  "derive_builder",
  "dirs",
  "event-listener",
- "fluvio-compression 0.1.1",
+ "fluvio-compression",
  "fluvio-dataplane-protocol",
- "fluvio-future 0.3.18",
+ "fluvio-future 0.4.2",
  "fluvio-protocol",
  "fluvio-sc-schema",
  "fluvio-socket",
@@ -603,19 +603,6 @@ dependencies = [
  "tokio",
  "toml",
  "tracing",
-]
-
-[[package]]
-name = "fluvio-compression"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1b2a11336f28be7bee0841da61f619bb410366c53b427cefe02f77e2d5cce7a7"
-dependencies = [
- "flate2",
- "lz4_flex",
- "serde",
- "snap",
- "thiserror",
 ]
 
 [[package]]
@@ -662,7 +649,7 @@ dependencies = [
  "content_inspector",
  "crc32c",
  "eyre",
- "fluvio-compression 0.2.0",
+ "fluvio-compression",
  "fluvio-future 0.4.2",
  "fluvio-protocol",
  "fluvio-types",
@@ -680,18 +667,8 @@ version = "0.3.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1e2d1fad8e412d44c516add2349a34f6d71d9279b108c8e012325ab17fcbf982"
 dependencies = [
- "async-io",
- "async-net",
- "async-std",
- "async-trait",
- "cfg-if",
  "fluvio-wasm-timer",
- "futures-lite",
- "futures-util",
  "log",
- "openssl",
- "openssl-sys",
- "pin-project",
  "thiserror",
  "tracing",
  "ws_stream_wasm",
@@ -704,11 +681,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "87c637d55360a7a105c387b7cc04d19c5f1532366cade02e6b258f06835a65e1"
 dependencies = [
  "async-io",
+ "async-net",
  "async-std",
+ "async-trait",
  "cfg-if",
  "fluvio-wasm-timer",
  "futures-lite",
+ "futures-util",
  "log",
+ "openssl",
+ "openssl-sys",
  "pin-project",
  "thiserror",
  "tracing",
@@ -759,9 +741,9 @@ dependencies = [
 
 [[package]]
 name = "fluvio-socket"
-version = "0.11.5"
+version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6c35259517081cd708d7b13d7afe1728d77f983e78b029924e8bd51ebfe0f219"
+checksum = "5f29b8d7f99f3ac4d87579e13dfdf960ae2dc1523ca41313816e342da86be9f0"
 dependencies = [
  "async-channel",
  "async-lock",
@@ -769,7 +751,7 @@ dependencies = [
  "bytes",
  "cfg-if",
  "event-listener",
- "fluvio-future 0.3.18",
+ "fluvio-future 0.4.2",
  "fluvio-protocol",
  "futures-util",
  "once_cell",
@@ -782,9 +764,9 @@ dependencies = [
 
 [[package]]
 name = "fluvio-spu-schema"
-version = "0.9.4"
+version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a300a9e13672016511b71d3046c061fcfae2f66b48d5540decba7965b4975d4c"
+checksum = "e4904b99254c7f7ec5e8b7d5518116e13ec091f8e2f8d8b630b2d4166e9c5b03"
 dependencies = [
  "bytes",
  "flate2",
@@ -1967,8 +1949,3 @@ dependencies = [
  "wasm-bindgen-futures",
  "web-sys",
 ]
-
-[[patch.unused]]
-name = "fluvio"
-version = "0.14.0"
-source = "git+http://github.com/infinyon/fluvio#a845dec276481dda5a6d95f6d90e8c064c9ec87a"
