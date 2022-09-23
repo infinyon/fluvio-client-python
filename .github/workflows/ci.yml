@@ -34,7 +34,6 @@ jobs:
         with:
           toolchain: ${{ matrix.rust }}
           override: true
-          components: clippy
       - name: check fmt and flake8
         run: make lint
       - name: Verify Docs generate
