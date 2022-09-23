@@ -1,7 +1,7 @@
 .PHONY: venv venv-pip
 
-PYTHON=./venv/bin/python
-PIP=./venv/bin/pip
+PYTHON=$(PWD)/venv/bin/python
+PIP=$(PWD)/venv/bin/pip
 
 venv:
 	python3 -m venv venv
@@ -9,6 +9,8 @@ venv:
 venv-pip: venv
 	$(PIP) install -U pip setuptools pdoc flake8 ipdb
 	$(PIP) install -r requirements.txt
+	$(PYTHON) --version
+	$(PIP) --version
 
 lint: venv-pip
 	cargo fmt -- --check
@@ -25,10 +27,10 @@ build-dev: venv-pip
 	$(PYTHON) setup.py develop
 
 integration-tests: build-dev
-	cd integration-tests && ../venv/bin/python -m unittest
+	$(PYTHON) setup.py test
 
 macos-ci-tests: build-dev
-	cd macos-ci-tests && ../venv/bin/python -m unittest
+	cd macos-ci-tests && $(PYTHON) -m unittest
 
 ci-build: venv-pip
 	$(PIP) install -r requirements-publish.txt

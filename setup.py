@@ -3,12 +3,12 @@ from setuptools_rust import Binding, RustExtension, Strip
 
 setup(
     name='fluvio',
-    version="0.12.5",
+    version="0.13.0",
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     author = "Fluvio Contributors",
     description='Python client library for Fluvio',
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     url='https://www.fluvio.io/',
     keywords=['fluvio', 'streaming', 'stream'],
     license='APACHE',
