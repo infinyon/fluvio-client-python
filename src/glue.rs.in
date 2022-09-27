@@ -67,16 +67,10 @@ pub struct ConsumerConfigWrapper {
 
 impl ConsumerConfigWrapper {
     fn new_config_with_wasm_filter(file: &str) -> Result<ConsumerConfigWrapper, std::io::Error> {
-        let raw_buffer = match std::fs::read(file) {
-            Ok(b) => b,
-            Err(error) => return Err(error)
-        };
+        let raw_buffer = std::fs::read(file)?;
         let mut encoder = GzEncoder::new(raw_buffer.as_slice(), Compression::default());
         let mut buffer = Vec::with_capacity(raw_buffer.len());
-        match encoder.read_to_end(&mut buffer) {
-            Ok(encoder) => encoder,
-            Err(error) => return Err(error)
-        };
+        let encoder = encoder.read_to_end(&mut buffer)?;
         Ok(ConsumerConfigWrapper {
             wasm_module: buffer,
         })
@@ -98,10 +92,7 @@ mod _PartitionConsumer {
         offset: &Offset,
         wasm_module_path: &str
     ) -> Result<PartitionConsumerStream, FluvioError> {
-        let config_wrapper = match ConsumerConfigWrapper::new_config_with_wasm_filter(wasm_module_path) {
-            Ok(config) => config,
-            Err(error) => return Err(FluvioError::Other(error.to_string()))
-        };
+        let config_wrapper = ConsumerConfigWrapper::new_config_with_wasm_filter(wasm_module_path)?;
         let mut builder = ConsumerConfig::builder();
         builder.smartmodule(Some(SmartModuleInvocation {
             wasm: SmartModuleInvocationWasm::AdHoc(config_wrapper.wasm_module),
@@ -119,7 +110,7 @@ foreign_class!(class PartitionConsumer {
         &self, _: &Offset
     ) -> Result<PartitionConsumerStream, FluvioError>;
     fn _PartitionConsumer::stream_with_config(
-        &self, _: &Offset, _: &str 
+        &self, _: &Offset, _: &str
     ) -> Result<PartitionConsumerStream, FluvioError>;
 });
 

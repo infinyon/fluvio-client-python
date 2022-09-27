@@ -15,6 +15,11 @@ venv-pip: venv
 lint: venv-pip
 	cargo fmt -- --check
 	$(PYTHON) -m flake8 fluvio integration-tests macos-ci-tests
+	$(PYTHON) -m black --check fluvio integration-tests macos-ci-tests
+
+lint-write: venv-pip
+	cargo fmt
+	$(PYTHON) -m black fluvio integration-tests macos-ci-tests
 
 build-wheel: venv-pip
 	rm -rf ./fluvio.egg-info/
