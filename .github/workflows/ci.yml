@@ -34,7 +34,7 @@ jobs:
         with:
           toolchain: ${{ matrix.rust }}
           override: true
-      - name: check fmt and flake8
+      - name: check fmt, flake8 and black
         run: make lint
       - name: Verify Docs generate
         run: |
