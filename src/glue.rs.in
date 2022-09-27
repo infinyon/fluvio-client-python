@@ -7,12 +7,21 @@ use fluvio::{
     Offset,
     consumer::Record,
 };
+use std::io::{Read, Error};
+use flate2::bufread::GzEncoder;
+use flate2::Compression;
 use fluvio_future::{
     task::run_block_on,
     io::{
         Stream,
         StreamExt,
     },
+};
+use fluvio::consumer::{
+    SmartModuleInvocation,
+    SmartModuleInvocationWasm,
+    SmartModuleKind,
+    ConsumerConfig
 };
 use std::pin::Pin;
 
@@ -52,6 +61,28 @@ foreign_class!(class Fluvio {
 });
 
 
+pub struct ConsumerConfigWrapper {
+    wasm_module: Vec<u8>,
+}
+
+impl ConsumerConfigWrapper {
+    fn new_config_with_wasm_filter(file: &str) -> Result<ConsumerConfigWrapper, std::io::Error> {
+        let raw_buffer = match std::fs::read(file) {
+            Ok(b) => b,
+            Err(error) => return Err(error)
+        };
+        let mut encoder = GzEncoder::new(raw_buffer.as_slice(), Compression::default());
+        let mut buffer = Vec::with_capacity(raw_buffer.len());
+        match encoder.read_to_end(&mut buffer) {
+            Ok(encoder) => encoder,
+            Err(error) => return Err(error)
+        };
+        Ok(ConsumerConfigWrapper {
+            wasm_module: buffer,
+        })
+    }
+}
+
 mod _PartitionConsumer {
     use super::*;
     pub fn stream(
@@ -62,12 +93,33 @@ mod _PartitionConsumer {
             inner: Box::pin(run_block_on(consumer.stream(offset.clone()))?)
         })
     }
+    pub fn stream_with_config(
+        consumer: &PartitionConsumer,
+        offset: &Offset,
+        wasm_module_path: &str
+    ) -> Result<PartitionConsumerStream, FluvioError> {
+        let config_wrapper = match ConsumerConfigWrapper::new_config_with_wasm_filter(wasm_module_path) {
+            Ok(config) => config,
+            Err(error) => return Err(FluvioError::Other(error.to_string()))
+        };
+        let mut builder = ConsumerConfig::builder();
+        builder.smartmodule(Some(SmartModuleInvocation {
+            wasm: SmartModuleInvocationWasm::AdHoc(config_wrapper.wasm_module),
+            kind: SmartModuleKind::Filter,
+            params: Default::default()
+        }));
+        let config = builder.build().map_err(|err| FluvioError::Other(err.to_string()))?;
+        run_block_on(consumer.stream_with_config(offset.clone(), config)).map(|stream| PartitionConsumerStream { inner: Box::pin(stream) })
+    }
 }
 foreign_class!(class PartitionConsumer {
     self_type PartitionConsumer;
     private constructor = empty;
     fn _PartitionConsumer::stream(
         &self, _: &Offset
+    ) -> Result<PartitionConsumerStream, FluvioError>;
+    fn _PartitionConsumer::stream_with_config(
+        &self, _: &Offset, _: &str 
     ) -> Result<PartitionConsumerStream, FluvioError>;
 });
 
