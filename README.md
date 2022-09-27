@@ -59,7 +59,7 @@ locally](https://www.fluvio.io/docs/getting-started/fluvio-local/) or on
 Add python unit tests in the `tests` directory using the built in python
 [`unittest` framework](https://docs.python.org/3/library/unittest.html)
 
-You should probably stick to using `make test` which will create the [virtual
+You should probably stick to using `make integration-tests` which will create the [virtual
 environment](https://docs.python.org/3/tutorial/venv.html) and install the
 package in the site-packages in the venv directory. This makes sure that the
 package is also packaged correctly.
@@ -70,3 +70,10 @@ put it as `fluvio/fluvio_python.cpython-39-x86_64-linux-gnu.so`. This filename
 is dependent on the host OS and python version.
 FLUVIO_CLOUD_TEST_PASSWORD` to your fork's secrets.
 
+When submitting a PR, CI checks a few things:
+* `make integration-tests` against a fluvio cluster in CI.
+* `make macos-ci-tests` with no fluvio cluster present (the macOS github runner is flakey) to verify linking is done correctly.
+* `make lint`. This checks that [`cargo
+fmt`](https://github.com/rust-lang/rustfmt),
+[`flake8`](https://pypi.org/project/flake8) and
+[`black`](https://pypi.org/project/black/) are all clear.
