@@ -9,6 +9,7 @@ dependencies = [
  "cpython",
  "env_logger",
  "flapigen",
+ "flate2",
  "fluvio",
  "fluvio-future 0.4.2",
  "log",
