@@ -1,5 +1,5 @@
 from string import ascii_lowercase
-from fluvio import (Fluvio, FluviorError, Offset)
+from fluvio import Fluvio, FluviorError, Offset
 import unittest
 import uuid
 import os
@@ -7,11 +7,13 @@ import os
 
 def create_topic(topic):
     import subprocess
+
     subprocess.run("fluvio topic create %s" % topic, shell=True)
 
 
 def delete_topic(topic):
     import subprocess
+
     subprocess.run("fluvio topic delete %s" % topic, shell=True)
 
 
@@ -46,18 +48,24 @@ class TestFluvioMethods(unittest.TestCase):
 
         """
 
-        wasm_module_path = os.path.abspath("integration-tests/smartmodule_filter_on_a.wasm")
+        wasm_module_path = os.path.abspath(
+            "integration-tests/smartmodule_filter_on_a.wasm"
+        )
 
         fluvio = Fluvio.connect()
         producer = fluvio.topic_producer(self.topic)
         for i in list(ascii_lowercase):
             producer.send_string(f"record-{i}")
-        
         records = []
 
         consumer = fluvio.partition_consumer(self.topic, 0)
-        records.append(bytearray(next(consumer.stream_with_config(Offset.beginning(), wasm_module_path)).value()).decode())
-        
+        records.append(
+            bytearray(
+                next(
+                    consumer.stream_with_config(Offset.beginning(), wasm_module_path)
+                ).value()
+            ).decode()
+        )
         self.assertEqual(len(records), 1)
         self.assertEqual(records[0], "record-a")
 
@@ -71,10 +79,8 @@ class TestFluvioMethods(unittest.TestCase):
         count = 0
         for i in consumer.stream(Offset.beginning()):
             print("THIS IS IN AN ITERATOR! %s" % i.value())
-            self.assertEqual(
-                bytearray(i.value()).decode(), 'record-%s' % count
-            )
-            self.assertEqual(i.value_string(), 'record-%s' % count)
+            self.assertEqual(bytearray(i.value()).decode(), "record-%s" % count)
+            self.assertEqual(i.value_string(), "record-%s" % count)
             count += 1
             if count >= 10:
                 break
@@ -88,18 +94,11 @@ class TestFluvioMethods(unittest.TestCase):
         consumer = fluvio.partition_consumer(self.topic, 0)
         count = 0
         for i in consumer.stream(Offset.beginning()):
-            print(
-                "THIS IS IN AN ITERATOR! key - %s, value - %s" % (
-                    i.key(),
-                    i.value()
-                )
-            )
-            self.assertEqual(
-                bytearray(i.value()).decode(), 'record-%s' % count
-            )
-            self.assertEqual(i.value_string(), 'record-%s' % count)
-            self.assertEqual(i.key_string(), 'foo')
-            self.assertEqual(i.key(), list('foo'.encode()))
+            print("THIS IS IN AN ITERATOR! key - %s, value - %s" % (i.key(), i.value()))
+            self.assertEqual(bytearray(i.value()).decode(), "record-%s" % count)
+            self.assertEqual(i.value_string(), "record-%s" % count)
+            self.assertEqual(i.key_string(), "foo")
+            self.assertEqual(i.key(), list("foo".encode()))
 
             count += 1
             if count >= 10:
@@ -119,12 +118,10 @@ class TestFluvioMethods(unittest.TestCase):
         consumer = fluvio.partition_consumer(self.topic, 0)
         count = 0
         for i in consumer.stream(Offset.beginning()):
-            self.assertEqual(
-                bytearray(i.value()).decode(), 'record-%s' % count
-            )
-            self.assertEqual(i.value_string(), 'record-%s' % count)
-            self.assertEqual(i.key_string(), ('%s' % count))
-            self.assertEqual(i.key(), list(('%s' % count).encode()))
+            self.assertEqual(bytearray(i.value()).decode(), "record-%s" % count)
+            self.assertEqual(i.value_string(), "record-%s" % count)
+            self.assertEqual(i.key_string(), ("%s" % count))
+            self.assertEqual(i.key(), list(("%s" % count).encode()))
 
             count += 1
             if count >= 10:
@@ -143,14 +140,11 @@ class TestFluvioErrors(unittest.TestCase):
             fluvio.topic_producer(self.topic)
         except FluviorError as e:
             error = e
-            print('ERROR: %s' % e)
+            print("ERROR: %s" % e)
 
         self.assertTrue(error is not None)
         self.assertEqual(
-            error.args,
-            (
-                'Topic not found: %s' % self.topic,  # noqa: E501
-            )
+            error.args, ("Topic not found: %s" % self.topic,)  # noqa: E501
         )
 
 
@@ -174,6 +168,7 @@ class TestFluvioProduceFlush(unittest.TestCase):
         producer.flush()
 
         import subprocess
+
         result = subprocess.run(
             "fluvio consume %s -B 0 -d" % self.topic,
             shell=True,
@@ -183,7 +178,7 @@ class TestFluvioProduceFlush(unittest.TestCase):
         )
 
         # The CLI appends an extra newline to the output.
-        expected_output.append('')
+        expected_output.append("")
         expected_output = "\n".join(expected_output)
         stdout = result.stdout
 
