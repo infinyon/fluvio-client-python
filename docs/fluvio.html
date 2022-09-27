@@ -91,6 +91,9 @@
                         <li>
                                 <a class="function" href="#PartitionConsumer.stream">stream</a>
                         </li>
+                        <li>
+                                <a class="function" href="#PartitionConsumer.stream_with_config">stream_with_config</a>
+                        </li>
                 </ul>
 
             </li>
@@ -296,92 +299,123 @@ fluvio    </h1>
 </span><span id="L-140"><a href="#L-140"><span class="linenos">140</span></a><span class="sd">        &#39;&#39;&#39;</span>
 </span><span id="L-141"><a href="#L-141"><span class="linenos">141</span></a>        <span class="k">return</span> <span class="n">PartitionConsumerStream</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">offset</span><span class="o">.</span><span class="n">_inner</span><span class="p">))</span>
 </span><span id="L-142"><a href="#L-142"><span class="linenos">142</span></a>
-</span><span id="L-143"><a href="#L-143"><span class="linenos">143</span></a>
-</span><span id="L-144"><a href="#L-144"><span class="linenos">144</span></a><span class="k">class</span> <span class="nc">TopicProducer</span><span class="p">:</span>
-</span><span id="L-145"><a href="#L-145"><span class="linenos">145</span></a>    <span class="sd">&#39;&#39;&#39;An interface for producing events to a particular topic.</span>
-</span><span id="L-146"><a href="#L-146"><span class="linenos">146</span></a>
-</span><span id="L-147"><a href="#L-147"><span class="linenos">147</span></a><span class="sd">    A `TopicProducer` allows you to send events to the specific topic it was</span>
-</span><span id="L-148"><a href="#L-148"><span class="linenos">148</span></a><span class="sd">    initialized for. Once you have a `TopicProducer`, you can send events to</span>
-</span><span id="L-149"><a href="#L-149"><span class="linenos">149</span></a><span class="sd">    the topic, choosing which partition each event should be delivered to.</span>
-</span><span id="L-150"><a href="#L-150"><span class="linenos">150</span></a><span class="sd">    &#39;&#39;&#39;</span>
-</span><span id="L-151"><a href="#L-151"><span class="linenos">151</span></a>    <span class="n">_inner</span><span class="p">:</span> <span class="n">_TopicProducer</span>
-</span><span id="L-152"><a href="#L-152"><span class="linenos">152</span></a>
-</span><span id="L-153"><a href="#L-153"><span class="linenos">153</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inner</span><span class="p">:</span> <span class="n">_TopicProducer</span><span class="p">):</span>
-</span><span id="L-154"><a href="#L-154"><span class="linenos">154</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span> <span class="o">=</span> <span class="n">inner</span>
-</span><span id="L-155"><a href="#L-155"><span class="linenos">155</span></a>
-</span><span id="L-156"><a href="#L-156"><span class="linenos">156</span></a>    <span class="k">def</span> <span class="nf">send_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buf</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-157"><a href="#L-157"><span class="linenos">157</span></a>        <span class="sd">&#39;&#39;&#39;Sends a string to this producer’s topic</span>
-</span><span id="L-158"><a href="#L-158"><span class="linenos">158</span></a><span class="sd">        &#39;&#39;&#39;</span>
-</span><span id="L-159"><a href="#L-159"><span class="linenos">159</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">([],</span> <span class="n">buf</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
-</span><span id="L-160"><a href="#L-160"><span class="linenos">160</span></a>
-</span><span id="L-161"><a href="#L-161"><span class="linenos">161</span></a>    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-162"><a href="#L-162"><span class="linenos">162</span></a>        <span class="sd">&#39;&#39;&#39;</span>
-</span><span id="L-163"><a href="#L-163"><span class="linenos">163</span></a><span class="sd">        Sends a key/value record to this producer&#39;s Topic.</span>
-</span><span id="L-164"><a href="#L-164"><span class="linenos">164</span></a>
-</span><span id="L-165"><a href="#L-165"><span class="linenos">165</span></a><span class="sd">        The partition that the record will be sent to is derived from the Key.</span>
-</span><span id="L-166"><a href="#L-166"><span class="linenos">166</span></a><span class="sd">        &#39;&#39;&#39;</span>
-</span><span id="L-167"><a href="#L-167"><span class="linenos">167</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+</span><span id="L-143"><a href="#L-143"><span class="linenos">143</span></a>    <span class="k">def</span> <span class="nf">stream_with_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="n">Offset</span><span class="p">,</span> <span class="n">wasm_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PartitionConsumerStream</span><span class="p">:</span>
+</span><span id="L-144"><a href="#L-144"><span class="linenos">144</span></a>        <span class="sd">&#39;&#39;&#39;</span>
+</span><span id="L-145"><a href="#L-145"><span class="linenos">145</span></a><span class="sd">        Continuously streams events from a particular offset with a SmartModule</span>
+</span><span id="L-146"><a href="#L-146"><span class="linenos">146</span></a><span class="sd">        WASM module in the consumer’s partition. This returns a</span>
+</span><span id="L-147"><a href="#L-147"><span class="linenos">147</span></a><span class="sd">        `PartitionConsumerStream` which is an iterator.</span>
+</span><span id="L-148"><a href="#L-148"><span class="linenos">148</span></a>
+</span><span id="L-149"><a href="#L-149"><span class="linenos">149</span></a><span class="sd">        Streaming is one of the two ways to consume events in Fluvio. It is a</span>
+</span><span id="L-150"><a href="#L-150"><span class="linenos">150</span></a><span class="sd">        continuous request for new records arriving in a partition, beginning</span>
+</span><span id="L-151"><a href="#L-151"><span class="linenos">151</span></a><span class="sd">        at a particular offset. You specify the starting point of the stream</span>
+</span><span id="L-152"><a href="#L-152"><span class="linenos">152</span></a><span class="sd">        using an Offset and periodically receive events, either individually or</span>
+</span><span id="L-153"><a href="#L-153"><span class="linenos">153</span></a><span class="sd">        in batches.</span>
+</span><span id="L-154"><a href="#L-154"><span class="linenos">154</span></a>
+</span><span id="L-155"><a href="#L-155"><span class="linenos">155</span></a><span class="sd">        Args:</span>
+</span><span id="L-156"><a href="#L-156"><span class="linenos">156</span></a><span class="sd">            offset: Offset</span>
+</span><span id="L-157"><a href="#L-157"><span class="linenos">157</span></a><span class="sd">            wasm_module_path: str - The absolute path to the WASM file</span>
+</span><span id="L-158"><a href="#L-158"><span class="linenos">158</span></a>
+</span><span id="L-159"><a href="#L-159"><span class="linenos">159</span></a><span class="sd">        Example:</span>
+</span><span id="L-160"><a href="#L-160"><span class="linenos">160</span></a><span class="sd">            import os</span>
+</span><span id="L-161"><a href="#L-161"><span class="linenos">161</span></a>
+</span><span id="L-162"><a href="#L-162"><span class="linenos">162</span></a><span class="sd">            wmp = os.path.abspath(&quot;somefilter.wasm&quot;)</span>
+</span><span id="L-163"><a href="#L-163"><span class="linenos">163</span></a><span class="sd">            for i in consumer.stream_with_config(Offset.beginning(), wmp):</span>
+</span><span id="L-164"><a href="#L-164"><span class="linenos">164</span></a><span class="sd">                # do something with i</span>
+</span><span id="L-165"><a href="#L-165"><span class="linenos">165</span></a>
+</span><span id="L-166"><a href="#L-166"><span class="linenos">166</span></a><span class="sd">        Returns:</span>
+</span><span id="L-167"><a href="#L-167"><span class="linenos">167</span></a><span class="sd">            PartionConsumerStream</span>
 </span><span id="L-168"><a href="#L-168"><span class="linenos">168</span></a>
-</span><span id="L-169"><a href="#L-169"><span class="linenos">169</span></a>    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-170"><a href="#L-170"><span class="linenos">170</span></a>        <span class="sd">&#39;&#39;&#39;</span>
-</span><span id="L-171"><a href="#L-171"><span class="linenos">171</span></a><span class="sd">        Send all the queued records in the producer batches.</span>
-</span><span id="L-172"><a href="#L-172"><span class="linenos">172</span></a><span class="sd">        &#39;&#39;&#39;</span>
-</span><span id="L-173"><a href="#L-173"><span class="linenos">173</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+</span><span id="L-169"><a href="#L-169"><span class="linenos">169</span></a><span class="sd">        &#39;&#39;&#39;</span>
+</span><span id="L-170"><a href="#L-170"><span class="linenos">170</span></a>        <span class="k">return</span> <span class="n">PartitionConsumerStream</span><span class="p">(</span>
+</span><span id="L-171"><a href="#L-171"><span class="linenos">171</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">stream_with_config</span><span class="p">(</span><span class="n">offset</span><span class="o">.</span><span class="n">_inner</span><span class="p">,</span> <span class="n">wasm_path</span><span class="p">)</span>
+</span><span id="L-172"><a href="#L-172"><span class="linenos">172</span></a>        <span class="p">)</span>
+</span><span id="L-173"><a href="#L-173"><span class="linenos">173</span></a>
 </span><span id="L-174"><a href="#L-174"><span class="linenos">174</span></a>
-</span><span id="L-175"><a href="#L-175"><span class="linenos">175</span></a>    <span class="k">def</span> <span class="nf">send_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">records</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]):</span>
-</span><span id="L-176"><a href="#L-176"><span class="linenos">176</span></a>        <span class="sd">&#39;&#39;&#39;</span>
-</span><span id="L-177"><a href="#L-177"><span class="linenos">177</span></a><span class="sd">        Sends a list of key/value records as a batch to this producer&#39;s Topic.</span>
-</span><span id="L-178"><a href="#L-178"><span class="linenos">178</span></a><span class="sd">        :param records: The list of records to send</span>
-</span><span id="L-179"><a href="#L-179"><span class="linenos">179</span></a><span class="sd">        &#39;&#39;&#39;</span>
-</span><span id="L-180"><a href="#L-180"><span class="linenos">180</span></a>        <span class="n">records_inner</span> <span class="o">=</span> <span class="p">[</span><span class="n">_ProducerBatchRecord</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="n">records</span><span class="p">]</span>
-</span><span id="L-181"><a href="#L-181"><span class="linenos">181</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">send_all</span><span class="p">(</span><span class="n">records_inner</span><span class="p">)</span>
-</span><span id="L-182"><a href="#L-182"><span class="linenos">182</span></a>
+</span><span id="L-175"><a href="#L-175"><span class="linenos">175</span></a><span class="k">class</span> <span class="nc">TopicProducer</span><span class="p">:</span>
+</span><span id="L-176"><a href="#L-176"><span class="linenos">176</span></a>    <span class="sd">&#39;&#39;&#39;An interface for producing events to a particular topic.</span>
+</span><span id="L-177"><a href="#L-177"><span class="linenos">177</span></a>
+</span><span id="L-178"><a href="#L-178"><span class="linenos">178</span></a><span class="sd">    A `TopicProducer` allows you to send events to the specific topic it was</span>
+</span><span id="L-179"><a href="#L-179"><span class="linenos">179</span></a><span class="sd">    initialized for. Once you have a `TopicProducer`, you can send events to</span>
+</span><span id="L-180"><a href="#L-180"><span class="linenos">180</span></a><span class="sd">    the topic, choosing which partition each event should be delivered to.</span>
+</span><span id="L-181"><a href="#L-181"><span class="linenos">181</span></a><span class="sd">    &#39;&#39;&#39;</span>
+</span><span id="L-182"><a href="#L-182"><span class="linenos">182</span></a>    <span class="n">_inner</span><span class="p">:</span> <span class="n">_TopicProducer</span>
 </span><span id="L-183"><a href="#L-183"><span class="linenos">183</span></a>
-</span><span id="L-184"><a href="#L-184"><span class="linenos">184</span></a><span class="k">class</span> <span class="nc">Fluvio</span><span class="p">:</span>
-</span><span id="L-185"><a href="#L-185"><span class="linenos">185</span></a>    <span class="sd">&#39;&#39;&#39;An interface for interacting with Fluvio streaming.&#39;&#39;&#39;</span>
-</span><span id="L-186"><a href="#L-186"><span class="linenos">186</span></a>    <span class="n">_inner</span><span class="p">:</span> <span class="n">_Fluvio</span>
-</span><span id="L-187"><a href="#L-187"><span class="linenos">187</span></a>
-</span><span id="L-188"><a href="#L-188"><span class="linenos">188</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inner</span><span class="p">:</span> <span class="n">_Fluvio</span><span class="p">):</span>
-</span><span id="L-189"><a href="#L-189"><span class="linenos">189</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span> <span class="o">=</span> <span class="n">inner</span>
-</span><span id="L-190"><a href="#L-190"><span class="linenos">190</span></a>
-</span><span id="L-191"><a href="#L-191"><span class="linenos">191</span></a>    <span class="nd">@classmethod</span>
-</span><span id="L-192"><a href="#L-192"><span class="linenos">192</span></a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-</span><span id="L-193"><a href="#L-193"><span class="linenos">193</span></a>        <span class="sd">&#39;&#39;&#39;Creates a new Fluvio client using the current profile from</span>
-</span><span id="L-194"><a href="#L-194"><span class="linenos">194</span></a><span class="sd">        `~/.fluvio/config`</span>
+</span><span id="L-184"><a href="#L-184"><span class="linenos">184</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inner</span><span class="p">:</span> <span class="n">_TopicProducer</span><span class="p">):</span>
+</span><span id="L-185"><a href="#L-185"><span class="linenos">185</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span> <span class="o">=</span> <span class="n">inner</span>
+</span><span id="L-186"><a href="#L-186"><span class="linenos">186</span></a>
+</span><span id="L-187"><a href="#L-187"><span class="linenos">187</span></a>    <span class="k">def</span> <span class="nf">send_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buf</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-188"><a href="#L-188"><span class="linenos">188</span></a>        <span class="sd">&#39;&#39;&#39;Sends a string to this producer’s topic</span>
+</span><span id="L-189"><a href="#L-189"><span class="linenos">189</span></a><span class="sd">        &#39;&#39;&#39;</span>
+</span><span id="L-190"><a href="#L-190"><span class="linenos">190</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">([],</span> <span class="n">buf</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+</span><span id="L-191"><a href="#L-191"><span class="linenos">191</span></a>
+</span><span id="L-192"><a href="#L-192"><span class="linenos">192</span></a>    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-193"><a href="#L-193"><span class="linenos">193</span></a>        <span class="sd">&#39;&#39;&#39;</span>
+</span><span id="L-194"><a href="#L-194"><span class="linenos">194</span></a><span class="sd">        Sends a key/value record to this producer&#39;s Topic.</span>
 </span><span id="L-195"><a href="#L-195"><span class="linenos">195</span></a>
-</span><span id="L-196"><a href="#L-196"><span class="linenos">196</span></a><span class="sd">        If there is no current profile or the `~/.fluvio/config` file does not</span>
-</span><span id="L-197"><a href="#L-197"><span class="linenos">197</span></a><span class="sd">        exist, then this will create a new profile with default settings and</span>
-</span><span id="L-198"><a href="#L-198"><span class="linenos">198</span></a><span class="sd">        set it as current, then try to connect to the cluster using those</span>
-</span><span id="L-199"><a href="#L-199"><span class="linenos">199</span></a><span class="sd">        settings.</span>
-</span><span id="L-200"><a href="#L-200"><span class="linenos">200</span></a><span class="sd">        &#39;&#39;&#39;</span>
-</span><span id="L-201"><a href="#L-201"><span class="linenos">201</span></a>        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">_Fluvio</span><span class="o">.</span><span class="n">connect</span><span class="p">())</span>
-</span><span id="L-202"><a href="#L-202"><span class="linenos">202</span></a>
-</span><span id="L-203"><a href="#L-203"><span class="linenos">203</span></a>    <span class="k">def</span> <span class="nf">partition_consumer</span><span class="p">(</span>
-</span><span id="L-204"><a href="#L-204"><span class="linenos">204</span></a>        <span class="bp">self</span><span class="p">,</span>
-</span><span id="L-205"><a href="#L-205"><span class="linenos">205</span></a>        <span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span id="L-206"><a href="#L-206"><span class="linenos">206</span></a>        <span class="n">partition</span><span class="p">:</span> <span class="nb">int</span>
-</span><span id="L-207"><a href="#L-207"><span class="linenos">207</span></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PartitionConsumer</span><span class="p">:</span>
-</span><span id="L-208"><a href="#L-208"><span class="linenos">208</span></a>        <span class="sd">&#39;&#39;&#39;Creates a new `PartitionConsumer` for the given topic and partition</span>
-</span><span id="L-209"><a href="#L-209"><span class="linenos">209</span></a>
-</span><span id="L-210"><a href="#L-210"><span class="linenos">210</span></a><span class="sd">        Currently, consumers are scoped to both a specific Fluvio topic and to</span>
-</span><span id="L-211"><a href="#L-211"><span class="linenos">211</span></a><span class="sd">        a particular partition within that topic. That means that if you have a</span>
-</span><span id="L-212"><a href="#L-212"><span class="linenos">212</span></a><span class="sd">        topic with multiple partitions, then in order to receive all of the</span>
-</span><span id="L-213"><a href="#L-213"><span class="linenos">213</span></a><span class="sd">        events in all of the partitions, you will need to create one consumer</span>
-</span><span id="L-214"><a href="#L-214"><span class="linenos">214</span></a><span class="sd">        per partition.</span>
-</span><span id="L-215"><a href="#L-215"><span class="linenos">215</span></a><span class="sd">        &#39;&#39;&#39;</span>
-</span><span id="L-216"><a href="#L-216"><span class="linenos">216</span></a>        <span class="k">return</span> <span class="n">PartitionConsumer</span><span class="p">(</span>
-</span><span id="L-217"><a href="#L-217"><span class="linenos">217</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">partition_consumer</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="n">partition</span><span class="p">)</span>
-</span><span id="L-218"><a href="#L-218"><span class="linenos">218</span></a>        <span class="p">)</span>
-</span><span id="L-219"><a href="#L-219"><span class="linenos">219</span></a>
-</span><span id="L-220"><a href="#L-220"><span class="linenos">220</span></a>    <span class="k">def</span> <span class="nf">topic_producer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TopicProducer</span><span class="p">:</span>
-</span><span id="L-221"><a href="#L-221"><span class="linenos">221</span></a>        <span class="sd">&#39;&#39;&#39;</span>
-</span><span id="L-222"><a href="#L-222"><span class="linenos">222</span></a><span class="sd">        Creates a new `TopicProducer` for the given topic name.</span>
-</span><span id="L-223"><a href="#L-223"><span class="linenos">223</span></a>
-</span><span id="L-224"><a href="#L-224"><span class="linenos">224</span></a><span class="sd">        Currently, producers are scoped to a specific Fluvio topic. That means</span>
-</span><span id="L-225"><a href="#L-225"><span class="linenos">225</span></a><span class="sd">        when you send events via a producer, you must specify which partition</span>
-</span><span id="L-226"><a href="#L-226"><span class="linenos">226</span></a><span class="sd">        each event should go to.</span>
-</span><span id="L-227"><a href="#L-227"><span class="linenos">227</span></a><span class="sd">        &#39;&#39;&#39;</span>
-</span><span id="L-228"><a href="#L-228"><span class="linenos">228</span></a>        <span class="k">return</span> <span class="n">TopicProducer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">topic_producer</span><span class="p">(</span><span class="n">topic</span><span class="p">))</span>
+</span><span id="L-196"><a href="#L-196"><span class="linenos">196</span></a><span class="sd">        The partition that the record will be sent to is derived from the Key.</span>
+</span><span id="L-197"><a href="#L-197"><span class="linenos">197</span></a><span class="sd">        &#39;&#39;&#39;</span>
+</span><span id="L-198"><a href="#L-198"><span class="linenos">198</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+</span><span id="L-199"><a href="#L-199"><span class="linenos">199</span></a>
+</span><span id="L-200"><a href="#L-200"><span class="linenos">200</span></a>    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-201"><a href="#L-201"><span class="linenos">201</span></a>        <span class="sd">&#39;&#39;&#39;</span>
+</span><span id="L-202"><a href="#L-202"><span class="linenos">202</span></a><span class="sd">        Send all the queued records in the producer batches.</span>
+</span><span id="L-203"><a href="#L-203"><span class="linenos">203</span></a><span class="sd">        &#39;&#39;&#39;</span>
+</span><span id="L-204"><a href="#L-204"><span class="linenos">204</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+</span><span id="L-205"><a href="#L-205"><span class="linenos">205</span></a>
+</span><span id="L-206"><a href="#L-206"><span class="linenos">206</span></a>    <span class="k">def</span> <span class="nf">send_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">records</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]):</span>
+</span><span id="L-207"><a href="#L-207"><span class="linenos">207</span></a>        <span class="sd">&#39;&#39;&#39;</span>
+</span><span id="L-208"><a href="#L-208"><span class="linenos">208</span></a><span class="sd">        Sends a list of key/value records as a batch to this producer&#39;s Topic.</span>
+</span><span id="L-209"><a href="#L-209"><span class="linenos">209</span></a><span class="sd">        :param records: The list of records to send</span>
+</span><span id="L-210"><a href="#L-210"><span class="linenos">210</span></a><span class="sd">        &#39;&#39;&#39;</span>
+</span><span id="L-211"><a href="#L-211"><span class="linenos">211</span></a>        <span class="n">records_inner</span> <span class="o">=</span> <span class="p">[</span><span class="n">_ProducerBatchRecord</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="n">records</span><span class="p">]</span>
+</span><span id="L-212"><a href="#L-212"><span class="linenos">212</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">send_all</span><span class="p">(</span><span class="n">records_inner</span><span class="p">)</span>
+</span><span id="L-213"><a href="#L-213"><span class="linenos">213</span></a>
+</span><span id="L-214"><a href="#L-214"><span class="linenos">214</span></a>
+</span><span id="L-215"><a href="#L-215"><span class="linenos">215</span></a><span class="k">class</span> <span class="nc">Fluvio</span><span class="p">:</span>
+</span><span id="L-216"><a href="#L-216"><span class="linenos">216</span></a>    <span class="sd">&#39;&#39;&#39;An interface for interacting with Fluvio streaming.&#39;&#39;&#39;</span>
+</span><span id="L-217"><a href="#L-217"><span class="linenos">217</span></a>    <span class="n">_inner</span><span class="p">:</span> <span class="n">_Fluvio</span>
+</span><span id="L-218"><a href="#L-218"><span class="linenos">218</span></a>
+</span><span id="L-219"><a href="#L-219"><span class="linenos">219</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inner</span><span class="p">:</span> <span class="n">_Fluvio</span><span class="p">):</span>
+</span><span id="L-220"><a href="#L-220"><span class="linenos">220</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span> <span class="o">=</span> <span class="n">inner</span>
+</span><span id="L-221"><a href="#L-221"><span class="linenos">221</span></a>
+</span><span id="L-222"><a href="#L-222"><span class="linenos">222</span></a>    <span class="nd">@classmethod</span>
+</span><span id="L-223"><a href="#L-223"><span class="linenos">223</span></a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+</span><span id="L-224"><a href="#L-224"><span class="linenos">224</span></a>        <span class="sd">&#39;&#39;&#39;Creates a new Fluvio client using the current profile from</span>
+</span><span id="L-225"><a href="#L-225"><span class="linenos">225</span></a><span class="sd">        `~/.fluvio/config`</span>
+</span><span id="L-226"><a href="#L-226"><span class="linenos">226</span></a>
+</span><span id="L-227"><a href="#L-227"><span class="linenos">227</span></a><span class="sd">        If there is no current profile or the `~/.fluvio/config` file does not</span>
+</span><span id="L-228"><a href="#L-228"><span class="linenos">228</span></a><span class="sd">        exist, then this will create a new profile with default settings and</span>
+</span><span id="L-229"><a href="#L-229"><span class="linenos">229</span></a><span class="sd">        set it as current, then try to connect to the cluster using those</span>
+</span><span id="L-230"><a href="#L-230"><span class="linenos">230</span></a><span class="sd">        settings.</span>
+</span><span id="L-231"><a href="#L-231"><span class="linenos">231</span></a><span class="sd">        &#39;&#39;&#39;</span>
+</span><span id="L-232"><a href="#L-232"><span class="linenos">232</span></a>        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">_Fluvio</span><span class="o">.</span><span class="n">connect</span><span class="p">())</span>
+</span><span id="L-233"><a href="#L-233"><span class="linenos">233</span></a>
+</span><span id="L-234"><a href="#L-234"><span class="linenos">234</span></a>    <span class="k">def</span> <span class="nf">partition_consumer</span><span class="p">(</span>
+</span><span id="L-235"><a href="#L-235"><span class="linenos">235</span></a>        <span class="bp">self</span><span class="p">,</span>
+</span><span id="L-236"><a href="#L-236"><span class="linenos">236</span></a>        <span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="L-237"><a href="#L-237"><span class="linenos">237</span></a>        <span class="n">partition</span><span class="p">:</span> <span class="nb">int</span>
+</span><span id="L-238"><a href="#L-238"><span class="linenos">238</span></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PartitionConsumer</span><span class="p">:</span>
+</span><span id="L-239"><a href="#L-239"><span class="linenos">239</span></a>        <span class="sd">&#39;&#39;&#39;Creates a new `PartitionConsumer` for the given topic and partition</span>
+</span><span id="L-240"><a href="#L-240"><span class="linenos">240</span></a>
+</span><span id="L-241"><a href="#L-241"><span class="linenos">241</span></a><span class="sd">        Currently, consumers are scoped to both a specific Fluvio topic and to</span>
+</span><span id="L-242"><a href="#L-242"><span class="linenos">242</span></a><span class="sd">        a particular partition within that topic. That means that if you have a</span>
+</span><span id="L-243"><a href="#L-243"><span class="linenos">243</span></a><span class="sd">        topic with multiple partitions, then in order to receive all of the</span>
+</span><span id="L-244"><a href="#L-244"><span class="linenos">244</span></a><span class="sd">        events in all of the partitions, you will need to create one consumer</span>
+</span><span id="L-245"><a href="#L-245"><span class="linenos">245</span></a><span class="sd">        per partition.</span>
+</span><span id="L-246"><a href="#L-246"><span class="linenos">246</span></a><span class="sd">        &#39;&#39;&#39;</span>
+</span><span id="L-247"><a href="#L-247"><span class="linenos">247</span></a>        <span class="k">return</span> <span class="n">PartitionConsumer</span><span class="p">(</span>
+</span><span id="L-248"><a href="#L-248"><span class="linenos">248</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">partition_consumer</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="n">partition</span><span class="p">)</span>
+</span><span id="L-249"><a href="#L-249"><span class="linenos">249</span></a>        <span class="p">)</span>
+</span><span id="L-250"><a href="#L-250"><span class="linenos">250</span></a>
+</span><span id="L-251"><a href="#L-251"><span class="linenos">251</span></a>    <span class="k">def</span> <span class="nf">topic_producer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TopicProducer</span><span class="p">:</span>
+</span><span id="L-252"><a href="#L-252"><span class="linenos">252</span></a>        <span class="sd">&#39;&#39;&#39;</span>
+</span><span id="L-253"><a href="#L-253"><span class="linenos">253</span></a><span class="sd">        Creates a new `TopicProducer` for the given topic name.</span>
+</span><span id="L-254"><a href="#L-254"><span class="linenos">254</span></a>
+</span><span id="L-255"><a href="#L-255"><span class="linenos">255</span></a><span class="sd">        Currently, producers are scoped to a specific Fluvio topic. That means</span>
+</span><span id="L-256"><a href="#L-256"><span class="linenos">256</span></a><span class="sd">        when you send events via a producer, you must specify which partition</span>
+</span><span id="L-257"><a href="#L-257"><span class="linenos">257</span></a><span class="sd">        each event should go to.</span>
+</span><span id="L-258"><a href="#L-258"><span class="linenos">258</span></a><span class="sd">        &#39;&#39;&#39;</span>
+</span><span id="L-259"><a href="#L-259"><span class="linenos">259</span></a>        <span class="k">return</span> <span class="n">TopicProducer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">topic_producer</span><span class="p">(</span><span class="n">topic</span><span class="p">))</span>
 </span></pre></div>
 
 
@@ -883,6 +917,37 @@ returns a <code><a href="#Record">Record</a></code>.</p>
 </span><span id="PartitionConsumer-140"><a href="#PartitionConsumer-140"><span class="linenos">140</span></a><span class="sd">        in batches.</span>
 </span><span id="PartitionConsumer-141"><a href="#PartitionConsumer-141"><span class="linenos">141</span></a><span class="sd">        &#39;&#39;&#39;</span>
 </span><span id="PartitionConsumer-142"><a href="#PartitionConsumer-142"><span class="linenos">142</span></a>        <span class="k">return</span> <span class="n">PartitionConsumerStream</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">offset</span><span class="o">.</span><span class="n">_inner</span><span class="p">))</span>
+</span><span id="PartitionConsumer-143"><a href="#PartitionConsumer-143"><span class="linenos">143</span></a>
+</span><span id="PartitionConsumer-144"><a href="#PartitionConsumer-144"><span class="linenos">144</span></a>    <span class="k">def</span> <span class="nf">stream_with_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="n">Offset</span><span class="p">,</span> <span class="n">wasm_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PartitionConsumerStream</span><span class="p">:</span>
+</span><span id="PartitionConsumer-145"><a href="#PartitionConsumer-145"><span class="linenos">145</span></a>        <span class="sd">&#39;&#39;&#39;</span>
+</span><span id="PartitionConsumer-146"><a href="#PartitionConsumer-146"><span class="linenos">146</span></a><span class="sd">        Continuously streams events from a particular offset with a SmartModule</span>
+</span><span id="PartitionConsumer-147"><a href="#PartitionConsumer-147"><span class="linenos">147</span></a><span class="sd">        WASM module in the consumer’s partition. This returns a</span>
+</span><span id="PartitionConsumer-148"><a href="#PartitionConsumer-148"><span class="linenos">148</span></a><span class="sd">        `PartitionConsumerStream` which is an iterator.</span>
+</span><span id="PartitionConsumer-149"><a href="#PartitionConsumer-149"><span class="linenos">149</span></a>
+</span><span id="PartitionConsumer-150"><a href="#PartitionConsumer-150"><span class="linenos">150</span></a><span class="sd">        Streaming is one of the two ways to consume events in Fluvio. It is a</span>
+</span><span id="PartitionConsumer-151"><a href="#PartitionConsumer-151"><span class="linenos">151</span></a><span class="sd">        continuous request for new records arriving in a partition, beginning</span>
+</span><span id="PartitionConsumer-152"><a href="#PartitionConsumer-152"><span class="linenos">152</span></a><span class="sd">        at a particular offset. You specify the starting point of the stream</span>
+</span><span id="PartitionConsumer-153"><a href="#PartitionConsumer-153"><span class="linenos">153</span></a><span class="sd">        using an Offset and periodically receive events, either individually or</span>
+</span><span id="PartitionConsumer-154"><a href="#PartitionConsumer-154"><span class="linenos">154</span></a><span class="sd">        in batches.</span>
+</span><span id="PartitionConsumer-155"><a href="#PartitionConsumer-155"><span class="linenos">155</span></a>
+</span><span id="PartitionConsumer-156"><a href="#PartitionConsumer-156"><span class="linenos">156</span></a><span class="sd">        Args:</span>
+</span><span id="PartitionConsumer-157"><a href="#PartitionConsumer-157"><span class="linenos">157</span></a><span class="sd">            offset: Offset</span>
+</span><span id="PartitionConsumer-158"><a href="#PartitionConsumer-158"><span class="linenos">158</span></a><span class="sd">            wasm_module_path: str - The absolute path to the WASM file</span>
+</span><span id="PartitionConsumer-159"><a href="#PartitionConsumer-159"><span class="linenos">159</span></a>
+</span><span id="PartitionConsumer-160"><a href="#PartitionConsumer-160"><span class="linenos">160</span></a><span class="sd">        Example:</span>
+</span><span id="PartitionConsumer-161"><a href="#PartitionConsumer-161"><span class="linenos">161</span></a><span class="sd">            import os</span>
+</span><span id="PartitionConsumer-162"><a href="#PartitionConsumer-162"><span class="linenos">162</span></a>
+</span><span id="PartitionConsumer-163"><a href="#PartitionConsumer-163"><span class="linenos">163</span></a><span class="sd">            wmp = os.path.abspath(&quot;somefilter.wasm&quot;)</span>
+</span><span id="PartitionConsumer-164"><a href="#PartitionConsumer-164"><span class="linenos">164</span></a><span class="sd">            for i in consumer.stream_with_config(Offset.beginning(), wmp):</span>
+</span><span id="PartitionConsumer-165"><a href="#PartitionConsumer-165"><span class="linenos">165</span></a><span class="sd">                # do something with i</span>
+</span><span id="PartitionConsumer-166"><a href="#PartitionConsumer-166"><span class="linenos">166</span></a>
+</span><span id="PartitionConsumer-167"><a href="#PartitionConsumer-167"><span class="linenos">167</span></a><span class="sd">        Returns:</span>
+</span><span id="PartitionConsumer-168"><a href="#PartitionConsumer-168"><span class="linenos">168</span></a><span class="sd">            PartionConsumerStream</span>
+</span><span id="PartitionConsumer-169"><a href="#PartitionConsumer-169"><span class="linenos">169</span></a>
+</span><span id="PartitionConsumer-170"><a href="#PartitionConsumer-170"><span class="linenos">170</span></a><span class="sd">        &#39;&#39;&#39;</span>
+</span><span id="PartitionConsumer-171"><a href="#PartitionConsumer-171"><span class="linenos">171</span></a>        <span class="k">return</span> <span class="n">PartitionConsumerStream</span><span class="p">(</span>
+</span><span id="PartitionConsumer-172"><a href="#PartitionConsumer-172"><span class="linenos">172</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">stream_with_config</span><span class="p">(</span><span class="n">offset</span><span class="o">.</span><span class="n">_inner</span><span class="p">,</span> <span class="n">wasm_path</span><span class="p">)</span>
+</span><span id="PartitionConsumer-173"><a href="#PartitionConsumer-173"><span class="linenos">173</span></a>        <span class="p">)</span>
 </span></pre></div>
 
 
@@ -955,6 +1020,78 @@ in batches.</p>
 
 
                             </div>
+                            <div id="PartitionConsumer.stream_with_config" class="classattr">
+                                        <input id="PartitionConsumer.stream_with_config-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">stream_with_config</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">offset</span><span class="p">:</span> <span class="n"><a href="#Offset">fluvio.Offset</a></span>,</span><span class="param">	<span class="n">wasm_path</span><span class="p">:</span> <span class="nb">str</span></span><span class="return-annotation">) -> <span class="n"><a href="#PartitionConsumerStream">fluvio.PartitionConsumerStream</a></span>:</span></span>
+
+                <label class="view-source-button" for="PartitionConsumer.stream_with_config-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#PartitionConsumer.stream_with_config"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="PartitionConsumer.stream_with_config-144"><a href="#PartitionConsumer.stream_with_config-144"><span class="linenos">144</span></a>    <span class="k">def</span> <span class="nf">stream_with_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="n">Offset</span><span class="p">,</span> <span class="n">wasm_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PartitionConsumerStream</span><span class="p">:</span>
+</span><span id="PartitionConsumer.stream_with_config-145"><a href="#PartitionConsumer.stream_with_config-145"><span class="linenos">145</span></a>        <span class="sd">&#39;&#39;&#39;</span>
+</span><span id="PartitionConsumer.stream_with_config-146"><a href="#PartitionConsumer.stream_with_config-146"><span class="linenos">146</span></a><span class="sd">        Continuously streams events from a particular offset with a SmartModule</span>
+</span><span id="PartitionConsumer.stream_with_config-147"><a href="#PartitionConsumer.stream_with_config-147"><span class="linenos">147</span></a><span class="sd">        WASM module in the consumer’s partition. This returns a</span>
+</span><span id="PartitionConsumer.stream_with_config-148"><a href="#PartitionConsumer.stream_with_config-148"><span class="linenos">148</span></a><span class="sd">        `PartitionConsumerStream` which is an iterator.</span>
+</span><span id="PartitionConsumer.stream_with_config-149"><a href="#PartitionConsumer.stream_with_config-149"><span class="linenos">149</span></a>
+</span><span id="PartitionConsumer.stream_with_config-150"><a href="#PartitionConsumer.stream_with_config-150"><span class="linenos">150</span></a><span class="sd">        Streaming is one of the two ways to consume events in Fluvio. It is a</span>
+</span><span id="PartitionConsumer.stream_with_config-151"><a href="#PartitionConsumer.stream_with_config-151"><span class="linenos">151</span></a><span class="sd">        continuous request for new records arriving in a partition, beginning</span>
+</span><span id="PartitionConsumer.stream_with_config-152"><a href="#PartitionConsumer.stream_with_config-152"><span class="linenos">152</span></a><span class="sd">        at a particular offset. You specify the starting point of the stream</span>
+</span><span id="PartitionConsumer.stream_with_config-153"><a href="#PartitionConsumer.stream_with_config-153"><span class="linenos">153</span></a><span class="sd">        using an Offset and periodically receive events, either individually or</span>
+</span><span id="PartitionConsumer.stream_with_config-154"><a href="#PartitionConsumer.stream_with_config-154"><span class="linenos">154</span></a><span class="sd">        in batches.</span>
+</span><span id="PartitionConsumer.stream_with_config-155"><a href="#PartitionConsumer.stream_with_config-155"><span class="linenos">155</span></a>
+</span><span id="PartitionConsumer.stream_with_config-156"><a href="#PartitionConsumer.stream_with_config-156"><span class="linenos">156</span></a><span class="sd">        Args:</span>
+</span><span id="PartitionConsumer.stream_with_config-157"><a href="#PartitionConsumer.stream_with_config-157"><span class="linenos">157</span></a><span class="sd">            offset: Offset</span>
+</span><span id="PartitionConsumer.stream_with_config-158"><a href="#PartitionConsumer.stream_with_config-158"><span class="linenos">158</span></a><span class="sd">            wasm_module_path: str - The absolute path to the WASM file</span>
+</span><span id="PartitionConsumer.stream_with_config-159"><a href="#PartitionConsumer.stream_with_config-159"><span class="linenos">159</span></a>
+</span><span id="PartitionConsumer.stream_with_config-160"><a href="#PartitionConsumer.stream_with_config-160"><span class="linenos">160</span></a><span class="sd">        Example:</span>
+</span><span id="PartitionConsumer.stream_with_config-161"><a href="#PartitionConsumer.stream_with_config-161"><span class="linenos">161</span></a><span class="sd">            import os</span>
+</span><span id="PartitionConsumer.stream_with_config-162"><a href="#PartitionConsumer.stream_with_config-162"><span class="linenos">162</span></a>
+</span><span id="PartitionConsumer.stream_with_config-163"><a href="#PartitionConsumer.stream_with_config-163"><span class="linenos">163</span></a><span class="sd">            wmp = os.path.abspath(&quot;somefilter.wasm&quot;)</span>
+</span><span id="PartitionConsumer.stream_with_config-164"><a href="#PartitionConsumer.stream_with_config-164"><span class="linenos">164</span></a><span class="sd">            for i in consumer.stream_with_config(Offset.beginning(), wmp):</span>
+</span><span id="PartitionConsumer.stream_with_config-165"><a href="#PartitionConsumer.stream_with_config-165"><span class="linenos">165</span></a><span class="sd">                # do something with i</span>
+</span><span id="PartitionConsumer.stream_with_config-166"><a href="#PartitionConsumer.stream_with_config-166"><span class="linenos">166</span></a>
+</span><span id="PartitionConsumer.stream_with_config-167"><a href="#PartitionConsumer.stream_with_config-167"><span class="linenos">167</span></a><span class="sd">        Returns:</span>
+</span><span id="PartitionConsumer.stream_with_config-168"><a href="#PartitionConsumer.stream_with_config-168"><span class="linenos">168</span></a><span class="sd">            PartionConsumerStream</span>
+</span><span id="PartitionConsumer.stream_with_config-169"><a href="#PartitionConsumer.stream_with_config-169"><span class="linenos">169</span></a>
+</span><span id="PartitionConsumer.stream_with_config-170"><a href="#PartitionConsumer.stream_with_config-170"><span class="linenos">170</span></a><span class="sd">        &#39;&#39;&#39;</span>
+</span><span id="PartitionConsumer.stream_with_config-171"><a href="#PartitionConsumer.stream_with_config-171"><span class="linenos">171</span></a>        <span class="k">return</span> <span class="n">PartitionConsumerStream</span><span class="p">(</span>
+</span><span id="PartitionConsumer.stream_with_config-172"><a href="#PartitionConsumer.stream_with_config-172"><span class="linenos">172</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">stream_with_config</span><span class="p">(</span><span class="n">offset</span><span class="o">.</span><span class="n">_inner</span><span class="p">,</span> <span class="n">wasm_path</span><span class="p">)</span>
+</span><span id="PartitionConsumer.stream_with_config-173"><a href="#PartitionConsumer.stream_with_config-173"><span class="linenos">173</span></a>        <span class="p">)</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Continuously streams events from a particular offset with a SmartModule
+WASM module in the consumer’s partition. This returns a
+<code><a href="#PartitionConsumerStream">PartitionConsumerStream</a></code> which is an iterator.</p>
+
+<p>Streaming is one of the two ways to consume events in Fluvio. It is a
+continuous request for new records arriving in a partition, beginning
+at a particular offset. You specify the starting point of the stream
+using an Offset and periodically receive events, either individually or
+in batches.</p>
+
+<p>Args:
+    offset: Offset
+    wasm_module_path: str - The absolute path to the WASM file</p>
+
+<p>Example:
+    import os</p>
+
+<pre><code>wmp = os.path.abspath("somefilter.wasm")
+for i in consumer.stream_with_config(<a href="#Offset.beginning">Offset.beginning()</a>, wmp):
+    # do something with i
+</code></pre>
+
+<p>Returns:
+    PartionConsumerStream</p>
+</div>
+
+
+                            </div>
                 </section>
                 <section id="TopicProducer">
                             <input id="TopicProducer-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
@@ -967,44 +1104,44 @@ in batches.</p>
 
     </div>
     <a class="headerlink" href="#TopicProducer"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="TopicProducer-145"><a href="#TopicProducer-145"><span class="linenos">145</span></a><span class="k">class</span> <span class="nc">TopicProducer</span><span class="p">:</span>
-</span><span id="TopicProducer-146"><a href="#TopicProducer-146"><span class="linenos">146</span></a>    <span class="sd">&#39;&#39;&#39;An interface for producing events to a particular topic.</span>
-</span><span id="TopicProducer-147"><a href="#TopicProducer-147"><span class="linenos">147</span></a>
-</span><span id="TopicProducer-148"><a href="#TopicProducer-148"><span class="linenos">148</span></a><span class="sd">    A `TopicProducer` allows you to send events to the specific topic it was</span>
-</span><span id="TopicProducer-149"><a href="#TopicProducer-149"><span class="linenos">149</span></a><span class="sd">    initialized for. Once you have a `TopicProducer`, you can send events to</span>
-</span><span id="TopicProducer-150"><a href="#TopicProducer-150"><span class="linenos">150</span></a><span class="sd">    the topic, choosing which partition each event should be delivered to.</span>
-</span><span id="TopicProducer-151"><a href="#TopicProducer-151"><span class="linenos">151</span></a><span class="sd">    &#39;&#39;&#39;</span>
-</span><span id="TopicProducer-152"><a href="#TopicProducer-152"><span class="linenos">152</span></a>    <span class="n">_inner</span><span class="p">:</span> <span class="n">_TopicProducer</span>
-</span><span id="TopicProducer-153"><a href="#TopicProducer-153"><span class="linenos">153</span></a>
-</span><span id="TopicProducer-154"><a href="#TopicProducer-154"><span class="linenos">154</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inner</span><span class="p">:</span> <span class="n">_TopicProducer</span><span class="p">):</span>
-</span><span id="TopicProducer-155"><a href="#TopicProducer-155"><span class="linenos">155</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span> <span class="o">=</span> <span class="n">inner</span>
-</span><span id="TopicProducer-156"><a href="#TopicProducer-156"><span class="linenos">156</span></a>
-</span><span id="TopicProducer-157"><a href="#TopicProducer-157"><span class="linenos">157</span></a>    <span class="k">def</span> <span class="nf">send_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buf</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="TopicProducer-158"><a href="#TopicProducer-158"><span class="linenos">158</span></a>        <span class="sd">&#39;&#39;&#39;Sends a string to this producer’s topic</span>
-</span><span id="TopicProducer-159"><a href="#TopicProducer-159"><span class="linenos">159</span></a><span class="sd">        &#39;&#39;&#39;</span>
-</span><span id="TopicProducer-160"><a href="#TopicProducer-160"><span class="linenos">160</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">([],</span> <span class="n">buf</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
-</span><span id="TopicProducer-161"><a href="#TopicProducer-161"><span class="linenos">161</span></a>
-</span><span id="TopicProducer-162"><a href="#TopicProducer-162"><span class="linenos">162</span></a>    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="TopicProducer-163"><a href="#TopicProducer-163"><span class="linenos">163</span></a>        <span class="sd">&#39;&#39;&#39;</span>
-</span><span id="TopicProducer-164"><a href="#TopicProducer-164"><span class="linenos">164</span></a><span class="sd">        Sends a key/value record to this producer&#39;s Topic.</span>
-</span><span id="TopicProducer-165"><a href="#TopicProducer-165"><span class="linenos">165</span></a>
-</span><span id="TopicProducer-166"><a href="#TopicProducer-166"><span class="linenos">166</span></a><span class="sd">        The partition that the record will be sent to is derived from the Key.</span>
-</span><span id="TopicProducer-167"><a href="#TopicProducer-167"><span class="linenos">167</span></a><span class="sd">        &#39;&#39;&#39;</span>
-</span><span id="TopicProducer-168"><a href="#TopicProducer-168"><span class="linenos">168</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-</span><span id="TopicProducer-169"><a href="#TopicProducer-169"><span class="linenos">169</span></a>
-</span><span id="TopicProducer-170"><a href="#TopicProducer-170"><span class="linenos">170</span></a>    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="TopicProducer-171"><a href="#TopicProducer-171"><span class="linenos">171</span></a>        <span class="sd">&#39;&#39;&#39;</span>
-</span><span id="TopicProducer-172"><a href="#TopicProducer-172"><span class="linenos">172</span></a><span class="sd">        Send all the queued records in the producer batches.</span>
-</span><span id="TopicProducer-173"><a href="#TopicProducer-173"><span class="linenos">173</span></a><span class="sd">        &#39;&#39;&#39;</span>
-</span><span id="TopicProducer-174"><a href="#TopicProducer-174"><span class="linenos">174</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-</span><span id="TopicProducer-175"><a href="#TopicProducer-175"><span class="linenos">175</span></a>
-</span><span id="TopicProducer-176"><a href="#TopicProducer-176"><span class="linenos">176</span></a>    <span class="k">def</span> <span class="nf">send_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">records</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]):</span>
-</span><span id="TopicProducer-177"><a href="#TopicProducer-177"><span class="linenos">177</span></a>        <span class="sd">&#39;&#39;&#39;</span>
-</span><span id="TopicProducer-178"><a href="#TopicProducer-178"><span class="linenos">178</span></a><span class="sd">        Sends a list of key/value records as a batch to this producer&#39;s Topic.</span>
-</span><span id="TopicProducer-179"><a href="#TopicProducer-179"><span class="linenos">179</span></a><span class="sd">        :param records: The list of records to send</span>
-</span><span id="TopicProducer-180"><a href="#TopicProducer-180"><span class="linenos">180</span></a><span class="sd">        &#39;&#39;&#39;</span>
-</span><span id="TopicProducer-181"><a href="#TopicProducer-181"><span class="linenos">181</span></a>        <span class="n">records_inner</span> <span class="o">=</span> <span class="p">[</span><span class="n">_ProducerBatchRecord</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="n">records</span><span class="p">]</span>
-</span><span id="TopicProducer-182"><a href="#TopicProducer-182"><span class="linenos">182</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">send_all</span><span class="p">(</span><span class="n">records_inner</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="TopicProducer-176"><a href="#TopicProducer-176"><span class="linenos">176</span></a><span class="k">class</span> <span class="nc">TopicProducer</span><span class="p">:</span>
+</span><span id="TopicProducer-177"><a href="#TopicProducer-177"><span class="linenos">177</span></a>    <span class="sd">&#39;&#39;&#39;An interface for producing events to a particular topic.</span>
+</span><span id="TopicProducer-178"><a href="#TopicProducer-178"><span class="linenos">178</span></a>
+</span><span id="TopicProducer-179"><a href="#TopicProducer-179"><span class="linenos">179</span></a><span class="sd">    A `TopicProducer` allows you to send events to the specific topic it was</span>
+</span><span id="TopicProducer-180"><a href="#TopicProducer-180"><span class="linenos">180</span></a><span class="sd">    initialized for. Once you have a `TopicProducer`, you can send events to</span>
+</span><span id="TopicProducer-181"><a href="#TopicProducer-181"><span class="linenos">181</span></a><span class="sd">    the topic, choosing which partition each event should be delivered to.</span>
+</span><span id="TopicProducer-182"><a href="#TopicProducer-182"><span class="linenos">182</span></a><span class="sd">    &#39;&#39;&#39;</span>
+</span><span id="TopicProducer-183"><a href="#TopicProducer-183"><span class="linenos">183</span></a>    <span class="n">_inner</span><span class="p">:</span> <span class="n">_TopicProducer</span>
+</span><span id="TopicProducer-184"><a href="#TopicProducer-184"><span class="linenos">184</span></a>
+</span><span id="TopicProducer-185"><a href="#TopicProducer-185"><span class="linenos">185</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inner</span><span class="p">:</span> <span class="n">_TopicProducer</span><span class="p">):</span>
+</span><span id="TopicProducer-186"><a href="#TopicProducer-186"><span class="linenos">186</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span> <span class="o">=</span> <span class="n">inner</span>
+</span><span id="TopicProducer-187"><a href="#TopicProducer-187"><span class="linenos">187</span></a>
+</span><span id="TopicProducer-188"><a href="#TopicProducer-188"><span class="linenos">188</span></a>    <span class="k">def</span> <span class="nf">send_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buf</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="TopicProducer-189"><a href="#TopicProducer-189"><span class="linenos">189</span></a>        <span class="sd">&#39;&#39;&#39;Sends a string to this producer’s topic</span>
+</span><span id="TopicProducer-190"><a href="#TopicProducer-190"><span class="linenos">190</span></a><span class="sd">        &#39;&#39;&#39;</span>
+</span><span id="TopicProducer-191"><a href="#TopicProducer-191"><span class="linenos">191</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">([],</span> <span class="n">buf</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+</span><span id="TopicProducer-192"><a href="#TopicProducer-192"><span class="linenos">192</span></a>
+</span><span id="TopicProducer-193"><a href="#TopicProducer-193"><span class="linenos">193</span></a>    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="TopicProducer-194"><a href="#TopicProducer-194"><span class="linenos">194</span></a>        <span class="sd">&#39;&#39;&#39;</span>
+</span><span id="TopicProducer-195"><a href="#TopicProducer-195"><span class="linenos">195</span></a><span class="sd">        Sends a key/value record to this producer&#39;s Topic.</span>
+</span><span id="TopicProducer-196"><a href="#TopicProducer-196"><span class="linenos">196</span></a>
+</span><span id="TopicProducer-197"><a href="#TopicProducer-197"><span class="linenos">197</span></a><span class="sd">        The partition that the record will be sent to is derived from the Key.</span>
+</span><span id="TopicProducer-198"><a href="#TopicProducer-198"><span class="linenos">198</span></a><span class="sd">        &#39;&#39;&#39;</span>
+</span><span id="TopicProducer-199"><a href="#TopicProducer-199"><span class="linenos">199</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+</span><span id="TopicProducer-200"><a href="#TopicProducer-200"><span class="linenos">200</span></a>
+</span><span id="TopicProducer-201"><a href="#TopicProducer-201"><span class="linenos">201</span></a>    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="TopicProducer-202"><a href="#TopicProducer-202"><span class="linenos">202</span></a>        <span class="sd">&#39;&#39;&#39;</span>
+</span><span id="TopicProducer-203"><a href="#TopicProducer-203"><span class="linenos">203</span></a><span class="sd">        Send all the queued records in the producer batches.</span>
+</span><span id="TopicProducer-204"><a href="#TopicProducer-204"><span class="linenos">204</span></a><span class="sd">        &#39;&#39;&#39;</span>
+</span><span id="TopicProducer-205"><a href="#TopicProducer-205"><span class="linenos">205</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+</span><span id="TopicProducer-206"><a href="#TopicProducer-206"><span class="linenos">206</span></a>
+</span><span id="TopicProducer-207"><a href="#TopicProducer-207"><span class="linenos">207</span></a>    <span class="k">def</span> <span class="nf">send_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">records</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]):</span>
+</span><span id="TopicProducer-208"><a href="#TopicProducer-208"><span class="linenos">208</span></a>        <span class="sd">&#39;&#39;&#39;</span>
+</span><span id="TopicProducer-209"><a href="#TopicProducer-209"><span class="linenos">209</span></a><span class="sd">        Sends a list of key/value records as a batch to this producer&#39;s Topic.</span>
+</span><span id="TopicProducer-210"><a href="#TopicProducer-210"><span class="linenos">210</span></a><span class="sd">        :param records: The list of records to send</span>
+</span><span id="TopicProducer-211"><a href="#TopicProducer-211"><span class="linenos">211</span></a><span class="sd">        &#39;&#39;&#39;</span>
+</span><span id="TopicProducer-212"><a href="#TopicProducer-212"><span class="linenos">212</span></a>        <span class="n">records_inner</span> <span class="o">=</span> <span class="p">[</span><span class="n">_ProducerBatchRecord</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="n">records</span><span class="p">]</span>
+</span><span id="TopicProducer-213"><a href="#TopicProducer-213"><span class="linenos">213</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">send_all</span><span class="p">(</span><span class="n">records_inner</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -1026,8 +1163,8 @@ the topic, choosing which partition each event should be delivered to.</p>
 
     </div>
     <a class="headerlink" href="#TopicProducer.__init__"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="TopicProducer.__init__-154"><a href="#TopicProducer.__init__-154"><span class="linenos">154</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inner</span><span class="p">:</span> <span class="n">_TopicProducer</span><span class="p">):</span>
-</span><span id="TopicProducer.__init__-155"><a href="#TopicProducer.__init__-155"><span class="linenos">155</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span> <span class="o">=</span> <span class="n">inner</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="TopicProducer.__init__-185"><a href="#TopicProducer.__init__-185"><span class="linenos">185</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inner</span><span class="p">:</span> <span class="n">_TopicProducer</span><span class="p">):</span>
+</span><span id="TopicProducer.__init__-186"><a href="#TopicProducer.__init__-186"><span class="linenos">186</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span> <span class="o">=</span> <span class="n">inner</span>
 </span></pre></div>
 
 
@@ -1045,10 +1182,10 @@ the topic, choosing which partition each event should be delivered to.</p>
 
     </div>
     <a class="headerlink" href="#TopicProducer.send_string"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="TopicProducer.send_string-157"><a href="#TopicProducer.send_string-157"><span class="linenos">157</span></a>    <span class="k">def</span> <span class="nf">send_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buf</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="TopicProducer.send_string-158"><a href="#TopicProducer.send_string-158"><span class="linenos">158</span></a>        <span class="sd">&#39;&#39;&#39;Sends a string to this producer’s topic</span>
-</span><span id="TopicProducer.send_string-159"><a href="#TopicProducer.send_string-159"><span class="linenos">159</span></a><span class="sd">        &#39;&#39;&#39;</span>
-</span><span id="TopicProducer.send_string-160"><a href="#TopicProducer.send_string-160"><span class="linenos">160</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">([],</span> <span class="n">buf</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="TopicProducer.send_string-188"><a href="#TopicProducer.send_string-188"><span class="linenos">188</span></a>    <span class="k">def</span> <span class="nf">send_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buf</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="TopicProducer.send_string-189"><a href="#TopicProducer.send_string-189"><span class="linenos">189</span></a>        <span class="sd">&#39;&#39;&#39;Sends a string to this producer’s topic</span>
+</span><span id="TopicProducer.send_string-190"><a href="#TopicProducer.send_string-190"><span class="linenos">190</span></a><span class="sd">        &#39;&#39;&#39;</span>
+</span><span id="TopicProducer.send_string-191"><a href="#TopicProducer.send_string-191"><span class="linenos">191</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">([],</span> <span class="n">buf</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
 </span></pre></div>
 
 
@@ -1068,13 +1205,13 @@ the topic, choosing which partition each event should be delivered to.</p>
 
     </div>
     <a class="headerlink" href="#TopicProducer.send"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="TopicProducer.send-162"><a href="#TopicProducer.send-162"><span class="linenos">162</span></a>    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="TopicProducer.send-163"><a href="#TopicProducer.send-163"><span class="linenos">163</span></a>        <span class="sd">&#39;&#39;&#39;</span>
-</span><span id="TopicProducer.send-164"><a href="#TopicProducer.send-164"><span class="linenos">164</span></a><span class="sd">        Sends a key/value record to this producer&#39;s Topic.</span>
-</span><span id="TopicProducer.send-165"><a href="#TopicProducer.send-165"><span class="linenos">165</span></a>
-</span><span id="TopicProducer.send-166"><a href="#TopicProducer.send-166"><span class="linenos">166</span></a><span class="sd">        The partition that the record will be sent to is derived from the Key.</span>
-</span><span id="TopicProducer.send-167"><a href="#TopicProducer.send-167"><span class="linenos">167</span></a><span class="sd">        &#39;&#39;&#39;</span>
-</span><span id="TopicProducer.send-168"><a href="#TopicProducer.send-168"><span class="linenos">168</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="TopicProducer.send-193"><a href="#TopicProducer.send-193"><span class="linenos">193</span></a>    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="TopicProducer.send-194"><a href="#TopicProducer.send-194"><span class="linenos">194</span></a>        <span class="sd">&#39;&#39;&#39;</span>
+</span><span id="TopicProducer.send-195"><a href="#TopicProducer.send-195"><span class="linenos">195</span></a><span class="sd">        Sends a key/value record to this producer&#39;s Topic.</span>
+</span><span id="TopicProducer.send-196"><a href="#TopicProducer.send-196"><span class="linenos">196</span></a>
+</span><span id="TopicProducer.send-197"><a href="#TopicProducer.send-197"><span class="linenos">197</span></a><span class="sd">        The partition that the record will be sent to is derived from the Key.</span>
+</span><span id="TopicProducer.send-198"><a href="#TopicProducer.send-198"><span class="linenos">198</span></a><span class="sd">        &#39;&#39;&#39;</span>
+</span><span id="TopicProducer.send-199"><a href="#TopicProducer.send-199"><span class="linenos">199</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -1096,11 +1233,11 @@ the topic, choosing which partition each event should be delivered to.</p>
 
     </div>
     <a class="headerlink" href="#TopicProducer.flush"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="TopicProducer.flush-170"><a href="#TopicProducer.flush-170"><span class="linenos">170</span></a>    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="TopicProducer.flush-171"><a href="#TopicProducer.flush-171"><span class="linenos">171</span></a>        <span class="sd">&#39;&#39;&#39;</span>
-</span><span id="TopicProducer.flush-172"><a href="#TopicProducer.flush-172"><span class="linenos">172</span></a><span class="sd">        Send all the queued records in the producer batches.</span>
-</span><span id="TopicProducer.flush-173"><a href="#TopicProducer.flush-173"><span class="linenos">173</span></a><span class="sd">        &#39;&#39;&#39;</span>
-</span><span id="TopicProducer.flush-174"><a href="#TopicProducer.flush-174"><span class="linenos">174</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="TopicProducer.flush-201"><a href="#TopicProducer.flush-201"><span class="linenos">201</span></a>    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="TopicProducer.flush-202"><a href="#TopicProducer.flush-202"><span class="linenos">202</span></a>        <span class="sd">&#39;&#39;&#39;</span>
+</span><span id="TopicProducer.flush-203"><a href="#TopicProducer.flush-203"><span class="linenos">203</span></a><span class="sd">        Send all the queued records in the producer batches.</span>
+</span><span id="TopicProducer.flush-204"><a href="#TopicProducer.flush-204"><span class="linenos">204</span></a><span class="sd">        &#39;&#39;&#39;</span>
+</span><span id="TopicProducer.flush-205"><a href="#TopicProducer.flush-205"><span class="linenos">205</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
 </span></pre></div>
 
 
@@ -1120,13 +1257,13 @@ the topic, choosing which partition each event should be delivered to.</p>
 
     </div>
     <a class="headerlink" href="#TopicProducer.send_all"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="TopicProducer.send_all-176"><a href="#TopicProducer.send_all-176"><span class="linenos">176</span></a>    <span class="k">def</span> <span class="nf">send_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">records</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]):</span>
-</span><span id="TopicProducer.send_all-177"><a href="#TopicProducer.send_all-177"><span class="linenos">177</span></a>        <span class="sd">&#39;&#39;&#39;</span>
-</span><span id="TopicProducer.send_all-178"><a href="#TopicProducer.send_all-178"><span class="linenos">178</span></a><span class="sd">        Sends a list of key/value records as a batch to this producer&#39;s Topic.</span>
-</span><span id="TopicProducer.send_all-179"><a href="#TopicProducer.send_all-179"><span class="linenos">179</span></a><span class="sd">        :param records: The list of records to send</span>
-</span><span id="TopicProducer.send_all-180"><a href="#TopicProducer.send_all-180"><span class="linenos">180</span></a><span class="sd">        &#39;&#39;&#39;</span>
-</span><span id="TopicProducer.send_all-181"><a href="#TopicProducer.send_all-181"><span class="linenos">181</span></a>        <span class="n">records_inner</span> <span class="o">=</span> <span class="p">[</span><span class="n">_ProducerBatchRecord</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="n">records</span><span class="p">]</span>
-</span><span id="TopicProducer.send_all-182"><a href="#TopicProducer.send_all-182"><span class="linenos">182</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">send_all</span><span class="p">(</span><span class="n">records_inner</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="TopicProducer.send_all-207"><a href="#TopicProducer.send_all-207"><span class="linenos">207</span></a>    <span class="k">def</span> <span class="nf">send_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">records</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]]):</span>
+</span><span id="TopicProducer.send_all-208"><a href="#TopicProducer.send_all-208"><span class="linenos">208</span></a>        <span class="sd">&#39;&#39;&#39;</span>
+</span><span id="TopicProducer.send_all-209"><a href="#TopicProducer.send_all-209"><span class="linenos">209</span></a><span class="sd">        Sends a list of key/value records as a batch to this producer&#39;s Topic.</span>
+</span><span id="TopicProducer.send_all-210"><a href="#TopicProducer.send_all-210"><span class="linenos">210</span></a><span class="sd">        :param records: The list of records to send</span>
+</span><span id="TopicProducer.send_all-211"><a href="#TopicProducer.send_all-211"><span class="linenos">211</span></a><span class="sd">        &#39;&#39;&#39;</span>
+</span><span id="TopicProducer.send_all-212"><a href="#TopicProducer.send_all-212"><span class="linenos">212</span></a>        <span class="n">records_inner</span> <span class="o">=</span> <span class="p">[</span><span class="n">_ProducerBatchRecord</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="n">records</span><span class="p">]</span>
+</span><span id="TopicProducer.send_all-213"><a href="#TopicProducer.send_all-213"><span class="linenos">213</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">send_all</span><span class="p">(</span><span class="n">records_inner</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -1153,51 +1290,51 @@ the topic, choosing which partition each event should be delivered to.</p>
 
     </div>
     <a class="headerlink" href="#Fluvio"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Fluvio-185"><a href="#Fluvio-185"><span class="linenos">185</span></a><span class="k">class</span> <span class="nc">Fluvio</span><span class="p">:</span>
-</span><span id="Fluvio-186"><a href="#Fluvio-186"><span class="linenos">186</span></a>    <span class="sd">&#39;&#39;&#39;An interface for interacting with Fluvio streaming.&#39;&#39;&#39;</span>
-</span><span id="Fluvio-187"><a href="#Fluvio-187"><span class="linenos">187</span></a>    <span class="n">_inner</span><span class="p">:</span> <span class="n">_Fluvio</span>
-</span><span id="Fluvio-188"><a href="#Fluvio-188"><span class="linenos">188</span></a>
-</span><span id="Fluvio-189"><a href="#Fluvio-189"><span class="linenos">189</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inner</span><span class="p">:</span> <span class="n">_Fluvio</span><span class="p">):</span>
-</span><span id="Fluvio-190"><a href="#Fluvio-190"><span class="linenos">190</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span> <span class="o">=</span> <span class="n">inner</span>
-</span><span id="Fluvio-191"><a href="#Fluvio-191"><span class="linenos">191</span></a>
-</span><span id="Fluvio-192"><a href="#Fluvio-192"><span class="linenos">192</span></a>    <span class="nd">@classmethod</span>
-</span><span id="Fluvio-193"><a href="#Fluvio-193"><span class="linenos">193</span></a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-</span><span id="Fluvio-194"><a href="#Fluvio-194"><span class="linenos">194</span></a>        <span class="sd">&#39;&#39;&#39;Creates a new Fluvio client using the current profile from</span>
-</span><span id="Fluvio-195"><a href="#Fluvio-195"><span class="linenos">195</span></a><span class="sd">        `~/.fluvio/config`</span>
-</span><span id="Fluvio-196"><a href="#Fluvio-196"><span class="linenos">196</span></a>
-</span><span id="Fluvio-197"><a href="#Fluvio-197"><span class="linenos">197</span></a><span class="sd">        If there is no current profile or the `~/.fluvio/config` file does not</span>
-</span><span id="Fluvio-198"><a href="#Fluvio-198"><span class="linenos">198</span></a><span class="sd">        exist, then this will create a new profile with default settings and</span>
-</span><span id="Fluvio-199"><a href="#Fluvio-199"><span class="linenos">199</span></a><span class="sd">        set it as current, then try to connect to the cluster using those</span>
-</span><span id="Fluvio-200"><a href="#Fluvio-200"><span class="linenos">200</span></a><span class="sd">        settings.</span>
-</span><span id="Fluvio-201"><a href="#Fluvio-201"><span class="linenos">201</span></a><span class="sd">        &#39;&#39;&#39;</span>
-</span><span id="Fluvio-202"><a href="#Fluvio-202"><span class="linenos">202</span></a>        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">_Fluvio</span><span class="o">.</span><span class="n">connect</span><span class="p">())</span>
-</span><span id="Fluvio-203"><a href="#Fluvio-203"><span class="linenos">203</span></a>
-</span><span id="Fluvio-204"><a href="#Fluvio-204"><span class="linenos">204</span></a>    <span class="k">def</span> <span class="nf">partition_consumer</span><span class="p">(</span>
-</span><span id="Fluvio-205"><a href="#Fluvio-205"><span class="linenos">205</span></a>        <span class="bp">self</span><span class="p">,</span>
-</span><span id="Fluvio-206"><a href="#Fluvio-206"><span class="linenos">206</span></a>        <span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span id="Fluvio-207"><a href="#Fluvio-207"><span class="linenos">207</span></a>        <span class="n">partition</span><span class="p">:</span> <span class="nb">int</span>
-</span><span id="Fluvio-208"><a href="#Fluvio-208"><span class="linenos">208</span></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PartitionConsumer</span><span class="p">:</span>
-</span><span id="Fluvio-209"><a href="#Fluvio-209"><span class="linenos">209</span></a>        <span class="sd">&#39;&#39;&#39;Creates a new `PartitionConsumer` for the given topic and partition</span>
-</span><span id="Fluvio-210"><a href="#Fluvio-210"><span class="linenos">210</span></a>
-</span><span id="Fluvio-211"><a href="#Fluvio-211"><span class="linenos">211</span></a><span class="sd">        Currently, consumers are scoped to both a specific Fluvio topic and to</span>
-</span><span id="Fluvio-212"><a href="#Fluvio-212"><span class="linenos">212</span></a><span class="sd">        a particular partition within that topic. That means that if you have a</span>
-</span><span id="Fluvio-213"><a href="#Fluvio-213"><span class="linenos">213</span></a><span class="sd">        topic with multiple partitions, then in order to receive all of the</span>
-</span><span id="Fluvio-214"><a href="#Fluvio-214"><span class="linenos">214</span></a><span class="sd">        events in all of the partitions, you will need to create one consumer</span>
-</span><span id="Fluvio-215"><a href="#Fluvio-215"><span class="linenos">215</span></a><span class="sd">        per partition.</span>
-</span><span id="Fluvio-216"><a href="#Fluvio-216"><span class="linenos">216</span></a><span class="sd">        &#39;&#39;&#39;</span>
-</span><span id="Fluvio-217"><a href="#Fluvio-217"><span class="linenos">217</span></a>        <span class="k">return</span> <span class="n">PartitionConsumer</span><span class="p">(</span>
-</span><span id="Fluvio-218"><a href="#Fluvio-218"><span class="linenos">218</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">partition_consumer</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="n">partition</span><span class="p">)</span>
-</span><span id="Fluvio-219"><a href="#Fluvio-219"><span class="linenos">219</span></a>        <span class="p">)</span>
-</span><span id="Fluvio-220"><a href="#Fluvio-220"><span class="linenos">220</span></a>
-</span><span id="Fluvio-221"><a href="#Fluvio-221"><span class="linenos">221</span></a>    <span class="k">def</span> <span class="nf">topic_producer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TopicProducer</span><span class="p">:</span>
-</span><span id="Fluvio-222"><a href="#Fluvio-222"><span class="linenos">222</span></a>        <span class="sd">&#39;&#39;&#39;</span>
-</span><span id="Fluvio-223"><a href="#Fluvio-223"><span class="linenos">223</span></a><span class="sd">        Creates a new `TopicProducer` for the given topic name.</span>
-</span><span id="Fluvio-224"><a href="#Fluvio-224"><span class="linenos">224</span></a>
-</span><span id="Fluvio-225"><a href="#Fluvio-225"><span class="linenos">225</span></a><span class="sd">        Currently, producers are scoped to a specific Fluvio topic. That means</span>
-</span><span id="Fluvio-226"><a href="#Fluvio-226"><span class="linenos">226</span></a><span class="sd">        when you send events via a producer, you must specify which partition</span>
-</span><span id="Fluvio-227"><a href="#Fluvio-227"><span class="linenos">227</span></a><span class="sd">        each event should go to.</span>
-</span><span id="Fluvio-228"><a href="#Fluvio-228"><span class="linenos">228</span></a><span class="sd">        &#39;&#39;&#39;</span>
-</span><span id="Fluvio-229"><a href="#Fluvio-229"><span class="linenos">229</span></a>        <span class="k">return</span> <span class="n">TopicProducer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">topic_producer</span><span class="p">(</span><span class="n">topic</span><span class="p">))</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Fluvio-216"><a href="#Fluvio-216"><span class="linenos">216</span></a><span class="k">class</span> <span class="nc">Fluvio</span><span class="p">:</span>
+</span><span id="Fluvio-217"><a href="#Fluvio-217"><span class="linenos">217</span></a>    <span class="sd">&#39;&#39;&#39;An interface for interacting with Fluvio streaming.&#39;&#39;&#39;</span>
+</span><span id="Fluvio-218"><a href="#Fluvio-218"><span class="linenos">218</span></a>    <span class="n">_inner</span><span class="p">:</span> <span class="n">_Fluvio</span>
+</span><span id="Fluvio-219"><a href="#Fluvio-219"><span class="linenos">219</span></a>
+</span><span id="Fluvio-220"><a href="#Fluvio-220"><span class="linenos">220</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inner</span><span class="p">:</span> <span class="n">_Fluvio</span><span class="p">):</span>
+</span><span id="Fluvio-221"><a href="#Fluvio-221"><span class="linenos">221</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span> <span class="o">=</span> <span class="n">inner</span>
+</span><span id="Fluvio-222"><a href="#Fluvio-222"><span class="linenos">222</span></a>
+</span><span id="Fluvio-223"><a href="#Fluvio-223"><span class="linenos">223</span></a>    <span class="nd">@classmethod</span>
+</span><span id="Fluvio-224"><a href="#Fluvio-224"><span class="linenos">224</span></a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+</span><span id="Fluvio-225"><a href="#Fluvio-225"><span class="linenos">225</span></a>        <span class="sd">&#39;&#39;&#39;Creates a new Fluvio client using the current profile from</span>
+</span><span id="Fluvio-226"><a href="#Fluvio-226"><span class="linenos">226</span></a><span class="sd">        `~/.fluvio/config`</span>
+</span><span id="Fluvio-227"><a href="#Fluvio-227"><span class="linenos">227</span></a>
+</span><span id="Fluvio-228"><a href="#Fluvio-228"><span class="linenos">228</span></a><span class="sd">        If there is no current profile or the `~/.fluvio/config` file does not</span>
+</span><span id="Fluvio-229"><a href="#Fluvio-229"><span class="linenos">229</span></a><span class="sd">        exist, then this will create a new profile with default settings and</span>
+</span><span id="Fluvio-230"><a href="#Fluvio-230"><span class="linenos">230</span></a><span class="sd">        set it as current, then try to connect to the cluster using those</span>
+</span><span id="Fluvio-231"><a href="#Fluvio-231"><span class="linenos">231</span></a><span class="sd">        settings.</span>
+</span><span id="Fluvio-232"><a href="#Fluvio-232"><span class="linenos">232</span></a><span class="sd">        &#39;&#39;&#39;</span>
+</span><span id="Fluvio-233"><a href="#Fluvio-233"><span class="linenos">233</span></a>        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">_Fluvio</span><span class="o">.</span><span class="n">connect</span><span class="p">())</span>
+</span><span id="Fluvio-234"><a href="#Fluvio-234"><span class="linenos">234</span></a>
+</span><span id="Fluvio-235"><a href="#Fluvio-235"><span class="linenos">235</span></a>    <span class="k">def</span> <span class="nf">partition_consumer</span><span class="p">(</span>
+</span><span id="Fluvio-236"><a href="#Fluvio-236"><span class="linenos">236</span></a>        <span class="bp">self</span><span class="p">,</span>
+</span><span id="Fluvio-237"><a href="#Fluvio-237"><span class="linenos">237</span></a>        <span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="Fluvio-238"><a href="#Fluvio-238"><span class="linenos">238</span></a>        <span class="n">partition</span><span class="p">:</span> <span class="nb">int</span>
+</span><span id="Fluvio-239"><a href="#Fluvio-239"><span class="linenos">239</span></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PartitionConsumer</span><span class="p">:</span>
+</span><span id="Fluvio-240"><a href="#Fluvio-240"><span class="linenos">240</span></a>        <span class="sd">&#39;&#39;&#39;Creates a new `PartitionConsumer` for the given topic and partition</span>
+</span><span id="Fluvio-241"><a href="#Fluvio-241"><span class="linenos">241</span></a>
+</span><span id="Fluvio-242"><a href="#Fluvio-242"><span class="linenos">242</span></a><span class="sd">        Currently, consumers are scoped to both a specific Fluvio topic and to</span>
+</span><span id="Fluvio-243"><a href="#Fluvio-243"><span class="linenos">243</span></a><span class="sd">        a particular partition within that topic. That means that if you have a</span>
+</span><span id="Fluvio-244"><a href="#Fluvio-244"><span class="linenos">244</span></a><span class="sd">        topic with multiple partitions, then in order to receive all of the</span>
+</span><span id="Fluvio-245"><a href="#Fluvio-245"><span class="linenos">245</span></a><span class="sd">        events in all of the partitions, you will need to create one consumer</span>
+</span><span id="Fluvio-246"><a href="#Fluvio-246"><span class="linenos">246</span></a><span class="sd">        per partition.</span>
+</span><span id="Fluvio-247"><a href="#Fluvio-247"><span class="linenos">247</span></a><span class="sd">        &#39;&#39;&#39;</span>
+</span><span id="Fluvio-248"><a href="#Fluvio-248"><span class="linenos">248</span></a>        <span class="k">return</span> <span class="n">PartitionConsumer</span><span class="p">(</span>
+</span><span id="Fluvio-249"><a href="#Fluvio-249"><span class="linenos">249</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">partition_consumer</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="n">partition</span><span class="p">)</span>
+</span><span id="Fluvio-250"><a href="#Fluvio-250"><span class="linenos">250</span></a>        <span class="p">)</span>
+</span><span id="Fluvio-251"><a href="#Fluvio-251"><span class="linenos">251</span></a>
+</span><span id="Fluvio-252"><a href="#Fluvio-252"><span class="linenos">252</span></a>    <span class="k">def</span> <span class="nf">topic_producer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TopicProducer</span><span class="p">:</span>
+</span><span id="Fluvio-253"><a href="#Fluvio-253"><span class="linenos">253</span></a>        <span class="sd">&#39;&#39;&#39;</span>
+</span><span id="Fluvio-254"><a href="#Fluvio-254"><span class="linenos">254</span></a><span class="sd">        Creates a new `TopicProducer` for the given topic name.</span>
+</span><span id="Fluvio-255"><a href="#Fluvio-255"><span class="linenos">255</span></a>
+</span><span id="Fluvio-256"><a href="#Fluvio-256"><span class="linenos">256</span></a><span class="sd">        Currently, producers are scoped to a specific Fluvio topic. That means</span>
+</span><span id="Fluvio-257"><a href="#Fluvio-257"><span class="linenos">257</span></a><span class="sd">        when you send events via a producer, you must specify which partition</span>
+</span><span id="Fluvio-258"><a href="#Fluvio-258"><span class="linenos">258</span></a><span class="sd">        each event should go to.</span>
+</span><span id="Fluvio-259"><a href="#Fluvio-259"><span class="linenos">259</span></a><span class="sd">        &#39;&#39;&#39;</span>
+</span><span id="Fluvio-260"><a href="#Fluvio-260"><span class="linenos">260</span></a>        <span class="k">return</span> <span class="n">TopicProducer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">topic_producer</span><span class="p">(</span><span class="n">topic</span><span class="p">))</span>
 </span></pre></div>
 
 
@@ -1215,8 +1352,8 @@ the topic, choosing which partition each event should be delivered to.</p>
 
     </div>
     <a class="headerlink" href="#Fluvio.__init__"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Fluvio.__init__-189"><a href="#Fluvio.__init__-189"><span class="linenos">189</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inner</span><span class="p">:</span> <span class="n">_Fluvio</span><span class="p">):</span>
-</span><span id="Fluvio.__init__-190"><a href="#Fluvio.__init__-190"><span class="linenos">190</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span> <span class="o">=</span> <span class="n">inner</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Fluvio.__init__-220"><a href="#Fluvio.__init__-220"><span class="linenos">220</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inner</span><span class="p">:</span> <span class="n">_Fluvio</span><span class="p">):</span>
+</span><span id="Fluvio.__init__-221"><a href="#Fluvio.__init__-221"><span class="linenos">221</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span> <span class="o">=</span> <span class="n">inner</span>
 </span></pre></div>
 
 
@@ -1235,17 +1372,17 @@ the topic, choosing which partition each event should be delivered to.</p>
 
     </div>
     <a class="headerlink" href="#Fluvio.connect"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Fluvio.connect-192"><a href="#Fluvio.connect-192"><span class="linenos">192</span></a>    <span class="nd">@classmethod</span>
-</span><span id="Fluvio.connect-193"><a href="#Fluvio.connect-193"><span class="linenos">193</span></a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-</span><span id="Fluvio.connect-194"><a href="#Fluvio.connect-194"><span class="linenos">194</span></a>        <span class="sd">&#39;&#39;&#39;Creates a new Fluvio client using the current profile from</span>
-</span><span id="Fluvio.connect-195"><a href="#Fluvio.connect-195"><span class="linenos">195</span></a><span class="sd">        `~/.fluvio/config`</span>
-</span><span id="Fluvio.connect-196"><a href="#Fluvio.connect-196"><span class="linenos">196</span></a>
-</span><span id="Fluvio.connect-197"><a href="#Fluvio.connect-197"><span class="linenos">197</span></a><span class="sd">        If there is no current profile or the `~/.fluvio/config` file does not</span>
-</span><span id="Fluvio.connect-198"><a href="#Fluvio.connect-198"><span class="linenos">198</span></a><span class="sd">        exist, then this will create a new profile with default settings and</span>
-</span><span id="Fluvio.connect-199"><a href="#Fluvio.connect-199"><span class="linenos">199</span></a><span class="sd">        set it as current, then try to connect to the cluster using those</span>
-</span><span id="Fluvio.connect-200"><a href="#Fluvio.connect-200"><span class="linenos">200</span></a><span class="sd">        settings.</span>
-</span><span id="Fluvio.connect-201"><a href="#Fluvio.connect-201"><span class="linenos">201</span></a><span class="sd">        &#39;&#39;&#39;</span>
-</span><span id="Fluvio.connect-202"><a href="#Fluvio.connect-202"><span class="linenos">202</span></a>        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">_Fluvio</span><span class="o">.</span><span class="n">connect</span><span class="p">())</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Fluvio.connect-223"><a href="#Fluvio.connect-223"><span class="linenos">223</span></a>    <span class="nd">@classmethod</span>
+</span><span id="Fluvio.connect-224"><a href="#Fluvio.connect-224"><span class="linenos">224</span></a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+</span><span id="Fluvio.connect-225"><a href="#Fluvio.connect-225"><span class="linenos">225</span></a>        <span class="sd">&#39;&#39;&#39;Creates a new Fluvio client using the current profile from</span>
+</span><span id="Fluvio.connect-226"><a href="#Fluvio.connect-226"><span class="linenos">226</span></a><span class="sd">        `~/.fluvio/config`</span>
+</span><span id="Fluvio.connect-227"><a href="#Fluvio.connect-227"><span class="linenos">227</span></a>
+</span><span id="Fluvio.connect-228"><a href="#Fluvio.connect-228"><span class="linenos">228</span></a><span class="sd">        If there is no current profile or the `~/.fluvio/config` file does not</span>
+</span><span id="Fluvio.connect-229"><a href="#Fluvio.connect-229"><span class="linenos">229</span></a><span class="sd">        exist, then this will create a new profile with default settings and</span>
+</span><span id="Fluvio.connect-230"><a href="#Fluvio.connect-230"><span class="linenos">230</span></a><span class="sd">        set it as current, then try to connect to the cluster using those</span>
+</span><span id="Fluvio.connect-231"><a href="#Fluvio.connect-231"><span class="linenos">231</span></a><span class="sd">        settings.</span>
+</span><span id="Fluvio.connect-232"><a href="#Fluvio.connect-232"><span class="linenos">232</span></a><span class="sd">        &#39;&#39;&#39;</span>
+</span><span id="Fluvio.connect-233"><a href="#Fluvio.connect-233"><span class="linenos">233</span></a>        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">_Fluvio</span><span class="o">.</span><span class="n">connect</span><span class="p">())</span>
 </span></pre></div>
 
 
@@ -1271,22 +1408,22 @@ settings.</p>
 
     </div>
     <a class="headerlink" href="#Fluvio.partition_consumer"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Fluvio.partition_consumer-204"><a href="#Fluvio.partition_consumer-204"><span class="linenos">204</span></a>    <span class="k">def</span> <span class="nf">partition_consumer</span><span class="p">(</span>
-</span><span id="Fluvio.partition_consumer-205"><a href="#Fluvio.partition_consumer-205"><span class="linenos">205</span></a>        <span class="bp">self</span><span class="p">,</span>
-</span><span id="Fluvio.partition_consumer-206"><a href="#Fluvio.partition_consumer-206"><span class="linenos">206</span></a>        <span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span id="Fluvio.partition_consumer-207"><a href="#Fluvio.partition_consumer-207"><span class="linenos">207</span></a>        <span class="n">partition</span><span class="p">:</span> <span class="nb">int</span>
-</span><span id="Fluvio.partition_consumer-208"><a href="#Fluvio.partition_consumer-208"><span class="linenos">208</span></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PartitionConsumer</span><span class="p">:</span>
-</span><span id="Fluvio.partition_consumer-209"><a href="#Fluvio.partition_consumer-209"><span class="linenos">209</span></a>        <span class="sd">&#39;&#39;&#39;Creates a new `PartitionConsumer` for the given topic and partition</span>
-</span><span id="Fluvio.partition_consumer-210"><a href="#Fluvio.partition_consumer-210"><span class="linenos">210</span></a>
-</span><span id="Fluvio.partition_consumer-211"><a href="#Fluvio.partition_consumer-211"><span class="linenos">211</span></a><span class="sd">        Currently, consumers are scoped to both a specific Fluvio topic and to</span>
-</span><span id="Fluvio.partition_consumer-212"><a href="#Fluvio.partition_consumer-212"><span class="linenos">212</span></a><span class="sd">        a particular partition within that topic. That means that if you have a</span>
-</span><span id="Fluvio.partition_consumer-213"><a href="#Fluvio.partition_consumer-213"><span class="linenos">213</span></a><span class="sd">        topic with multiple partitions, then in order to receive all of the</span>
-</span><span id="Fluvio.partition_consumer-214"><a href="#Fluvio.partition_consumer-214"><span class="linenos">214</span></a><span class="sd">        events in all of the partitions, you will need to create one consumer</span>
-</span><span id="Fluvio.partition_consumer-215"><a href="#Fluvio.partition_consumer-215"><span class="linenos">215</span></a><span class="sd">        per partition.</span>
-</span><span id="Fluvio.partition_consumer-216"><a href="#Fluvio.partition_consumer-216"><span class="linenos">216</span></a><span class="sd">        &#39;&#39;&#39;</span>
-</span><span id="Fluvio.partition_consumer-217"><a href="#Fluvio.partition_consumer-217"><span class="linenos">217</span></a>        <span class="k">return</span> <span class="n">PartitionConsumer</span><span class="p">(</span>
-</span><span id="Fluvio.partition_consumer-218"><a href="#Fluvio.partition_consumer-218"><span class="linenos">218</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">partition_consumer</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="n">partition</span><span class="p">)</span>
-</span><span id="Fluvio.partition_consumer-219"><a href="#Fluvio.partition_consumer-219"><span class="linenos">219</span></a>        <span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Fluvio.partition_consumer-235"><a href="#Fluvio.partition_consumer-235"><span class="linenos">235</span></a>    <span class="k">def</span> <span class="nf">partition_consumer</span><span class="p">(</span>
+</span><span id="Fluvio.partition_consumer-236"><a href="#Fluvio.partition_consumer-236"><span class="linenos">236</span></a>        <span class="bp">self</span><span class="p">,</span>
+</span><span id="Fluvio.partition_consumer-237"><a href="#Fluvio.partition_consumer-237"><span class="linenos">237</span></a>        <span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="Fluvio.partition_consumer-238"><a href="#Fluvio.partition_consumer-238"><span class="linenos">238</span></a>        <span class="n">partition</span><span class="p">:</span> <span class="nb">int</span>
+</span><span id="Fluvio.partition_consumer-239"><a href="#Fluvio.partition_consumer-239"><span class="linenos">239</span></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PartitionConsumer</span><span class="p">:</span>
+</span><span id="Fluvio.partition_consumer-240"><a href="#Fluvio.partition_consumer-240"><span class="linenos">240</span></a>        <span class="sd">&#39;&#39;&#39;Creates a new `PartitionConsumer` for the given topic and partition</span>
+</span><span id="Fluvio.partition_consumer-241"><a href="#Fluvio.partition_consumer-241"><span class="linenos">241</span></a>
+</span><span id="Fluvio.partition_consumer-242"><a href="#Fluvio.partition_consumer-242"><span class="linenos">242</span></a><span class="sd">        Currently, consumers are scoped to both a specific Fluvio topic and to</span>
+</span><span id="Fluvio.partition_consumer-243"><a href="#Fluvio.partition_consumer-243"><span class="linenos">243</span></a><span class="sd">        a particular partition within that topic. That means that if you have a</span>
+</span><span id="Fluvio.partition_consumer-244"><a href="#Fluvio.partition_consumer-244"><span class="linenos">244</span></a><span class="sd">        topic with multiple partitions, then in order to receive all of the</span>
+</span><span id="Fluvio.partition_consumer-245"><a href="#Fluvio.partition_consumer-245"><span class="linenos">245</span></a><span class="sd">        events in all of the partitions, you will need to create one consumer</span>
+</span><span id="Fluvio.partition_consumer-246"><a href="#Fluvio.partition_consumer-246"><span class="linenos">246</span></a><span class="sd">        per partition.</span>
+</span><span id="Fluvio.partition_consumer-247"><a href="#Fluvio.partition_consumer-247"><span class="linenos">247</span></a><span class="sd">        &#39;&#39;&#39;</span>
+</span><span id="Fluvio.partition_consumer-248"><a href="#Fluvio.partition_consumer-248"><span class="linenos">248</span></a>        <span class="k">return</span> <span class="n">PartitionConsumer</span><span class="p">(</span>
+</span><span id="Fluvio.partition_consumer-249"><a href="#Fluvio.partition_consumer-249"><span class="linenos">249</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">partition_consumer</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="n">partition</span><span class="p">)</span>
+</span><span id="Fluvio.partition_consumer-250"><a href="#Fluvio.partition_consumer-250"><span class="linenos">250</span></a>        <span class="p">)</span>
 </span></pre></div>
 
 
@@ -1312,15 +1449,15 @@ per partition.</p>
 
     </div>
     <a class="headerlink" href="#Fluvio.topic_producer"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Fluvio.topic_producer-221"><a href="#Fluvio.topic_producer-221"><span class="linenos">221</span></a>    <span class="k">def</span> <span class="nf">topic_producer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TopicProducer</span><span class="p">:</span>
-</span><span id="Fluvio.topic_producer-222"><a href="#Fluvio.topic_producer-222"><span class="linenos">222</span></a>        <span class="sd">&#39;&#39;&#39;</span>
-</span><span id="Fluvio.topic_producer-223"><a href="#Fluvio.topic_producer-223"><span class="linenos">223</span></a><span class="sd">        Creates a new `TopicProducer` for the given topic name.</span>
-</span><span id="Fluvio.topic_producer-224"><a href="#Fluvio.topic_producer-224"><span class="linenos">224</span></a>
-</span><span id="Fluvio.topic_producer-225"><a href="#Fluvio.topic_producer-225"><span class="linenos">225</span></a><span class="sd">        Currently, producers are scoped to a specific Fluvio topic. That means</span>
-</span><span id="Fluvio.topic_producer-226"><a href="#Fluvio.topic_producer-226"><span class="linenos">226</span></a><span class="sd">        when you send events via a producer, you must specify which partition</span>
-</span><span id="Fluvio.topic_producer-227"><a href="#Fluvio.topic_producer-227"><span class="linenos">227</span></a><span class="sd">        each event should go to.</span>
-</span><span id="Fluvio.topic_producer-228"><a href="#Fluvio.topic_producer-228"><span class="linenos">228</span></a><span class="sd">        &#39;&#39;&#39;</span>
-</span><span id="Fluvio.topic_producer-229"><a href="#Fluvio.topic_producer-229"><span class="linenos">229</span></a>        <span class="k">return</span> <span class="n">TopicProducer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">topic_producer</span><span class="p">(</span><span class="n">topic</span><span class="p">))</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Fluvio.topic_producer-252"><a href="#Fluvio.topic_producer-252"><span class="linenos">252</span></a>    <span class="k">def</span> <span class="nf">topic_producer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TopicProducer</span><span class="p">:</span>
+</span><span id="Fluvio.topic_producer-253"><a href="#Fluvio.topic_producer-253"><span class="linenos">253</span></a>        <span class="sd">&#39;&#39;&#39;</span>
+</span><span id="Fluvio.topic_producer-254"><a href="#Fluvio.topic_producer-254"><span class="linenos">254</span></a><span class="sd">        Creates a new `TopicProducer` for the given topic name.</span>
+</span><span id="Fluvio.topic_producer-255"><a href="#Fluvio.topic_producer-255"><span class="linenos">255</span></a>
+</span><span id="Fluvio.topic_producer-256"><a href="#Fluvio.topic_producer-256"><span class="linenos">256</span></a><span class="sd">        Currently, producers are scoped to a specific Fluvio topic. That means</span>
+</span><span id="Fluvio.topic_producer-257"><a href="#Fluvio.topic_producer-257"><span class="linenos">257</span></a><span class="sd">        when you send events via a producer, you must specify which partition</span>
+</span><span id="Fluvio.topic_producer-258"><a href="#Fluvio.topic_producer-258"><span class="linenos">258</span></a><span class="sd">        each event should go to.</span>
+</span><span id="Fluvio.topic_producer-259"><a href="#Fluvio.topic_producer-259"><span class="linenos">259</span></a><span class="sd">        &#39;&#39;&#39;</span>
+</span><span id="Fluvio.topic_producer-260"><a href="#Fluvio.topic_producer-260"><span class="linenos">260</span></a>        <span class="k">return</span> <span class="n">TopicProducer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inner</span><span class="o">.</span><span class="n">topic_producer</span><span class="p">(</span><span class="n">topic</span><span class="p">))</span>
 </span></pre></div>
 
 
