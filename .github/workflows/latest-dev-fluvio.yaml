@@ -1,0 +1,87 @@
+name: Fluvio CI with latest fluvio
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron:  '0 14 * * *'
+
+jobs:
+  smoke_test:
+    name: Test against Dev cluster
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        rust: [stable]
+        python-version: ["3.10"]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install ${{ matrix.rust }}
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust }}
+          override: true
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Update the fluvio client to use the latest on the fluvio master branch.
+        run: |
+          cargo add fluvio --git https://github.com/infinyon/fluvio --branch master
+          git diff Cargo.toml
+
+      - name: Build
+        run: |
+          make build-dev
+
+      - uses: AbsaOSS/k3d-action@v2
+        name: "Create fluvio k3d Cluster"
+        with:
+          cluster-name: "fluvio"
+      - name: Sleep 20 to ensure k3d cluster is ready
+        run: sleep 20
+
+      # TODO: Ideally we'd install fluvio and start the cluster from the
+      # composite action. The composite action doesn't support installing the
+      # `--development` version of fluvio
+      # - name: Install Fluvio Cluster
+      #   uses: infinyon/fluvio@master
+      #   with:
+      #     cluster-type: local
+      #     version: latest
+
+      - name: Install fluvio
+        run: |
+          curl -fsS https://packages.fluvio.io/v1/install.sh | bash
+          echo "${HOME}/.fluvio/bin" >> $GITHUB_PATH
+      - name: Update fluvio client to development and start the local cluster.
+        run: |
+          fluvio update --develop
+          fluvio cluster start --rust-log debug --local
+
+      - name: Sleep 10 to ensure the fluvio cluster is ready
+        run: sleep 10
+      - name: Check Fluvio Installation
+        run: |
+          fluvio version
+          fluvio topic list
+          fluvio topic create foobar
+          sleep 3
+          echo foo | fluvio produce foobar
+          fluvio consume foobar -o 0 -d
+
+
+      - name: Test
+        run: |
+          make integration-tests
+
+      - name: Slack Notification
+        uses: 8398a7/action-slack@v3
+        if: failure()
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took # selectable (default: repo,message)
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
