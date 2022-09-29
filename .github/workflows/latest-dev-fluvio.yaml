@@ -49,6 +49,8 @@ jobs:
         run: |
           curl -fsS https://packages.fluvio.io/v1/install.sh | bash
           echo "${HOME}/.fluvio/bin" >> $GITHUB_PATH
+      - name: Update fluvio client to development and start the local cluster.
+        run: |
           fluvio update --develop
           fluvio cluster start --rust-log debug --local
 
