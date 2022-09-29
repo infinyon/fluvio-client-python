@@ -4,8 +4,6 @@ on:
   workflow_dispatch:
   push:
     branches: [ main ]
-  pull_request: # TODO: Remove this as this before merging the PR.
-    branches: [ main ]
   schedule:
     - cron:  '0 14 * * *'
 
@@ -29,6 +27,15 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Update the fluvio client to use the latest on the fluvio master branch.
+        run: |
+          cargo add fluvio --git https://github.com/infinyon/fluvio --branch master
+          git diff Cargo.toml
+
+      - name: Build
+        run: |
+          make build-dev
+
       - uses: AbsaOSS/k3d-action@v2
         name: "Create fluvio k3d Cluster"
         with:
@@ -65,14 +72,6 @@ jobs:
           echo foo | fluvio produce foobar
           fluvio consume foobar -o 0 -d
 
-      - name: Update the fluvio client to use the latest on the fluvio master branch.
-        run: |
-          cargo add fluvio --git https://github.com/infinyon/fluvio --branch master
-          git diff Cargo.toml
-
-      - name: Build
-        run: |
-          make build-dev
 
       - name: Test
         run: |
