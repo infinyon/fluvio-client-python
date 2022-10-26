@@ -2,11 +2,15 @@
 use flate2::bufread::GzEncoder;
 use flate2::Compression;
 use fluvio::consumer::{
-    ConsumerConfig, SmartModuleInvocation, SmartModuleInvocationWasm, SmartModuleKind,
+    ConsumerConfig,
 };
+use fluvio::dataplane::link::ErrorCode;
 use fluvio::{
-    consumer::Record, dataplane::ErrorCode, Fluvio, FluvioError, Offset, PartitionConsumer,
+    consumer::Record, Fluvio, FluvioError, Offset, PartitionConsumer,
     TopicProducer,
+};
+use fluvio_spu_schema::server::smartmodule::{
+    SmartModuleInvocation, SmartModuleInvocationWasm, SmartModuleKind,
 };
 use fluvio_future::{
     io::{Stream, StreamExt},
