@@ -14,9 +14,9 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest] # TODO: add windows-2019,
-        python-version: ["37", "38", "39", "310"]
+        python-version: ["37", "38", "39", "310", "311"]
     env:
-      CIBW_SKIP: "cp27-* cp34-* cp35-* cp36-* pp* *-win32"
+      CIBW_SKIP: "cp36-* pp* *-win32"
       CIBW_ARCHS_MACOS: x86_64 universal2
       CIBW_ARCHS_LINUX: auto aarch64
       CIBW_BEFORE_ALL_LINUX: "{package}/tools/cibw_before_all_linux.sh"
@@ -28,7 +28,7 @@ jobs:
       # Used to host cibuildwheel
       - uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
+          python-version: "3.11"
 
       - if: runner.os == 'macOS'
         name: Install Rust Stable
@@ -69,7 +69,7 @@ jobs:
       - uses: actions/setup-python@v4
         name: Install Python
         with:
-          python-version: "3.10"
+          python-version: "3.11"
 
       - name: Install setuptools and setuptools-rust
         run: |
@@ -97,7 +97,7 @@ jobs:
       - uses: actions/setup-python@v4
         name: Install Python
         with:
-          python-version: "3.10"
+          python-version: "3.11"
       - name: Install Rust ${{ matrix.platform.target }}
         uses: actions-rs/toolchain@v1
         with:
