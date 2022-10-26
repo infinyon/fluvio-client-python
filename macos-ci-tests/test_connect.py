@@ -23,7 +23,7 @@ class TestFluvioCannotConnect(unittest.TestCase):
             error.args,
             [
                 (
-                    'Config error: Config has no active profile\nCaused by:\nConfig has no active profile',  # noqa: E501
+                    "Config error: Config has no active profile\nCaused by:\nConfig has no active profile",  # noqa: E501
                 ),
                 (
                     "Fluvio config error: Config has no active profile\nCaused by:\nConfig has no active profile",  # noqa: E501
