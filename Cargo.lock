@@ -11,7 +11,7 @@ dependencies = [
  "flapigen",
  "flate2",
  "fluvio",
- "fluvio-future 0.4.2",
+ "fluvio-future",
  "log",
 ]
 
@@ -570,9 +570,9 @@ dependencies = [
 
 [[package]]
 name = "fluvio"
-version = "0.13.1"
+version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ef9777bb3fcc752a0edebcdac91a285ad40ed0aeced5f5992e4efb16a5eb7555"
+checksum = "fbff062a4c7484872c1a483bb7217de260b41ce00f36752fa3d9aea4bd308717"
 dependencies = [
  "async-channel",
  "async-lock",
@@ -582,14 +582,15 @@ dependencies = [
  "built",
  "bytes",
  "cfg-if",
+ "chrono",
  "derive_builder",
  "dirs",
  "event-listener",
  "fluvio-compression",
- "fluvio-dataplane-protocol",
- "fluvio-future 0.4.2",
- "fluvio-protocol",
+ "fluvio-future",
+ "fluvio-protocol 0.8.0",
  "fluvio-sc-schema",
+ "fluvio-smartmodule",
  "fluvio-socket",
  "fluvio-spu-schema",
  "fluvio-types",
@@ -622,18 +623,20 @@ dependencies = [
 
 [[package]]
 name = "fluvio-controlplane-metadata"
-version = "0.15.4"
+version = "0.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8d876315d312d61a7822df10f60363a5ef396b40ea29b8ad4ab7ecfded7122e1"
+checksum = "36b9affdafec74a7b646beb850907b09b7e81fc0522803f918c8edae29eed880"
 dependencies = [
  "async-trait",
  "base64",
- "fluvio-dataplane-protocol",
- "fluvio-future 0.3.18",
- "fluvio-protocol",
+ "bytes",
+ "fluvio-future",
+ "fluvio-protocol 0.8.0",
  "fluvio-stream-model",
  "fluvio-types",
  "flv-util",
+ "lenient_semver",
+ "semver",
  "thiserror",
  "tracing",
 ]
@@ -646,13 +649,12 @@ checksum = "a691755125a8211290191dc46f6a2c07898d891c00c4e09ebbad735908afa35a"
 dependencies = [
  "bytes",
  "cfg-if",
- "chrono",
  "content_inspector",
  "crc32c",
  "eyre",
  "fluvio-compression",
- "fluvio-future 0.4.2",
- "fluvio-protocol",
+ "fluvio-future",
+ "fluvio-protocol 0.7.9",
  "fluvio-types",
  "flv-util",
  "futures-util",
@@ -660,19 +662,6 @@ dependencies = [
  "semver",
  "thiserror",
  "tracing",
-]
-
-[[package]]
-name = "fluvio-future"
-version = "0.3.18"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1e2d1fad8e412d44c516add2349a34f6d71d9279b108c8e012325ab17fcbf982"
-dependencies = [
- "fluvio-wasm-timer",
- "log",
- "thiserror",
- "tracing",
- "ws_stream_wasm",
 ]
 
 [[package]]
@@ -705,8 +694,28 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6a5fa561c1628d40bdde2fbde33cb1ce4597386a3f943b45b09703bc3534cf2d"
 dependencies = [
  "bytes",
- "fluvio-future 0.4.2",
+ "fluvio-future",
  "fluvio-protocol-derive",
+ "tracing",
+]
+
+[[package]]
+name = "fluvio-protocol"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "06fa2854935ee5fc3c93dc0f4665354e487eec5d1a2342fc817dfda20ee7e745"
+dependencies = [
+ "bytes",
+ "content_inspector",
+ "crc32c",
+ "eyre",
+ "fluvio-compression",
+ "fluvio-protocol-derive",
+ "fluvio-types",
+ "flv-util",
+ "once_cell",
+ "semver",
+ "thiserror",
  "tokio-util",
  "tracing",
 ]
@@ -725,13 +734,12 @@ dependencies = [
 
 [[package]]
 name = "fluvio-sc-schema"
-version = "0.14.0"
+version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bdc8c0790b81d350c5bd787b9357da7d4021ab23b106526e31b76e9245af974b"
+checksum = "851cd3dc99efe8cff7f140a7bd10fabb7e4250dc72b0e3ae9bc205d0bc0687f8"
 dependencies = [
  "fluvio-controlplane-metadata",
- "fluvio-dataplane-protocol",
- "fluvio-protocol",
+ "fluvio-protocol 0.8.0",
  "fluvio-types",
  "log",
  "paste",
@@ -741,10 +749,34 @@ dependencies = [
 ]
 
 [[package]]
-name = "fluvio-socket"
-version = "0.12.1"
+name = "fluvio-smartmodule"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5f29b8d7f99f3ac4d87579e13dfdf960ae2dc1523ca41313816e342da86be9f0"
+checksum = "61cdcbe01412492adadba2ee835c4e22678fcff8581b1b0fa1deb0b680d4e597"
+dependencies = [
+ "eyre",
+ "fluvio-protocol 0.8.0",
+ "fluvio-smartmodule-derive",
+ "thiserror",
+ "tracing",
+]
+
+[[package]]
+name = "fluvio-smartmodule-derive"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d1465b33d396d943cc819ae8cb2ad8e80998a974189320221a4c90e9439e062c"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "fluvio-socket"
+version = "0.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "85d84122028b8a3d8326e840967b49cf404df3576b438f3af6b3fd45b1873cd0"
 dependencies = [
  "async-channel",
  "async-lock",
@@ -752,8 +784,8 @@ dependencies = [
  "bytes",
  "cfg-if",
  "event-listener",
- "fluvio-future 0.4.2",
- "fluvio-protocol",
+ "fluvio-future",
+ "fluvio-protocol 0.8.0",
  "futures-util",
  "once_cell",
  "pin-project",
@@ -772,7 +804,7 @@ dependencies = [
  "bytes",
  "flate2",
  "fluvio-dataplane-protocol",
- "fluvio-protocol",
+ "fluvio-protocol 0.7.9",
  "log",
  "serde",
  "static_assertions",
@@ -781,9 +813,9 @@ dependencies = [
 
 [[package]]
 name = "fluvio-stream-model"
-version = "0.6.1"
+version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4e421ff1be3b83020a3a97cb7ef8b6f045bca3b1eea2c95f0cea791eeeaaf988"
+checksum = "775f24ad3ec6e3965dc2c018670c8299b13a2115317e6cafbd29dfdbb29f62f2"
 dependencies = [
  "async-rwlock",
  "event-listener",
@@ -1097,6 +1129,35 @@ name = "lazy_static"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
+
+[[package]]
+name = "lenient_semver"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "de8de3f4f3754c280ce1c8c42ed8dd26a9c8385c2e5ad4ec5a77e774cea9c1ec"
+dependencies = [
+ "lenient_semver_parser",
+ "semver",
+]
+
+[[package]]
+name = "lenient_semver_parser"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7f650c1d024ddc26b4bb79c3076b30030f2cf2b18292af698c81f7337a64d7d6"
+dependencies = [
+ "lenient_semver_version_builder",
+ "semver",
+]
+
+[[package]]
+name = "lenient_semver_version_builder"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9049f8ff49f75b946f95557148e70230499c8a642bf2d6528246afc7d0282d17"
+dependencies = [
+ "semver",
+]
 
 [[package]]
 name = "libc"
