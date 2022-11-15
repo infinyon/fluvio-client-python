@@ -15,7 +15,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest] # TODO: add windows-2019,
         python-version: ["37", "38", "39", "310", "311"]
-        cibw-build: ["manylinux_x86_64" "manylinux_aarch64", "macosx_x86_64", "macosx_universal2", "macosx_arm64"]
+        cibw-build: ["manylinux_x86_64", "manylinux_aarch64", "macosx_x86_64", "macosx_universal2", "macosx_arm64"]
         exclude:
           - os: macos-latest
             cibw-build: "manylinux_x86_64"
