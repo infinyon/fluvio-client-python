@@ -13,18 +13,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest] # TODO: add windows-2019,
+        os: [ubuntu-latest, macos-latest] # TODO: add windows-2019,
         python-version: ["37", "38", "39", "310", "311"]
-        cibw-build: ["manylinux_x86_64"]
-        include:
+        cibw-build: ["manylinux_x86_64" "manylinux_aarch64", "macosx_x86_64", "macosx_universal2", "macosx_arm64"]
+        exclude:
           - os: macos-latest
-            cibw-build: "macosx_x86_64"
-          - os: macos-latest
-            cibw-build: "macosx_universal2"
-          - os: macos-latest
-            cibw-build: "macosx_arm64"
+            cibw-build: ["manylinux_x86_64", "manylinux_aarch64"]
           - os: ubuntu-latest
-            cibw-build: "manylinux_aarch64"
+            cibw-build: ["macosx_x86_64", "macosx_universal2", "macosx_arm64"]
 
     env:
       CIBW_SKIP: "cp36-* pp* *-win32"
