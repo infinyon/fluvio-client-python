@@ -55,6 +55,9 @@ jobs:
         uses: pypa/cibuildwheel@v2.11.2
         env:
           CIBW_BUILD: "cp${{matrix.python-version}}-manylinux_x86_64 cp${{matrix.python-version}}-manylinux_aarch64 cp${{matrix.python-version}}-macosx_x86_64 cp${{matrix.python-version}}-macosx_universal2 cp${{matrix.python-version}}-macosx_arm64"
+          CC_aarch64_unknown_linux_gnu: ./tools/aarch64-linux-gnu-zig-cc
+          CXX_aarch64_unknown_linux_gnu: ./tools/aarch64-linux-gnu-zig-c++
+
 
       - uses: actions/upload-artifact@v3
         with:
