@@ -62,7 +62,7 @@ jobs:
           image: tonistiigi/binfmt:latest
           platforms: arm64
 
-      - name: Build wheels
+      - name: Build wheels for ${{matrix.python-version}} targeting ${{matrix.cibw-build}}
         uses: pypa/cibuildwheel@v2.11.2
         env:
           CIBW_BUILD: "cp${{matrix.python-version}}-${{matrix.cibw-build}}"
