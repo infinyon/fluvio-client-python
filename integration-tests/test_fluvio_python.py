@@ -17,7 +17,7 @@ def delete_topic(topic):
     subprocess.run("fluvio topic delete %s" % topic, shell=True)
 
 
-class TestFluvioMethods(unittest.TestCase):
+class TestFluvioMethods(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         self.topic = str(uuid.uuid4())
         create_topic(self.topic)
