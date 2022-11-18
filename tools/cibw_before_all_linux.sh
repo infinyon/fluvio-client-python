@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e -x
 
-yum install -y openssl-devel zig
+yum install -y openssl-devel
 curl https://sh.rustup.rs --proto '=https' --tlsv1.2 -sSf | sh -s -- --default-toolchain stable -y
 
 curl 'https://ziglang.org/download/0.10.0/zig-linux-aarch64-0.10.0.tar.xz' -o ./zig-linux-aarch64-0.10.0.tar.xz
