@@ -14,15 +14,15 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest] # TODO: add windows-2019,
+        python-version: ["311"]
         #os: [ubuntu-latest, macOS-latest] # TODO: add windows-2019,
         #python-version: ["37", "38", "39", "310", "311"]
-        python-version: ["311"]
     env:
       CIBW_SKIP: "cp36-* pp* *-win32"
       CIBW_ARCHS_MACOS: x86_64 universal2
-      CIBW_ARCHS_LINUX: auto aarch64
+      #CIBW_ARCHS_LINUX: auto aarch64
       CIBW_BEFORE_ALL_LINUX: "{package}/tools/cibw_before_all_linux.sh"
-      CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin:$HOME/.bin/"'
+      #CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin:$HOME/.bin/"'
 
     steps:
       - uses: actions/checkout@v3
