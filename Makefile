@@ -39,7 +39,7 @@ macos-ci-tests: build-dev
 
 ci-build: venv-pip
 	$(PIP) install -r requirements-publish.txt
-	CIBW_SKIP="cp27-*" $(PYTHON) -m cibuildwheel --platform linux --output-dir wheelhouse
+	CC_aarch64_unknown_linux_gnu=./tools/aarch64-linux-gnu-zig-cc CXX_aarch64_unknown_linux_gnu=./tools/aarch64-linux-gnu-zig-c++ CIBW_SKIP="cp27-*" CIBW_BEFORE_ALL_LINUX="{package}/tools/cibw_before_all_linux.sh" CIBW_ENVIRONMENT='PATH="${PATH}:${HOME}/.cargo/bin:${HOME}/.bin/"' $(PYTHON) -m cibuildwheel --platform linux --output-dir wheelhouse
 
 docs-serve: venv-pip build-dev
 	$(PYTHON) -m pdoc fluvio

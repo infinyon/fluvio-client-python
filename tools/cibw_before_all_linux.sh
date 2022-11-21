@@ -11,7 +11,7 @@ ls -lah ./${ZIG_DIRECTORY}/zig
 echo $PATH
 mkdir -p $HOME/.bin
 cp ./${ZIG_DIRECTORY}/zig $HOME/.bin
-zig --help
+$HOME/.bin/zig --help
 
 yum install -y openssl-devel
 curl https://sh.rustup.rs --proto '=https' --tlsv1.2 -sSf | sh -s -- --default-toolchain stable -y
