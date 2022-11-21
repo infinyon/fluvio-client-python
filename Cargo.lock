@@ -4,7 +4,7 @@ version = 3
 
 [[package]]
 name = "_fluvio_python"
-version = "0.9.0"
+version = "0.14.0"
 dependencies = [
  "cpython",
  "env_logger",
@@ -12,7 +12,7 @@ dependencies = [
  "flate2",
  "fluvio",
  "fluvio-future",
- "fluvio-spu-schema",
+ "fluvio-spu-schema 0.11.0",
  "log",
 ]
 
@@ -673,8 +673,8 @@ dependencies = [
  "fluvio-sc-schema",
  "fluvio-smartmodule",
  "fluvio-socket",
- "fluvio-spu-schema",
- "fluvio-types",
+ "fluvio-spu-schema 0.10.1",
+ "fluvio-types 0.3.9",
  "futures-util",
  "once_cell",
  "pin-project-lite",
@@ -714,7 +714,7 @@ dependencies = [
  "fluvio-future",
  "fluvio-protocol",
  "fluvio-stream-model",
- "fluvio-types",
+ "fluvio-types 0.3.9",
  "flv-util",
  "lenient_semver",
  "semver",
@@ -758,7 +758,7 @@ dependencies = [
  "fluvio-compression",
  "fluvio-future",
  "fluvio-protocol-derive",
- "fluvio-types",
+ "fluvio-types 0.3.9",
  "flv-util",
  "once_cell",
  "semver",
@@ -787,7 +787,7 @@ checksum = "851cd3dc99efe8cff7f140a7bd10fabb7e4250dc72b0e3ae9bc205d0bc0687f8"
 dependencies = [
  "fluvio-controlplane-metadata",
  "fluvio-protocol",
- "fluvio-types",
+ "fluvio-types 0.3.9",
  "log",
  "paste",
  "static_assertions",
@@ -861,6 +861,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "fluvio-spu-schema"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0b6adf9e4f31a7a8940d438b2af9458b14cc2adc2f21af9efe4e556d764cb9e0"
+dependencies = [
+ "bytes",
+ "educe",
+ "flate2",
+ "fluvio-protocol",
+ "fluvio-smartmodule",
+ "fluvio-types 0.4.0",
+ "log",
+ "serde",
+ "static_assertions",
+ "tracing",
+]
+
+[[package]]
 name = "fluvio-stream-model"
 version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -879,6 +897,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "03781d3cadb56c6c56c8539b07961902fa75dd13602efc3b174ea086060255ea"
 dependencies = [
  "event-listener",
+ "thiserror",
+ "tracing",
+]
+
+[[package]]
+name = "fluvio-types"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "af493e9df6f0b531fbc0d56ef568aaf613f5298ea27c11ad6ad70c780d30f090"
+dependencies = [
  "thiserror",
  "tracing",
 ]
