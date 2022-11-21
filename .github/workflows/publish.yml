@@ -13,8 +13,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macOS-latest] # TODO: add windows-2019,
-        python-version: ["37", "38", "39", "310", "311"]
+        os: [ubuntu-latest] # TODO: add windows-2019,
+        #os: [ubuntu-latest, macOS-latest] # TODO: add windows-2019,
+        #python-version: ["37", "38", "39", "310", "311"]
+        python-version: ["311"]
     env:
       CIBW_SKIP: "cp36-* pp* *-win32"
       CIBW_ARCHS_MACOS: x86_64 universal2
@@ -54,7 +56,8 @@ jobs:
       - name: Build wheels for ${{matrix.python-version}} on ${{matrix.os}}
         uses: pypa/cibuildwheel@v2.11.2
         env:
-          CIBW_BUILD: "cp${{matrix.python-version}}-manylinux_x86_64 cp${{matrix.python-version}}-manylinux_aarch64 cp${{matrix.python-version}}-macosx_x86_64 cp${{matrix.python-version}}-macosx_universal2 cp${{matrix.python-version}}-macosx_arm64"
+          #CIBW_BUILD: "cp${{matrix.python-version}}-manylinux_x86_64 cp${{matrix.python-version}}-manylinux_aarch64 cp${{matrix.python-version}}-macosx_x86_64 cp${{matrix.python-version}}-macosx_universal2 cp${{matrix.python-version}}-macosx_arm64"
+          CIBW_BUILD: "cp${{matrix.python-version}}-manylinux_aarch64"
           CC_aarch64_unknown_linux_gnu: ./tools/aarch64-linux-gnu-zig-cc
           CXX_aarch64_unknown_linux_gnu: ./tools/aarch64-linux-gnu-zig-c++
 
