@@ -24,9 +24,9 @@ checksum = "f26201604c87b1e01bd3d98f8d5d9a8fcbb815e8cedb41ffccbeb4bf593a35fe"
 
 [[package]]
 name = "aho-corasick"
-version = "0.7.19"
+version = "0.7.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b4f55bd91a0978cbfd91c457a164bab8b4001c833b7f323132c0a4e1922dd44e"
+checksum = "cc936419f96fa211c1b9166887b38e5e40b19958e5b895be7c1f93adec7071ac"
 dependencies = [
  "memchr",
 ]
@@ -269,9 +269,9 @@ checksum = "572f695136211188308f16ad2ca5c851a712c464060ae6974944458eb83880ba"
 
 [[package]]
 name = "bytes"
-version = "1.2.1"
+version = "1.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ec8a7b6a70fde80372154c65702f00a0f56f3e1c36abbc6c440484be248856db"
+checksum = "dfb24e866b15a1af2a1b663f10c6b6b8f397a84aadb828f12e5b289ec23a3a3c"
 
 [[package]]
 name = "cache-padded"
@@ -293,9 +293,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.0.76"
+version = "1.0.77"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "76a284da2e6fe2092f2353e51713435363112dfd60030e22add80be333fb928f"
+checksum = "e9f73505338f7d905b19d18738976aae232eb46b8efc15554ffc56deb5d9ebe4"
 
 [[package]]
 name = "cfg-if"
@@ -393,9 +393,9 @@ dependencies = [
 
 [[package]]
 name = "crossbeam-utils"
-version = "0.8.12"
+version = "0.8.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "edbafec5fa1f196ca66527c1b12c2ec4745ca14b50f1ad8f9f6f720b55d11fac"
+checksum = "4fb766fa798726286dbbb842f174001dab8abc7b627a1dd86e0b7222a95d929f"
 dependencies = [
  "cfg-if",
 ]
@@ -412,9 +412,9 @@ dependencies = [
 
 [[package]]
 name = "cxx"
-version = "1.0.81"
+version = "1.0.82"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "97abf9f0eca9e52b7f81b945524e76710e6cb2366aead23b7d4fbf72e281f888"
+checksum = "d4a41a86530d0fe7f5d9ea779916b7cadd2d4f9add748b99c2c029cbbdfaf453"
 dependencies = [
  "cc",
  "cxxbridge-flags",
@@ -424,9 +424,9 @@ dependencies = [
 
 [[package]]
 name = "cxx-build"
-version = "1.0.81"
+version = "1.0.82"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7cc32cc5fea1d894b77d269ddb9f192110069a8a9c1f1d441195fba90553dea3"
+checksum = "06416d667ff3e3ad2df1cd8cd8afae5da26cf9cec4d0825040f88b5ca659a2f0"
 dependencies = [
  "cc",
  "codespan-reporting",
@@ -439,15 +439,15 @@ dependencies = [
 
 [[package]]
 name = "cxxbridge-flags"
-version = "1.0.81"
+version = "1.0.82"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8ca220e4794c934dc6b1207c3b42856ad4c302f2df1712e9f8d2eec5afaacf1f"
+checksum = "820a9a2af1669deeef27cb271f476ffd196a2c4b6731336011e0ba63e2c7cf71"
 
 [[package]]
 name = "cxxbridge-macro"
-version = "1.0.81"
+version = "1.0.82"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b846f081361125bfc8dc9d3940c84e1fd83ba54bbca7b17cd29483c828be0704"
+checksum = "a08a6e2fcc370a089ad3b4aaf54db3b1b4cee38ddabce5896b33eb693275f470"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -670,16 +670,15 @@ dependencies = [
 
 [[package]]
 name = "fluvio"
-version = "0.14.0"
+version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fbff062a4c7484872c1a483bb7217de260b41ce00f36752fa3d9aea4bd308717"
+checksum = "1d52a7895a372e5b0c935375eef791ad311899a4daa9023bdb34b50849c34af4"
 dependencies = [
  "async-channel",
  "async-lock",
  "async-rwlock",
  "async-trait",
  "base64",
- "built",
  "bytes",
  "cfg-if",
  "chrono",
@@ -723,13 +722,14 @@ dependencies = [
 
 [[package]]
 name = "fluvio-controlplane-metadata"
-version = "0.19.0"
+version = "0.19.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "36b9affdafec74a7b646beb850907b09b7e81fc0522803f918c8edae29eed880"
+checksum = "627026ac882f99427361496599d4b5c666aa5d9dfac3a2f6676e0a7365055ba0"
 dependencies = [
  "async-trait",
  "base64",
  "bytes",
+ "flate2",
  "fluvio-future",
  "fluvio-protocol",
  "fluvio-stream-model",
@@ -737,7 +737,9 @@ dependencies = [
  "flv-util",
  "lenient_semver",
  "semver",
+ "serde",
  "thiserror",
+ "toml",
  "tracing",
 ]
 
@@ -766,9 +768,9 @@ dependencies = [
 
 [[package]]
 name = "fluvio-protocol"
-version = "0.8.0"
+version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "06fa2854935ee5fc3c93dc0f4665354e487eec5d1a2342fc817dfda20ee7e745"
+checksum = "6bc0ecca3969fbcf8e71457ea0d0450ceab3e2b8ae793203af67b2406414e7d1"
 dependencies = [
  "bytes",
  "content_inspector",
@@ -788,9 +790,9 @@ dependencies = [
 
 [[package]]
 name = "fluvio-protocol-derive"
-version = "0.4.3"
+version = "0.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e1dd5a390e6159c0eac091e8f5e4124374aea6b01a8fcffd5e249cdacbac4e1f"
+checksum = "5be1a3fafae877a328607b0f14df6c1a5f05eab778f2b7dfdf14635991f3eeec"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -800,12 +802,13 @@ dependencies = [
 
 [[package]]
 name = "fluvio-sc-schema"
-version = "0.15.0"
+version = "0.15.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "851cd3dc99efe8cff7f140a7bd10fabb7e4250dc72b0e3ae9bc205d0bc0687f8"
+checksum = "ad6f5f2dfcf8ac5b92fe8155dca4b3d6e2874928dd5db6833ab75bcbb8459420"
 dependencies = [
  "fluvio-controlplane-metadata",
  "fluvio-protocol",
+ "fluvio-socket",
  "fluvio-types",
  "log",
  "paste",
@@ -816,9 +819,9 @@ dependencies = [
 
 [[package]]
 name = "fluvio-smartmodule"
-version = "0.3.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "61cdcbe01412492adadba2ee835c4e22678fcff8581b1b0fa1deb0b680d4e597"
+checksum = "a10bef73ebe43bf2ec120003b36079424cd3bcad7d8d9f5dbd248078a3fab029"
 dependencies = [
  "eyre",
  "fluvio-protocol",
@@ -840,13 +843,14 @@ dependencies = [
 
 [[package]]
 name = "fluvio-socket"
-version = "0.13.0"
+version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "85d84122028b8a3d8326e840967b49cf404df3576b438f3af6b3fd45b1873cd0"
+checksum = "4c397310c3cf094a64e51db41eefdc317f53e1fc33bdf92f9660949e002a85cc"
 dependencies = [
  "async-channel",
  "async-lock",
  "async-trait",
+ "built",
  "bytes",
  "cfg-if",
  "event-listener",
@@ -855,6 +859,7 @@ dependencies = [
  "futures-util",
  "once_cell",
  "pin-project",
+ "semver",
  "thiserror",
  "tokio",
  "tokio-util",
@@ -863,9 +868,9 @@ dependencies = [
 
 [[package]]
 name = "fluvio-spu-schema"
-version = "0.10.1"
+version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "70dff26adc3bc8b68909cc53762e88cd983b29303112ff204a6403e84b013fc7"
+checksum = "0b6adf9e4f31a7a8940d438b2af9458b14cc2adc2f21af9efe4e556d764cb9e0"
 dependencies = [
  "bytes",
  "educe",
@@ -873,6 +878,7 @@ dependencies = [
  "fluvio-future",
  "fluvio-protocol",
  "fluvio-smartmodule",
+ "fluvio-types",
  "log",
  "serde",
  "static_assertions",
@@ -881,9 +887,9 @@ dependencies = [
 
 [[package]]
 name = "fluvio-stream-model"
-version = "0.8.2"
+version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "775f24ad3ec6e3965dc2c018670c8299b13a2115317e6cafbd29dfdbb29f62f2"
+checksum = "72c92f9760268840bbc4b3e275421b6a9350e4e06746c36deb4c16455b70ea4d"
 dependencies = [
  "async-rwlock",
  "event-listener",
@@ -893,9 +899,9 @@ dependencies = [
 
 [[package]]
 name = "fluvio-types"
-version = "0.3.9"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "03781d3cadb56c6c56c8539b07961902fa75dd13602efc3b174ea086060255ea"
+checksum = "af493e9df6f0b531fbc0d56ef568aaf613f5298ea27c11ad6ad70c780d30f090"
 dependencies = [
  "event-listener",
  "thiserror",
@@ -1159,9 +1165,9 @@ checksum = "ce23b50ad8242c51a442f3ff322d56b02f08852c77e4c0b4d3fd684abc89c683"
 
 [[package]]
 name = "indexmap"
-version = "1.9.1"
+version = "1.9.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "10a35a97730320ffe8e2d410b5d3b69279b98d2c14bdb8b70ea89ecf7888d41e"
+checksum = "1885e79c1fc4b10f0e172c475f458b7f7b93061064d98c3293e98c5ba0c8b399"
 dependencies = [
  "autocfg",
  "hashbrown",
@@ -1680,9 +1686,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.87"
+version = "1.0.89"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6ce777b7b150d76b9cf60d28b55f5847135a003f7d7350c6be7a773508ce7d45"
+checksum = "020ff22c755c2ed3f8cf162dbb41a7268d934702f3ed3631656ea597e08fc3db"
 dependencies = [
  "itoa",
  "ryu",
@@ -1740,9 +1746,9 @@ dependencies = [
 
 [[package]]
 name = "snap"
-version = "1.0.5"
+version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "45456094d1983e2ee2a18fdfebce3189fa451699d0502cb8e3b49dba5ba41451"
+checksum = "5e9f0ab6ef7eb7353d9119c170a436d1bf248eea575ac42d19d12f4e34130831"
 
 [[package]]
 name = "socket2"
@@ -1856,9 +1862,9 @@ checksum = "cda74da7e1a664f795bb1f8a87ec406fb89a02522cf6e50620d016add6dbbf5c"
 
 [[package]]
 name = "tokio"
-version = "1.21.2"
+version = "1.22.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a9e03c497dc955702ba729190dc4aac6f2a0ce97f913e5b1b5912fc5039d9099"
+checksum = "d76ce4a75fb488c605c54bf610f221cea8b0dafb53333c1a67e8ee199dcd2ae3"
 dependencies = [
  "autocfg",
  "pin-project-lite",

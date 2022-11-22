@@ -16,6 +16,6 @@ log = "^0.4.17"
 [dependencies]
 cpython = { version = "0.7", features = ["extension-module"] }
 flate2 = "1.0.24"
-fluvio = { version = "0.14" }
-fluvio-spu-schema = { version = "0.10.0", default-features = false }
+fluvio = { version = "0.15" }
+fluvio-spu-schema = { version = "0.11", default-features = false }
 fluvio-future = { version = "0.4.2", features = ["task", "io"] }
