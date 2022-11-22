@@ -20,7 +20,7 @@ jobs:
       CIBW_ARCHS_MACOS: x86_64 universal2
       CIBW_ARCHS_LINUX: auto aarch64
       CIBW_BEFORE_ALL_LINUX: "{package}/tools/cibw_before_all_linux.sh"
-      CIBW_ENVIRONMENT: 'PATH="$PATH:$HOME/.cargo/bin"'
+      CIBW_BUILD_VERBOSITY: 1
 
     steps:
       - uses: actions/checkout@v3
@@ -51,10 +51,11 @@ jobs:
           image: tonistiigi/binfmt:latest
           platforms: arm64
 
-      - name: Build wheels
-        uses: pypa/cibuildwheel@v2.11.1
+      - name: Build wheels for ${{matrix.python-version}} on ${{matrix.os}}
+        uses: pypa/cibuildwheel@v2.11.2
         env:
-          CIBW_BUILD: "cp${{matrix.python-version}}-manylinux_x86_64 cp${{matrix.python-version}}-macosx_x86_64 cp${{matrix.python-version}}-macosx_universal2 cp${{matrix.python-version}}-macosx_arm64" # cp${{matrix.python-version}}-musllinux_x86_64
+          CIBW_BUILD: "cp${{matrix.python-version}}-manylinux_x86_64 cp${{matrix.python-version}}-macosx_x86_64 cp${{matrix.python-version}}-macosx_universal2 cp${{matrix.python-version}}-macosx_arm64"
+
 
       - uses: actions/upload-artifact@v3
         with:
@@ -82,7 +83,7 @@ jobs:
           path: dist/*.tar.gz
 
   build_cc_wheels:
-    name: Build wheels for Raspberry PI
+    name: Cross Build wheels for ${{ matrix.platform.name }}
     runs-on: ubuntu-latest
     env:
         CARGO: cross
@@ -90,7 +91,8 @@ jobs:
       matrix:
           platform: [
               { name: "linux_armv7l", target: "armv7-unknown-linux-gnueabihf" },
-              { name: "linux_armv6l", target: "arm-unknown-linux-gnueabihf" }
+              { name: "linux_armv6l", target: "arm-unknown-linux-gnueabihf" },
+              { name: "linux_aarch64", target: "aarch64-unknown-linux-gnu" },
           ]
     steps:
       - uses: actions/checkout@v3
