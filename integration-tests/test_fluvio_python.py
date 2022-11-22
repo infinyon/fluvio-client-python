@@ -170,7 +170,7 @@ class TestFluvioProduceFlush(unittest.TestCase):
         import subprocess
 
         result = subprocess.run(
-            "fluvio consume %s -B 0 -d" % self.topic,
+            "fluvio consume %s -B -d" % self.topic,
             shell=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
