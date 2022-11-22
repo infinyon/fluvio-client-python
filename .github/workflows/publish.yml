@@ -56,8 +56,7 @@ jobs:
       - name: Build wheels for ${{matrix.python-version}} on ${{matrix.os}}
         uses: pypa/cibuildwheel@v2.11.2
         env:
-          #CIBW_BUILD: "cp${{matrix.python-version}}-manylinux_x86_64 cp${{matrix.python-version}}-manylinux_aarch64 cp${{matrix.python-version}}-macosx_x86_64 cp${{matrix.python-version}}-macosx_universal2 cp${{matrix.python-version}}-macosx_arm64"
-          CIBW_BUILD: "cp${{matrix.python-version}}-manylinux_aarch64"
+          CIBW_BUILD: "cp${{matrix.python-version}}-manylinux_x86_64 cp${{matrix.python-version}}-macosx_x86_64 cp${{matrix.python-version}}-macosx_universal2 cp${{matrix.python-version}}-macosx_arm64"
           CC_aarch64_unknown_linux_gnu: ./tools/aarch64-linux-gnu-zig-cc
           CXX_aarch64_unknown_linux_gnu: ./tools/aarch64-linux-gnu-zig-c++
 
@@ -97,6 +96,7 @@ jobs:
           platform: [
               { name: "linux_armv7l", target: "armv7-unknown-linux-gnueabihf" },
               { name: "linux_armv6l", target: "arm-unknown-linux-gnueabihf" }
+              { name: "linux_aarch64", target: "aarch64-unknown-linux-gnu" }
           ]
     steps:
       - uses: actions/checkout@v3
