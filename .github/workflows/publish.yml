@@ -95,8 +95,8 @@ jobs:
       matrix:
           platform: [
               { name: "linux_armv7l", target: "armv7-unknown-linux-gnueabihf" },
-              { name: "linux_armv6l", target: "arm-unknown-linux-gnueabihf" }
-              { name: "linux_aarch64", target: "aarch64-unknown-linux-gnu" }
+              { name: "linux_armv6l", target: "arm-unknown-linux-gnueabihf" },
+              { name: "linux_aarch64", target: "aarch64-unknown-linux-gnu" },
           ]
     steps:
       - uses: actions/checkout@v3
