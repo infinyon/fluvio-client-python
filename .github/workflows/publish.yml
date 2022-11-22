@@ -13,10 +13,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest] # TODO: add windows-2019,
-        python-version: ["311"]
-        #os: [ubuntu-latest, macOS-latest] # TODO: add windows-2019,
-        #python-version: ["37", "38", "39", "310", "311"]
+        os: [ubuntu-latest, macOS-latest] # TODO: add windows-2019,
+        python-version: ["37", "38", "39", "310", "311"]
     env:
       CIBW_SKIP: "cp36-* pp* *-win32"
       CIBW_ARCHS_MACOS: x86_64 universal2
@@ -57,8 +55,6 @@ jobs:
         uses: pypa/cibuildwheel@v2.11.2
         env:
           CIBW_BUILD: "cp${{matrix.python-version}}-manylinux_x86_64 cp${{matrix.python-version}}-macosx_x86_64 cp${{matrix.python-version}}-macosx_universal2 cp${{matrix.python-version}}-macosx_arm64"
-          CC_aarch64_unknown_linux_gnu: ./tools/aarch64-linux-gnu-zig-cc
-          CXX_aarch64_unknown_linux_gnu: ./tools/aarch64-linux-gnu-zig-c++
 
 
       - uses: actions/upload-artifact@v3
@@ -87,7 +83,7 @@ jobs:
           path: dist/*.tar.gz
 
   build_cc_wheels:
-    name: Build wheels for Raspberry PI
+    name: Cross Build wheels for ${{ matrix.platform.name }}
     runs-on: ubuntu-latest
     env:
         CARGO: cross
