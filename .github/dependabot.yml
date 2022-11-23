@@ -6,16 +6,24 @@ updates:
     schedule:
       # Check for updates to GitHub Actions every weekday
       interval: "daily"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"] # ignore patch updates
 
   # Maintain dependencies for npm
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
       interval: "daily"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"] # ignore patch updates
 
   # Maintain dependencies for Cargo
   - package-ecosystem: "cargo"
     directory: "/"
     schedule:
       interval: "daily"
-
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"] # ignore patch updates
