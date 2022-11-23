@@ -24,6 +24,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            ~/.cargo/.crates.toml
+            ~/.cargo/.crates2.json
+            target/
+          key: ${{ matrix.os }}-cargo-${{matrix.python-version}}-${{ hashFiles('**/Cargo.lock') }}
 
       # Used to host cibuildwheel
       - uses: actions/setup-python@v4
@@ -92,10 +103,21 @@ jobs:
           platform: [
               { name: "linux_armv7l", target: "armv7-unknown-linux-gnueabihf" },
               { name: "linux_armv6l", target: "arm-unknown-linux-gnueabihf" },
-              { name: "linux_aarch64", target: "aarch64-unknown-linux-gnu" },
+              { name: "manylinux2014_aarch64", target: "aarch64-unknown-linux-gnu" },
           ]
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            ~/.cargo/.crates.toml
+            ~/.cargo/.crates2.json
+            target/
+          key: ${{ matrix.platform.target }}-cargo-${{ matrix.platform.name }}-${{ hashFiles('**/Cargo.lock') }}
       - uses: actions/setup-python@v4
         name: Install Python
         with:
@@ -142,3 +164,4 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.PYPI_ACCESS_TOKEN }}
+          skip_existing: true
