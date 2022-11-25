@@ -12,7 +12,7 @@ dependencies = [
  "flate2",
  "fluvio",
  "fluvio-future",
- "fluvio-spu-schema",
+ "fluvio-spu-schema 0.10.1",
  "log",
 ]
 
@@ -253,15 +253,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "built"
-version = "0.5.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f346b6890a0dfa7266974910e7df2d5088120dd54721b9b0e5aae1ae5e05715"
-dependencies = [
- "cargo-lock",
-]
-
-[[package]]
 name = "bumpalo"
 version = "3.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -278,18 +269,6 @@ name = "cache-padded"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c1db59621ec70f09c5e9b597b220c7a2b43611f4710dc03ceb8748637775692c"
-
-[[package]]
-name = "cargo-lock"
-version = "7.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6c408da54db4c50d4693f7e649c299bc9de9c23ead86249e5368830bb32a734b"
-dependencies = [
- "semver",
- "serde",
- "toml",
- "url",
-]
 
 [[package]]
 name = "cc"
@@ -670,16 +649,15 @@ dependencies = [
 
 [[package]]
 name = "fluvio"
-version = "0.14.0"
+version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fbff062a4c7484872c1a483bb7217de260b41ce00f36752fa3d9aea4bd308717"
+checksum = "1d52a7895a372e5b0c935375eef791ad311899a4daa9023bdb34b50849c34af4"
 dependencies = [
  "async-channel",
  "async-lock",
  "async-rwlock",
  "async-trait",
  "base64",
- "built",
  "bytes",
  "cfg-if",
  "chrono",
@@ -692,8 +670,8 @@ dependencies = [
  "fluvio-sc-schema",
  "fluvio-smartmodule",
  "fluvio-socket",
- "fluvio-spu-schema",
- "fluvio-types",
+ "fluvio-spu-schema 0.11.0",
+ "fluvio-types 0.4.0",
  "futures-util",
  "once_cell",
  "pin-project-lite",
@@ -733,7 +711,7 @@ dependencies = [
  "fluvio-future",
  "fluvio-protocol",
  "fluvio-stream-model",
- "fluvio-types",
+ "fluvio-types 0.3.9",
  "flv-util",
  "lenient_semver",
  "semver",
@@ -777,7 +755,7 @@ dependencies = [
  "fluvio-compression",
  "fluvio-future",
  "fluvio-protocol-derive",
- "fluvio-types",
+ "fluvio-types 0.3.9",
  "flv-util",
  "once_cell",
  "semver",
@@ -806,7 +784,7 @@ checksum = "851cd3dc99efe8cff7f140a7bd10fabb7e4250dc72b0e3ae9bc205d0bc0687f8"
 dependencies = [
  "fluvio-controlplane-metadata",
  "fluvio-protocol",
- "fluvio-types",
+ "fluvio-types 0.3.9",
  "log",
  "paste",
  "static_assertions",
@@ -870,9 +848,27 @@ dependencies = [
  "bytes",
  "educe",
  "flate2",
+ "fluvio-protocol",
+ "fluvio-smartmodule",
+ "log",
+ "serde",
+ "static_assertions",
+ "tracing",
+]
+
+[[package]]
+name = "fluvio-spu-schema"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0b6adf9e4f31a7a8940d438b2af9458b14cc2adc2f21af9efe4e556d764cb9e0"
+dependencies = [
+ "bytes",
+ "educe",
+ "flate2",
  "fluvio-future",
  "fluvio-protocol",
  "fluvio-smartmodule",
+ "fluvio-types 0.4.0",
  "log",
  "serde",
  "static_assertions",
@@ -896,6 +892,16 @@ name = "fluvio-types"
 version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "03781d3cadb56c6c56c8539b07961902fa75dd13602efc3b174ea086060255ea"
+dependencies = [
+ "thiserror",
+ "tracing",
+]
+
+[[package]]
+name = "fluvio-types"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "af493e9df6f0b531fbc0d56ef568aaf613f5298ea27c11ad6ad70c780d30f090"
 dependencies = [
  "event-listener",
  "thiserror",
@@ -947,15 +953,6 @@ name = "foreign-types-shared"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "00b0228411908ca8685dba7fc2cdd70ec9990a6e753e89b6ac91a84c40fbaf4b"
-
-[[package]]
-name = "form_urlencoded"
-version = "1.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a9c384f161156f5260c24a097c56119f9be8c798586aecc13afbcbe7b7e26bf8"
-dependencies = [
- "percent-encoding",
-]
 
 [[package]]
 name = "futures"
@@ -1140,16 +1137,6 @@ name = "ident_case"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b9e0384b61958566e926dc50660321d12159025e767c18e043daf26b70104c39"
-
-[[package]]
-name = "idna"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e14ddfc70884202db2244c223200c204c2bda1bc6e0998d11b5e024d657209e6"
-dependencies = [
- "unicode-bidi",
- "unicode-normalization",
-]
 
 [[package]]
 name = "indenter"
@@ -1448,12 +1435,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b1de2e551fb905ac83f73f7aedf2f0cb4a0da7e35efa24a202a936269f1f18e1"
 
 [[package]]
-name = "percent-encoding"
-version = "2.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "478c572c3d73181ff3c2539045f6eb99e5491218eae919370993b890cdbdd98e"
-
-[[package]]
 name = "petgraph"
 version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1648,9 +1629,6 @@ name = "semver"
 version = "1.0.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e25dfac463d778e353db5be2449d1cce89bd6fd23c9f1ea21310ce6e5a1b29c4"
-dependencies = [
- "serde",
-]
 
 [[package]]
 name = "send_wrapper"
@@ -1840,21 +1818,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tinyvec"
-version = "1.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "87cc5ceb3875bb20c2890005a4e226a4651264a5c75edb2421b52861a0a0cb50"
-dependencies = [
- "tinyvec_macros",
-]
-
-[[package]]
-name = "tinyvec_macros"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cda74da7e1a664f795bb1f8a87ec406fb89a02522cf6e50620d016add6dbbf5c"
-
-[[package]]
 name = "tokio"
 version = "1.21.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1943,42 +1906,16 @@ dependencies = [
 ]
 
 [[package]]
-name = "unicode-bidi"
-version = "0.3.8"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "099b7128301d285f79ddd55b9a83d5e6b9e97c92e0ea0daebee7263e932de992"
-
-[[package]]
 name = "unicode-ident"
 version = "1.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6ceab39d59e4c9499d4e5a8ee0e2735b891bb7308ac83dfb4e80cad195c9f6f3"
 
 [[package]]
-name = "unicode-normalization"
-version = "0.1.22"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5c5713f0fc4b5db668a2ac63cdb7bb4469d8c9fed047b1d0292cc7b0ce2ba921"
-dependencies = [
- "tinyvec",
-]
-
-[[package]]
 name = "unicode-width"
 version = "0.1.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c0edd1e5b14653f783770bce4a4dabb4a5108a5370a5f5d8cfe8710c361f6c8b"
-
-[[package]]
-name = "url"
-version = "2.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0d68c799ae75762b8c3fe375feb6600ef5602c883c5d21eb51c09f22b83c4643"
-dependencies = [
- "form_urlencoded",
- "idna",
- "percent-encoding",
-]
 
 [[package]]
 name = "value-bag"
