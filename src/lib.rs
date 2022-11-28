@@ -23,7 +23,7 @@ mod _Fluvio {
     pub fn partition_consumer(
         fluvio: &Fluvio,
         topic: String,
-        partition: i32,
+        partition: u32,
     ) -> Result<PartitionConsumer, FluvioError> {
         run_block_on(fluvio.partition_consumer(topic, partition))
     }
@@ -65,11 +65,11 @@ mod _PartitionConsumer {
     ) -> Result<PartitionConsumerStream, FluvioError> {
         let config_wrapper = ConsumerConfigWrapper::new_config_with_wasm_filter(wasm_module_path)?;
         let mut builder = ConsumerConfig::builder();
-        builder.smartmodule(Some(SmartModuleInvocation {
+        builder.smartmodule(vec![SmartModuleInvocation {
             wasm: SmartModuleInvocationWasm::AdHoc(config_wrapper.wasm_module),
             kind: SmartModuleKind::Filter,
             params: Default::default(),
-        }));
+        }]);
         let config = builder
             .build()
             .map_err(|err| FluvioError::Other(err.to_string()))?;

@@ -6,7 +6,7 @@ foreign_class!(class Fluvio {
     fn _Fluvio::partition_consumer(
         &self,
         _: String,
-        _ : i32
+        _ : u32
     ) -> Result<PartitionConsumer, FluvioError>;
     fn _Fluvio::topic_producer(
         &self,
