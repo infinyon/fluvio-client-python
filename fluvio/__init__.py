@@ -9,7 +9,6 @@ from ._fluvio_python import (
 )
 from ._fluvio_python import Error as FluviorError  # noqa: F401
 import typing
-import asyncio
 
 
 class Record:

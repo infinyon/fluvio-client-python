@@ -62,7 +62,9 @@ class TestFluvioMethods(unittest.IsolatedAsyncioTestCase):
         records.append(
             bytearray(
                 next(
-                    await consumer.stream_with_config(Offset.beginning(), wasm_module_path)
+                    await consumer.stream_with_config(
+                        Offset.beginning(), wasm_module_path
+                    )
                 ).value()
             ).decode()
         )
