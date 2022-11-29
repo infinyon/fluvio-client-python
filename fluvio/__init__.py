@@ -121,7 +121,7 @@ class PartitionConsumer:
     def __init__(self, inner: _PartitionConsumer):
         self._inner = inner
 
-    def stream(self, offset: Offset) -> PartitionConsumerStream:
+    async def stream(self, offset: Offset) -> PartitionConsumerStream:
         """
         Continuously streams events from a particular offset in the consumer’s
         partition. This returns a `PartitionConsumerStream` which is an
@@ -135,7 +135,7 @@ class PartitionConsumer:
         """
         return PartitionConsumerStream(self._inner.stream(offset._inner))
 
-    def stream_with_config(
+    async def stream_with_config(
         self, offset: Offset, wasm_path: str
     ) -> PartitionConsumerStream:
         """
@@ -182,11 +182,11 @@ class TopicProducer:
     def __init__(self, inner: _TopicProducer):
         self._inner = inner
 
-    def send_string(self, buf: str) -> None:
+    async def send_string(self, buf: str) -> None:
         """Sends a string to this producer’s topic"""
-        return self.send([], buf.encode("utf-8"))
+        return await self.send([], buf.encode("utf-8"))
 
-    def send(self, key: typing.List[int], value: typing.List[int]) -> None:
+    async def send(self, key: typing.List[int], value: typing.List[int]) -> None:
         """
         Sends a key/value record to this producer's Topic.
 
@@ -194,13 +194,13 @@ class TopicProducer:
         """
         return self._inner.send(key, value)
 
-    def flush(self) -> None:
+    async def flush(self) -> None:
         """
         Send all the queued records in the producer batches.
         """
         return self._inner.flush()
 
-    def send_all(self, records: typing.List[typing.Tuple[bytes, bytes]]):
+    async def send_all(self, records: typing.List[typing.Tuple[bytes, bytes]]):
         """
         Sends a list of key/value records as a batch to this producer's Topic.
         :param records: The list of records to send
@@ -218,7 +218,7 @@ class Fluvio:
         self._inner = inner
 
     @classmethod
-    def connect(cls):
+    async def connect(cls):
         """Creates a new Fluvio client using the current profile from
         `~/.fluvio/config`
 
@@ -229,7 +229,7 @@ class Fluvio:
         """
         return cls(_Fluvio.connect())
 
-    def partition_consumer(self, topic: str, partition: int) -> PartitionConsumer:
+    async def partition_consumer(self, topic: str, partition: int) -> PartitionConsumer:
         """Creates a new `PartitionConsumer` for the given topic and partition
 
         Currently, consumers are scoped to both a specific Fluvio topic and to
@@ -240,7 +240,7 @@ class Fluvio:
         """
         return PartitionConsumer(self._inner.partition_consumer(topic, partition))
 
-    def topic_producer(self, topic: str) -> TopicProducer:
+    async def topic_producer(self, topic: str) -> TopicProducer:
         """
         Creates a new `TopicProducer` for the given topic name.
 
