@@ -74,7 +74,7 @@ jobs:
           fluvio topic create foobar
           sleep 3
           echo foo | fluvio produce foobar
-          fluvio consume foobar -o 0 -d
+          fluvio consume foobar -B -d
 
 
       - name: Test
