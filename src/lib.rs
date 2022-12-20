@@ -2,14 +2,12 @@
 use flate2::bufread::GzEncoder;
 use flate2::Compression;
 use fluvio::consumer::ConsumerConfig;
+use fluvio::consumer::{SmartModuleInvocation, SmartModuleInvocationWasm, SmartModuleKind};
 use fluvio::dataplane::link::ErrorCode;
 use fluvio::{consumer::Record, Fluvio, FluvioError, Offset, PartitionConsumer, TopicProducer};
 use fluvio_future::{
     io::{Stream, StreamExt},
     task::run_block_on,
-};
-use fluvio_spu_schema::server::smartmodule::{
-    SmartModuleInvocation, SmartModuleInvocationWasm, SmartModuleKind,
 };
 use std::io::{Error, Read};
 use std::pin::Pin;
