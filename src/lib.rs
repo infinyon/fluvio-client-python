@@ -1,15 +1,16 @@
 #![allow(non_snake_case, unused)]
 use flate2::bufread::GzEncoder;
 use flate2::Compression;
-use fluvio::consumer::ConsumerConfig;
+use fluvio::consumer::{
+    ConsumerConfig as NativeConsumerConfig,
+    ConsumerConfigBuilder,
+    SmartModuleInvocation, SmartModuleInvocationWasm, SmartModuleKind,
+};
 use fluvio::dataplane::link::ErrorCode;
 use fluvio::{consumer::Record, Fluvio, FluvioError, Offset, PartitionConsumer, TopicProducer};
 use fluvio_future::{
     io::{Stream, StreamExt},
     task::run_block_on,
-};
-use fluvio_spu_schema::server::smartmodule::{
-    SmartModuleInvocation, SmartModuleInvocationWasm, SmartModuleKind,
 };
 use std::io::{Error, Read};
 use std::pin::Pin;
@@ -32,19 +33,22 @@ mod _Fluvio {
     }
 }
 
-pub struct ConsumerConfigWrapper {
-    wasm_module: Vec<u8>,
+pub struct ConsumerConfig{
+    pub(crate) builder: ConsumerConfigBuilder,
 }
 
-impl ConsumerConfigWrapper {
-    fn new_config_with_wasm_filter(file: &str) -> Result<ConsumerConfigWrapper, std::io::Error> {
-        let raw_buffer = std::fs::read(file)?;
-        let mut encoder = GzEncoder::new(raw_buffer.as_slice(), Compression::default());
-        let mut buffer = Vec::with_capacity(raw_buffer.len());
-        let encoder = encoder.read_to_end(&mut buffer)?;
-        Ok(ConsumerConfigWrapper {
-            wasm_module: buffer,
-        })
+impl ConsumerConfig {
+    fn new() -> Self {
+        Self {
+            builder: NativeConsumerConfig::builder(),
+        }
+    }
+    pub fn max_bytes(&mut self, max_bytes: i32) {
+        self.builder.max_bytes(max_bytes);
+    }
+
+    pub fn smartmodule(&mut self, smartmodules: Vec<SmartModuleInvocation>) {
+        self.builder.smartmodule(smartmodules);
     }
 }
 
@@ -61,18 +65,10 @@ mod _PartitionConsumer {
     pub fn stream_with_config(
         consumer: &PartitionConsumer,
         offset: &Offset,
-        wasm_module_path: &str,
+        config_wrapper: &ConsumerConfig,
     ) -> Result<PartitionConsumerStream, FluvioError> {
-        let config_wrapper = ConsumerConfigWrapper::new_config_with_wasm_filter(wasm_module_path)?;
-        let mut builder = ConsumerConfig::builder();
-        builder.smartmodule(vec![SmartModuleInvocation {
-            wasm: SmartModuleInvocationWasm::AdHoc(config_wrapper.wasm_module),
-            kind: SmartModuleKind::Filter,
-            params: Default::default(),
-        }]);
-        let config = builder
-            .build()
-            .map_err(|err| FluvioError::Other(err.to_string()))?;
+        let config = config_wrapper.builder.build().map_err(|err| FluvioError::Other(err.to_string()))?;
+
         run_block_on(consumer.stream_with_config(offset.clone(), config)).map(|stream| {
             PartitionConsumerStream {
                 inner: Box::pin(stream),
