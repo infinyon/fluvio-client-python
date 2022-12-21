@@ -30,6 +30,9 @@ foreign_class!(class PartitionConsumerStream{
     fn PartitionConsumerStream::next(
         &mut self
     ) -> Option<Result<Record, ErrorCode>>;
+    fn PartitionConsumerStream::next_async(
+        &mut self
+    ) -> Option<Result<Record, ErrorCode>>;
 });
 
 foreign_class!(

@@ -88,6 +88,9 @@ impl PartitionConsumerStream {
     pub fn next(&mut self) -> Option<Result<Record, ErrorCode>> {
         run_block_on(self.inner.next())
     }
+    pub fn next_async(&mut self) -> Option<Result<Record, ErrorCode>> {
+        run_block_on(self.inner.next())
+    }
 }
 #[derive(Clone)]
 pub struct ProducerBatchRecord {
