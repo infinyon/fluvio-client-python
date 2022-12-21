@@ -12,6 +12,7 @@ use fluvio_future::{
 use std::io::{Error, Read};
 use std::pin::Pin;
 use std::string::FromUtf8Error;
+mod cloud;
 
 mod _Fluvio {
     use super::*;
