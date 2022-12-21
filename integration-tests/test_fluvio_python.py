@@ -17,7 +17,7 @@ def delete_topic(topic):
     subprocess.run("fluvio topic delete %s" % topic, shell=True)
 
 
-class TestFluvioMethods(unittest.TestCase):
+class TestFluvioMethods(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         self.topic = str(uuid.uuid4())
         create_topic(self.topic)
@@ -78,6 +78,22 @@ class TestFluvioMethods(unittest.TestCase):
         consumer = fluvio.partition_consumer(self.topic, 0)
         count = 0
         for i in consumer.stream(Offset.beginning()):
+            print("THIS IS IN AN ITERATOR! %s" % i.value())
+            self.assertEqual(bytearray(i.value()).decode(), "record-%s" % count)
+            self.assertEqual(i.value_string(), "record-%s" % count)
+            count += 1
+            if count >= 10:
+                break
+
+    async def test_consumer_with_interator_async(self):
+        fluvio = Fluvio.connect()
+        producer = fluvio.topic_producer(self.topic)
+        for i in range(10):
+            producer.send_string("record-%s" % i)
+
+        consumer = fluvio.partition_consumer(self.topic, 0)
+        count = 0
+        async for i in consumer.stream(Offset.beginning()):
             print("THIS IS IN AN ITERATOR! %s" % i.value())
             self.assertEqual(bytearray(i.value()).decode(), "record-%s" % count)
             self.assertEqual(i.value_string(), "record-%s" % count)

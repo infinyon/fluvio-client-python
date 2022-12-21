@@ -99,6 +99,12 @@ class PartitionConsumerStream:
     def __iter__(self):
         return self
 
+    def __aiter__(self):
+        return self
+
+    async def __anext__(self) -> typing.Optional[Record]:
+        return Record(self._inner.next_async())
+
     def __next__(self) -> typing.Optional[Record]:
         return Record(self._inner.next())
 
