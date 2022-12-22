@@ -40,6 +40,13 @@ macos-ci-tests: build-dev
 ci-build: # This is for testing builds
 	CIBW_BUILD="cp311-manylinux_x86_64 cp311-manylinux_aarch64 cp311-macosx_x86_64 cp311-macosx_universal2 cp311-macosx_arm64"  CIBW_SKIP="cp27-*" CIBW_BEFORE_ALL_LINUX="{package}/tools/cibw_before_all_linux.sh"  $(PYTHON) -m cibuildwheel --platform linux --output-dir wheelhouse
 
+manylinux2014_aarch64:
+	docker build -f cross/Dockerfile.aarch64-unknown-linux-gnu -t fluvio-cross-python:aarch64-unknown-linux-gnu cross
+	python setup.py bdist_wheel --py-limited-api=cp38 --plat-name manylinux2014_aarch64
+
+manylinux2014_x86_64:
+	python setup.py bdist_wheel --py-limited-api=cp38 --plat-name manylinux2014_x86_64
+
 docs-serve: venv-pip build-dev
 	$(PYTHON) -m pdoc fluvio
 

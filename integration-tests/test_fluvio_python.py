@@ -85,6 +85,25 @@ class TestFluvioMethods(unittest.TestCase):
             if count >= 10:
                 break
 
+    def test_consumer_with_interator_generator(self):
+        fluvio = Fluvio.connect()
+        producer = fluvio.topic_producer(self.topic)
+        for i in range(10):
+            producer.send_string("%s" % i)
+
+        consumer = fluvio.partition_consumer(self.topic, 0)
+        import itertools
+
+        stream = (
+            int(i.value_string()) * 2
+            for i in itertools.islice(
+                consumer.stream(Offset.beginning()).as_generator(), 10
+            )
+        )
+
+        for count, i in enumerate(stream):
+            self.assertEqual(i, count * 2)
+
     def test_key_value(self):
         fluvio = Fluvio.connect()
         producer = fluvio.topic_producer(self.topic)

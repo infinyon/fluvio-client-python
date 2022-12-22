@@ -96,6 +96,12 @@ class PartitionConsumerStream:
     def __init__(self, inner: _PartitionConsumerStream):
         self._inner = inner
 
+    def as_generator(self):
+        item = self._inner.next()
+        while item is not None:
+            yield Record(item)
+            item = self._inner.next()
+
     def __iter__(self):
         return self
 
