@@ -3,6 +3,7 @@ from fluvio import Fluvio, FluviorError, Offset
 import unittest
 import uuid
 import os
+import itertools
 
 
 def create_topic(topic):
@@ -76,14 +77,12 @@ class TestFluvioMethods(unittest.TestCase):
             producer.send_string("record-%s" % i)
 
         consumer = fluvio.partition_consumer(self.topic, 0)
-        count = 0
-        for i in consumer.stream(Offset.beginning()):
+        for count, i in enumerate(
+            itertools.islice(consumer.stream(Offset.beginning()), 10)
+        ):
             print("THIS IS IN AN ITERATOR! %s" % i.value())
             self.assertEqual(bytearray(i.value()).decode(), "record-%s" % count)
             self.assertEqual(i.value_string(), "record-%s" % count)
-            count += 1
-            if count >= 10:
-                break
 
     def test_consumer_with_interator_generator(self):
         fluvio = Fluvio.connect()
@@ -92,13 +91,10 @@ class TestFluvioMethods(unittest.TestCase):
             producer.send_string("%s" % i)
 
         consumer = fluvio.partition_consumer(self.topic, 0)
-        import itertools
 
         stream = (
             int(i.value_string()) * 2
-            for i in itertools.islice(
-                consumer.stream(Offset.beginning()).as_generator(), 10
-            )
+            for i in itertools.islice(consumer.stream(Offset.beginning()), 10)
         )
 
         for count, i in enumerate(stream):
@@ -111,17 +107,14 @@ class TestFluvioMethods(unittest.TestCase):
             producer.send("foo".encode(), ("record-%s" % i).encode())
 
         consumer = fluvio.partition_consumer(self.topic, 0)
-        count = 0
-        for i in consumer.stream(Offset.beginning()):
+        for count, i in enumerate(
+            itertools.islice(consumer.stream(Offset.beginning()), 10)
+        ):
             print("THIS IS IN AN ITERATOR! key - %s, value - %s" % (i.key(), i.value()))
             self.assertEqual(bytearray(i.value()).decode(), "record-%s" % count)
             self.assertEqual(i.value_string(), "record-%s" % count)
             self.assertEqual(i.key_string(), "foo")
             self.assertEqual(i.key(), list("foo".encode()))
-
-            count += 1
-            if count >= 10:
-                break
 
     def test_batch_produce(self):
         fluvio = Fluvio.connect()
@@ -135,16 +128,13 @@ class TestFluvioMethods(unittest.TestCase):
         producer.send_all(records)
 
         consumer = fluvio.partition_consumer(self.topic, 0)
-        count = 0
-        for i in consumer.stream(Offset.beginning()):
+        for count, i in enumerate(
+            itertools.islice(consumer.stream(Offset.beginning()), 10)
+        ):
             self.assertEqual(bytearray(i.value()).decode(), "record-%s" % count)
             self.assertEqual(i.value_string(), "record-%s" % count)
             self.assertEqual(i.key_string(), ("%s" % count))
             self.assertEqual(i.key(), list(("%s" % count).encode()))
-
-            count += 1
-            if count >= 10:
-                break
 
 
 class TestFluvioErrors(unittest.TestCase):
