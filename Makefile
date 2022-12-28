@@ -37,6 +37,9 @@ integration-tests: build-dev
 macos-ci-tests: build-dev
 	cd macos-ci-tests && $(PYTHON) -m unittest
 
+manual-tests: build-dev
+	cd manual-tests/ && $(PYTHON) -m unittest
+
 ci-build: # This is for testing builds
 	CIBW_BUILD="cp311-manylinux_x86_64 cp311-manylinux_aarch64 cp311-macosx_x86_64 cp311-macosx_universal2 cp311-macosx_arm64"  CIBW_SKIP="cp27-*" CIBW_BEFORE_ALL_LINUX="{package}/tools/cibw_before_all_linux.sh"  $(PYTHON) -m cibuildwheel --platform linux --output-dir wheelhouse
 

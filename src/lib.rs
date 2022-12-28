@@ -136,7 +136,7 @@ mod _Record {
 
 mod _Cloud {
     use super::*;
-    fn login() -> Result<(), CloudLoginError> {
+    pub fn login() -> Result<(), CloudLoginError> {
         run_block_on(async {
             let mut client = CloudClient::with_default_path()?;
             client.authenticate_with_auth0(DEFAULT_CLOUD_REMOTE).await?;
