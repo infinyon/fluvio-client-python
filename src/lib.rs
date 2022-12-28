@@ -13,6 +13,7 @@ use std::io::{Error, Read};
 use std::pin::Pin;
 use std::string::FromUtf8Error;
 mod cloud;
+use cloud::{CloudClient, CloudLoginError, DEFAULT_CLOUD_REMOTE};
 
 mod _Fluvio {
     use super::*;
@@ -130,6 +131,59 @@ mod _Record {
     pub fn key_string(record: &Record) -> Option<Result<String, FromUtf8Error>> {
         let key = record.key()?;
         Some(String::from_utf8(key.to_vec()))
+    }
+}
+
+mod _Cloud {
+    use super::*;
+    fn login() -> Result<(), CloudLoginError> {
+        run_block_on(async {
+            let mut client = CloudClient::with_default_path()?;
+            client.authenticate_with_auth0(DEFAULT_CLOUD_REMOTE).await?;
+            let cluster = match client.download_profile().await {
+                Ok(cluster) => cluster,
+                Err(CloudLoginError::ClusterDoesNotExist(_))
+                | Err(CloudLoginError::ProfileNotAvailable) => {
+                    println!("Warning: You don't have any clusters, please create cluster if you want to perform fluvio functions");
+                    return Ok(());
+                }
+                Err(err) => {
+                    return Err(err);
+                }
+            };
+            println!("Fluvio cluster found, switching to profile");
+
+            save_cluster(cluster)?;
+            Ok(())
+        })
+    }
+    use fluvio::config::{ConfigFile, FluvioConfig, Profile};
+    use tracing::info;
+    pub(crate) const DEFAULT_REMOTE: &str = "https://infinyon.cloud";
+    pub const DEFAULT_PROFILE_NAME: &str = "cloud";
+    fn save_cluster(cluster: FluvioConfig) -> Result<(), CloudLoginError> {
+        let mut config_file = ConfigFile::load_default_or_new()?;
+        let config = config_file.mut_config();
+        let profile_name =
+            profile_from_remote(DEFAULT_REMOTE).unwrap_or_else(|| DEFAULT_PROFILE_NAME.to_string());
+
+        let profile = Profile::new(profile_name.clone());
+        config.add_cluster(cluster, profile_name.clone());
+        config.add_profile(profile, profile_name.clone());
+        config.set_current_profile(&profile_name);
+        config_file.save()?;
+        info!(%profile_name, "Successfully saved profile");
+        Ok(())
+    }
+    use url::Host;
+    fn profile_from_remote(remote: &str) -> Option<String> {
+        let url = url::Url::parse(remote).ok()?;
+        let host = url.host()?;
+        match host {
+            Host::Ipv4(ip4) => Some(format!("{}", ip4)),
+            Host::Ipv6(ip6) => Some(format!("{}", ip6)),
+            Host::Domain(domain) => Some(domain.to_owned().replace('.', "-")),
+        }
     }
 }
 

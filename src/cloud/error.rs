@@ -1,8 +1,10 @@
+use fluvio::FluvioError;
 use http_types::url::ParseError;
 use http_types::StatusCode;
 use std::io::Error as IoError;
 use std::path::PathBuf;
 use thiserror::Error;
+use toml::de::Error as TomlError;
 
 #[derive(Error, Debug)]
 pub enum CloudLoginError {
@@ -33,6 +35,21 @@ pub enum CloudLoginError {
     IoError(#[from] IoError),
     #[error("Failed to create logins dir {path}")]
     UnableToCreateLoginsDir { source: IoError, path: PathBuf },
+    #[error("Cluster for \"{0}\" does not exist")]
+    ClusterDoesNotExist(String),
+    #[error("Profile not available yet, please try again later.")]
+    ProfileNotAvailable,
+    #[error("Failed to parse login token from file")]
+    UnableToParseCredentials(#[from] TomlError),
+    #[error("Failed to load cloud credentials")]
+    UnableToLoadCredentials(#[source] IoError),
+    #[error("Failed to download cloud profile: Status code {0}: {1}")]
+    ProfileDownloadError(StatusCode, &'static str),
+    /// Failed to open Infinyon Cloud login file
+    #[error("Not logged in")]
+    NotLoggedIn,
+    #[error("Fluvio client error")]
+    FluvioError(#[from] FluvioError),
 }
 
 #[derive(Error, Debug)]

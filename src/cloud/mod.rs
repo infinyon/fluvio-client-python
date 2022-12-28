@@ -1,17 +1,21 @@
 mod http;
 use http::execute;
 mod error;
-use error::CloudLoginError;
+pub use error::CloudLoginError;
+use fluvio::FluvioConfig;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
-use tracing::debug;
+use tracing::{debug, trace};
 
 use fluvio_types::defaults::CLI_CONFIG_PATH;
 const DEFAULT_LOGINS_DIR: &str = "logins";
+const CURRENT_LOGIN_FILE_NAME: &str = "current";
+pub const DEFAULT_PROFILE_NAME: &str = "cloud";
 use async_std::prelude::StreamExt;
 use http_types::{Mime, Request, Response, StatusCode, Url};
+pub(crate) const DEFAULT_CLOUD_REMOTE: &str = "https://infinyon.cloud";
 
 #[derive(Debug)]
 pub struct CloudClient {
@@ -29,6 +33,10 @@ impl CloudClient {
         login_path.push(CLI_CONFIG_PATH);
         login_path.push(DEFAULT_LOGINS_DIR);
         Ok(login_path)
+    }
+
+    pub fn with_default_path() -> Result<Self, CloudLoginError> {
+        Ok(Self::new(Self::default_file_path()?))
     }
 
     pub async fn authenticate_with_auth0(
@@ -114,6 +122,29 @@ impl CloudClient {
         creds.try_save(&self.credentials_path)?;
         Ok(())
     }
+
+    pub async fn download_profile(&mut self) -> Result<FluvioConfig, CloudLoginError> {
+        // Load the current credentials from disk
+        let creds = Credentials::try_load(&self.credentials_path, None)?;
+
+        let mut response = download_profile(&creds).await?;
+        trace!(?response, "Response");
+        debug!(status = response.status() as u16);
+
+        match response.status() {
+            StatusCode::Ok => {
+                debug!("Profile downloaded");
+                let config: FluvioConfig = response.body_json().await?;
+                Ok(config)
+            }
+            StatusCode::NoContent => Err(CloudLoginError::ProfileNotAvailable),
+            StatusCode::NotFound => Err(CloudLoginError::ClusterDoesNotExist(creds.email)),
+            status => Err(CloudLoginError::ProfileDownloadError(
+                status,
+                status.canonical_reason(),
+            )),
+        }
+    }
 }
 async fn get_auth0_config(remote: &str) -> Result<Response, CloudLoginError> {
     let url_string = format!("{}/api/v1/oauth2/auth0/config", remote);
@@ -193,6 +224,16 @@ async fn authorize_auth0_user(
     let response = execute(request).await?;
     Ok(response)
 }
+async fn download_profile(creds: &Credentials) -> Result<Response, CloudLoginError> {
+    let url_string = format!("{}/api/v1/downloadProfile", creds.remote);
+    let url = Url::parse(&url_string)
+        .map_err(|source| CloudLoginError::UrlError { source, url_string })?;
+    let mut request = Request::get(url);
+    request.append_header("Authorization", &*creds.token);
+
+    let response = execute(request).await?;
+    Ok(response)
+}
 
 #[derive(Deserialize, Debug)]
 struct Auth0Config {
@@ -266,7 +307,6 @@ struct Credentials {
     token: String,
 }
 impl Credentials {
-    /*
     /// Try to load credentials from disk
     fn try_load<P: AsRef<Path>>(
         base_path: P,
@@ -287,8 +327,6 @@ impl Credentials {
             toml::from_str(&file_str).map_err(CloudLoginError::UnableToParseCredentials)?;
         Ok(creds)
     }
-    */
-
     /// Try to save credentials to disk
     fn try_save<P: AsRef<Path>>(&self, base_path: P) -> Result<(), CloudLoginError> {
         use std::io::Write;
