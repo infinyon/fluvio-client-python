@@ -77,6 +77,7 @@ class Offset:
     def __init__(self, inner: _Offset):
         self._inner = inner
 
+
 class PartitionConsumer:
     """
     An interface for consuming events from a particular partition
