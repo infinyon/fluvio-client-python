@@ -8,7 +8,7 @@ setup(
     long_description_content_type='text/markdown',
     author = "Fluvio Contributors",
     description='Python client library for Fluvio',
-    python_requires='>=3.7',
+    python_requires='>=3.8',
     url='https://www.fluvio.io/',
     keywords=['fluvio', 'streaming', 'stream'],
     license='APACHE',
@@ -30,7 +30,6 @@ setup(
         # that you indicate you support Python 3. These classifiers are *not*
         # checked by 'pip install'. See instead 'python_requires' below.
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',

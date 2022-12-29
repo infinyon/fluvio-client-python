@@ -136,10 +136,39 @@ mod _Record {
 
 mod _Cloud {
     use super::*;
-    pub fn login() -> Result<(), CloudLoginError> {
+    const DEFAULT_REMOTE: &str = "https://infinyon.cloud";
+    pub fn login(
+        use_oauth2: bool,
+        profile: String,
+        remote: String,
+        email: Option<String>,
+        password: Option<String>,
+    ) -> Result<(), CloudLoginError> {
         run_block_on(async {
             let mut client = CloudClient::with_default_path()?;
-            client.authenticate_with_auth0(DEFAULT_CLOUD_REMOTE).await?;
+            if use_oauth2 {
+                client.authenticate_with_auth0(remote.as_str()).await?;
+            } else {
+                use std::io;
+                use std::io::Write;
+                let email = match email {
+                    Some(email) => email.clone(),
+                    None => {
+                        print!("Infinyon Cloud email: ");
+                        io::stdout().flush()?;
+                        let mut email = String::new();
+                        io::stdin().read_line(&mut email)?;
+                        email
+                    }
+                };
+                let email = email.trim();
+                let password = match password {
+                    Some(pw) => pw.clone(),
+                    None => rpassword::read_password_from_tty(Some("Password: "))?,
+                };
+                client.authenticate(email, &password, &remote).await?;
+            }
+
             let cluster = match client.download_profile().await {
                 Ok(cluster) => cluster,
                 Err(CloudLoginError::ClusterDoesNotExist(_))
@@ -153,19 +182,21 @@ mod _Cloud {
             };
             println!("Fluvio cluster found, switching to profile");
 
-            save_cluster(cluster)?;
+            save_cluster(cluster, remote, profile)?;
             Ok(())
         })
     }
     use fluvio::config::{ConfigFile, FluvioConfig, Profile};
     use tracing::info;
-    pub(crate) const DEFAULT_REMOTE: &str = "https://infinyon.cloud";
     pub const DEFAULT_PROFILE_NAME: &str = "cloud";
-    fn save_cluster(cluster: FluvioConfig) -> Result<(), CloudLoginError> {
+    fn save_cluster(
+        cluster: FluvioConfig,
+        remote: String,
+        profile: String,
+    ) -> Result<(), CloudLoginError> {
         let mut config_file = ConfigFile::load_default_or_new()?;
         let config = config_file.mut_config();
-        let profile_name =
-            profile_from_remote(DEFAULT_REMOTE).unwrap_or_else(|| DEFAULT_PROFILE_NAME.to_string());
+        let profile_name = profile_from_remote(remote).unwrap_or_else(|| profile);
 
         let profile = Profile::new(profile_name.clone());
         config.add_cluster(cluster, profile_name.clone());
@@ -176,8 +207,8 @@ mod _Cloud {
         Ok(())
     }
     use url::Host;
-    fn profile_from_remote(remote: &str) -> Option<String> {
-        let url = url::Url::parse(remote).ok()?;
+    fn profile_from_remote(remote: String) -> Option<String> {
+        let url = url::Url::parse(remote.as_str()).ok()?;
         let host = url.host()?;
         match host {
             Host::Ipv4(ip4) => Some(format!("{}", ip4)),

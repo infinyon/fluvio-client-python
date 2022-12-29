@@ -50,6 +50,10 @@ pub enum CloudLoginError {
     NotLoggedIn,
     #[error("Fluvio client error")]
     FluvioError(#[from] FluvioError),
+    #[error("Failed to authenticate with username: {0}")]
+    AuthenticationError(String),
+    #[error("Account not active. Please validate email address.")]
+    AccountNotActive,
 }
 
 #[derive(Error, Debug)]

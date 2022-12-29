@@ -110,6 +110,30 @@ impl CloudClient {
             }
         }
     }
+    pub async fn authenticate(
+        &mut self,
+        email: &str,
+        password: &str,
+        remote: &str,
+    ) -> Result<(), CloudLoginError> {
+        let mut response = login_user(remote, email, password).await?;
+        match response.status() {
+            StatusCode::Ok => {
+                debug!("Successfully authenticated with token");
+                let creds = response.body_json::<CredentialsResponse>().await?;
+                if let Some(false) = creds.active {
+                    return Err(CloudLoginError::AccountNotActive);
+                }
+                self.save_credentials(remote.to_owned(), email.to_owned(), creds)
+                    .await?;
+                Ok(())
+            }
+            _ => {
+                debug!(?response, "Failed to login");
+                Err(CloudLoginError::AuthenticationError(email.to_owned()))
+            }
+        }
+    }
 
     async fn save_credentials(
         &mut self,
@@ -377,4 +401,32 @@ impl CredentialKey {
         let output = hasher.finalize();
         hex::encode(output)
     }
+}
+
+#[derive(Debug, Serialize)]
+struct LoginRequest {
+    email: String,
+    password: String,
+}
+
+async fn login_user(
+    remote: &str,
+    email: &str,
+    password: &str,
+) -> Result<Response, CloudLoginError> {
+    let url_string = format!("{}/api/v1/loginUser", remote);
+    let url = Url::parse(&url_string)
+        .map_err(|source| CloudLoginError::UrlError { source, url_string })?;
+    let mut request = Request::post(url);
+    let login = LoginRequest {
+        email: email.to_owned(),
+        password: password.to_owned(),
+    };
+
+    // Always safe to serialize when Self: Serialize
+    let body = serde_json::to_string(&login).unwrap();
+    request.set_body(body);
+
+    let response = execute(request).await?;
+    Ok(response)
 }
