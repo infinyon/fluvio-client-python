@@ -82,7 +82,7 @@ foreign_class!(class Cloud {
     fn _Cloud::login(
         _: bool,
         _: String,
-        _: String,
+        _: Option<String>,
         _: Option<String>,
         _: Option<String>
     ) -> Result<(), CloudLoginError>;

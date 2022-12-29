@@ -139,11 +139,12 @@ mod _Cloud {
     use fluvio::config::{ConfigFile, FluvioConfig, Profile};
     use tracing::info;
     use url::Host;
+    const DEFAULT_PROFILE_NAME: &'static str = "cloud";
 
     pub fn login(
         use_oauth2: bool,
-        profile: String,
         remote: String,
+        profile: Option<String>,
         email: Option<String>,
         password: Option<String>,
     ) -> Result<(), CloudLoginError> {
@@ -193,11 +194,15 @@ mod _Cloud {
     fn save_cluster(
         cluster: FluvioConfig,
         remote: String,
-        profile: String,
+        profile: Option<String>,
     ) -> Result<(), CloudLoginError> {
         let mut config_file = ConfigFile::load_default_or_new()?;
         let config = config_file.mut_config();
-        let profile_name = profile_from_remote(remote).unwrap_or_else(|| profile);
+        let profile_name = if let Some(profile) = profile {
+            profile
+        } else {
+            profile_from_remote(remote).unwrap_or_else(|| DEFAULT_PROFILE_NAME.to_string())
+        };
 
         let profile = Profile::new(profile_name.clone());
         config.add_cluster(cluster, profile_name.clone());
