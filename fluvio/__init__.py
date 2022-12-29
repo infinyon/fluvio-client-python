@@ -78,31 +78,6 @@ class Offset:
         self._inner = inner
 
 
-class PartitionConsumerStream:
-    """An iterator for `PartitionConsumer.stream` method where each `__next__`
-    returns a `Record`.
-
-    Usage:
-
-    ```python
-    for i in consumer.stream(0):
-        print(i.value())
-        print(i.value_string())
-    ```
-    """
-
-    _inner: _PartitionConsumerStream
-
-    def __init__(self, inner: _PartitionConsumerStream):
-        self._inner = inner
-
-    def __iter__(self):
-        return self
-
-    def __next__(self) -> typing.Optional[Record]:
-        return Record(self._inner.next())
-
-
 class PartitionConsumer:
     """
     An interface for consuming events from a particular partition
@@ -120,10 +95,10 @@ class PartitionConsumer:
     def __init__(self, inner: _PartitionConsumer):
         self._inner = inner
 
-    def stream(self, offset: Offset) -> PartitionConsumerStream:
+    def stream(self, offset: Offset) -> typing.Iterator[Record]:
         """
         Continuously streams events from a particular offset in the consumer’s
-        partition. This returns a `PartitionConsumerStream` which is an
+        partition. This returns a `Iterator[Record]` which is an
         iterator.
 
         Streaming is one of the two ways to consume events in Fluvio. It is a
@@ -132,15 +107,15 @@ class PartitionConsumer:
         using an Offset and periodically receive events, either individually or
         in batches.
         """
-        return PartitionConsumerStream(self._inner.stream(offset._inner))
+        return self._generator(self._inner.stream(offset._inner))
 
     def stream_with_config(
         self, offset: Offset, wasm_path: str
-    ) -> PartitionConsumerStream:
+    ) -> typing.Iterator[Record]:
         """
         Continuously streams events from a particular offset with a SmartModule
         WASM module in the consumer’s partition. This returns a
-        `PartitionConsumerStream` which is an iterator.
+        `Iterator[Record]` which is an iterator.
 
         Streaming is one of the two ways to consume events in Fluvio. It is a
         continuous request for new records arriving in a partition, beginning
@@ -160,12 +135,16 @@ class PartitionConsumer:
                 # do something with i
 
         Returns:
-            PartionConsumerStream
+            `Iterator[Record]`
 
         """
-        return PartitionConsumerStream(
-            self._inner.stream_with_config(offset._inner, wasm_path)
-        )
+        return self._generator(self._inner.stream_with_config(offset._inner, wasm_path))
+
+    def _generator(self, stream: _PartitionConsumerStream) -> typing.Iterator[Record]:
+        item = stream.next()
+        while item is not None:
+            yield Record(item)
+            item = stream.next()
 
 
 class TopicProducer:
