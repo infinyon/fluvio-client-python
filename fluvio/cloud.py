@@ -1,5 +1,4 @@
 from ._fluvio_python import Cloud
-import typing
 
 DEFAULT_PROFILE_NAME = "cloud"
 DEFAULT_REMOTE = "https://infinyon.cloud"
