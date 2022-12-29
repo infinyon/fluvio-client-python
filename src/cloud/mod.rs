@@ -1,21 +1,19 @@
 mod http;
 use http::execute;
 mod error;
+use async_std::prelude::StreamExt;
 pub use error::CloudLoginError;
 use fluvio::FluvioConfig;
+use fluvio_types::defaults::CLI_CONFIG_PATH;
+use http_types::{Mime, Request, Response, StatusCode, Url};
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
 use tracing::{debug, trace};
 
-use fluvio_types::defaults::CLI_CONFIG_PATH;
 const DEFAULT_LOGINS_DIR: &str = "logins";
 const CURRENT_LOGIN_FILE_NAME: &str = "current";
-pub const DEFAULT_PROFILE_NAME: &str = "cloud";
-use async_std::prelude::StreamExt;
-use http_types::{Mime, Request, Response, StatusCode, Url};
-pub(crate) const DEFAULT_CLOUD_REMOTE: &str = "https://infinyon.cloud";
 
 #[derive(Debug)]
 pub struct CloudClient {

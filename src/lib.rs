@@ -13,7 +13,7 @@ use std::io::{Error, Read};
 use std::pin::Pin;
 use std::string::FromUtf8Error;
 mod cloud;
-use cloud::{CloudClient, CloudLoginError, DEFAULT_CLOUD_REMOTE};
+use cloud::{CloudClient, CloudLoginError};
 
 mod _Fluvio {
     use super::*;
@@ -136,7 +136,10 @@ mod _Record {
 
 mod _Cloud {
     use super::*;
-    const DEFAULT_REMOTE: &str = "https://infinyon.cloud";
+    use fluvio::config::{ConfigFile, FluvioConfig, Profile};
+    use tracing::info;
+    use url::Host;
+
     pub fn login(
         use_oauth2: bool,
         profile: String,
@@ -186,9 +189,7 @@ mod _Cloud {
             Ok(())
         })
     }
-    use fluvio::config::{ConfigFile, FluvioConfig, Profile};
-    use tracing::info;
-    pub const DEFAULT_PROFILE_NAME: &str = "cloud";
+
     fn save_cluster(
         cluster: FluvioConfig,
         remote: String,
@@ -206,7 +207,7 @@ mod _Cloud {
         info!(%profile_name, "Successfully saved profile");
         Ok(())
     }
-    use url::Host;
+
     fn profile_from_remote(remote: String) -> Option<String> {
         let url = url::Url::parse(remote.as_str()).ok()?;
         let host = url.host()?;
