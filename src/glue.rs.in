@@ -86,4 +86,7 @@ foreign_class!(class Cloud {
         _: Option<String>,
         _: Option<String>
     ) -> Result<(), CloudLoginError>;
+    fn _Cloud::auth0_url(
+        _: String,
+    ) -> Result<(String, String), CloudLoginError>;
 });

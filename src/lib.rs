@@ -139,7 +139,18 @@ mod _Cloud {
     use fluvio::config::{ConfigFile, FluvioConfig, Profile};
     use tracing::info;
     use url::Host;
+    use std::io;
+    use std::io::Write;
     const DEFAULT_PROFILE_NAME: &'static str = "cloud";
+    pub fn auth0_url(
+        remote: String,
+    ) -> Result<(String, String), CloudLoginError> {
+        run_block_on(async {
+            let mut client = CloudClient::with_default_path()?;
+            let (_, device_code) = client.get_auth0_and_device_code(remote.as_str()).await?;
+            Ok((device_code.verification_uri_complete, device_code.user_code))
+        })
+    }
 
     pub fn login(
         use_oauth2: bool,
@@ -153,8 +164,6 @@ mod _Cloud {
             if use_oauth2 {
                 client.authenticate_with_auth0(remote.as_str()).await?;
             } else {
-                use std::io;
-                use std::io::Write;
                 let email = match email {
                     Some(email) => email.clone(),
                     None => {
