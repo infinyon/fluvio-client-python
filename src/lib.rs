@@ -137,12 +137,80 @@ mod _Record {
 mod _Cloud {
     use super::*;
     use fluvio::config::{ConfigFile, FluvioConfig, Profile};
+    use std::io;
+    use std::io::Write;
     use tracing::info;
     use url::Host;
     const DEFAULT_PROFILE_NAME: &'static str = "cloud";
+    use crate::cloud::{Auth0Config, DeviceCodeResponse};
+    pub struct CloudAuth {
+        pub auth0_config: Option<Auth0Config>,
+        pub device_code: Option<DeviceCodeResponse>,
+        pub client: CloudClient,
+        remote: String,
+        profile: Option<String>,
+    }
+    impl CloudAuth {
+        pub fn new(remote: String) -> Result<CloudAuth, CloudLoginError> {
+            run_block_on(async {
+                let client = CloudClient::with_default_path()?;
+                Ok(CloudAuth {
+                    client,
+                    remote,
+                    auth0_config: None,
+                    device_code: None,
+                    profile: None,
+                })
+            })
+        }
+        pub fn get_auth0_url(&mut self) -> Result<(String, String), CloudLoginError> {
+            run_block_on(async {
+                let (auth0_config, device_code) = self
+                    .client
+                    .get_auth0_and_device_code(self.remote.as_str())
+                    .await?;
+                let (complete_url, user_code) = (
+                    device_code.verification_uri_complete.clone(),
+                    device_code.user_code.clone(),
+                );
+                self.auth0_config = Some(auth0_config);
+                self.device_code = Some(device_code);
+                Ok((complete_url, user_code))
+            })
+        }
+        pub fn authenticate_with_auth0(&mut self) -> Result<(), CloudLoginError> {
+            run_block_on(async {
+                let auth0_config = self
+                    .auth0_config
+                    .as_ref()
+                    .ok_or(CloudLoginError::Auth0ConfigNotFound)?;
+                let device_code = self
+                    .device_code
+                    .as_ref()
+                    .ok_or(CloudLoginError::DeviceCodeNotFound)?;
+                self.client
+                    .authenticate_with_auth0(self.remote.as_str(), auth0_config, device_code)
+                    .await?;
+                let cluster = match self.client.download_profile().await {
+                    Ok(cluster) => cluster,
+                    Err(CloudLoginError::ClusterDoesNotExist(_))
+                    | Err(CloudLoginError::ProfileNotAvailable) => {
+                        println!("Warning: You don't have any clusters, please create cluster if you want to perform fluvio functions");
+                        return Ok(());
+                    }
+                    Err(err) => {
+                        return Err(err);
+                    }
+                };
+                println!("Fluvio cluster found, switching to profile");
 
-    pub fn login(
-        use_oauth2: bool,
+                save_cluster(cluster, self.remote.clone(), self.profile.clone())?;
+                Ok(())
+            })
+        }
+    }
+
+    pub fn login_with_username(
         remote: String,
         profile: Option<String>,
         email: Option<String>,
@@ -150,28 +218,22 @@ mod _Cloud {
     ) -> Result<(), CloudLoginError> {
         run_block_on(async {
             let mut client = CloudClient::with_default_path()?;
-            if use_oauth2 {
-                client.authenticate_with_auth0(remote.as_str()).await?;
-            } else {
-                use std::io;
-                use std::io::Write;
-                let email = match email {
-                    Some(email) => email.clone(),
-                    None => {
-                        print!("Infinyon Cloud email: ");
-                        io::stdout().flush()?;
-                        let mut email = String::new();
-                        io::stdin().read_line(&mut email)?;
-                        email
-                    }
-                };
-                let email = email.trim();
-                let password = match password {
-                    Some(pw) => pw.clone(),
-                    None => rpassword::read_password_from_tty(Some("Password: "))?,
-                };
-                client.authenticate(email, &password, &remote).await?;
-            }
+            let email = match email {
+                Some(email) => email.clone(),
+                None => {
+                    print!("Infinyon Cloud email: ");
+                    io::stdout().flush()?;
+                    let mut email = String::new();
+                    io::stdin().read_line(&mut email)?;
+                    email
+                }
+            };
+            let email = email.trim();
+            let password = match password {
+                Some(pw) => pw.clone(),
+                None => rpassword::read_password_from_tty(Some("Password: "))?,
+            };
+            client.authenticate(email, &password, &remote).await?;
 
             let cluster = match client.download_profile().await {
                 Ok(cluster) => cluster,
