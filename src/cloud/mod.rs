@@ -63,14 +63,14 @@ impl CloudClient {
     pub async fn authenticate_with_auth0(
         &mut self,
         remote: &str,
+        auth0_config: &Auth0Config,
+        device_code: &DeviceCodeResponse,
     ) -> Result<String, CloudLoginError> {
-        let (auth0_config, device_code) = self.get_auth0_and_device_code(remote).await?;
-
         let mut response = tokio::select!(
              response = get_auth0_token(
                 &auth0_config,
                 device_code.interval,
-                device_code.device_code,
+                device_code.device_code.clone(),
             ) => {response?},
             _ = fluvio_future::timer::sleep(std::time::Duration::from_secs(device_code.expires_in)) => {
                 return Err(CloudLoginError::Auth0TimeoutError)

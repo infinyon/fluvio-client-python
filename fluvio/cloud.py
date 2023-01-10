@@ -4,7 +4,7 @@ import sys
 
 DEFAULT_REMOTE = "https://infinyon.cloud"
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 consoleHandler = logging.StreamHandler()
 consoleHandler.setLevel(logging.INFO)
 
@@ -18,17 +18,15 @@ def login(
     email=None,
     password=None,
 ):
-
-
-
     if email is not None and password is not None:
-        Cloud.login(False, remote, profile, email, password)
+        Cloud.login_with_username(remote, profile, email, password)
     else:
-        logger.info('fluvio-client-python - getting auth-url')
-        auth0_url, user_code = Cloud.auth0_url(remote)
-        logger.info(f'Please visit the following URL: {auth0_url} and verify the following code: {user_code} matches.\n Then, proceed with authentication.')
-        logger.info('fluvio-client-python - got auth-url')
-        Cloud.login(useOauth2, remote, profile, email, password)
+        logger.debug("fluvio-client-python - getting auth-url")
+        cloudClient = Cloud.new(remote)
+        auth0_url, user_code = cloudClient.get_auth0_url()
+        logger.info(
+            f"Please visit the following URL: {auth0_url} and verify the following code: {user_code} matches.\n Then, proceed with authentication."
+        )
 
-    Cloud.login(useOauth2, remote, profile, email, password)
-    logger.debug('after login')
+        cloudClient.authenticate_with_auth0()
+        logger.debug("fluvio-client-python - success")
