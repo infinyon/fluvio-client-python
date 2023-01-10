@@ -36,11 +36,10 @@ impl CloudClient {
     pub fn with_default_path() -> Result<Self, CloudLoginError> {
         Ok(Self::new(Self::default_file_path()?))
     }
-
-    pub async fn authenticate_with_auth0(
+    pub async fn get_auth0_and_device_code(
         &mut self,
         remote: &str,
-    ) -> Result<String, CloudLoginError> {
+    ) -> Result<(Auth0Config, DeviceCodeResponse), CloudLoginError> {
         let mut response = get_auth0_config(remote).await?;
 
         if response.status() != StatusCode::Ok {
@@ -49,7 +48,6 @@ impl CloudClient {
             ));
         }
         let auth0_config = response.body_json::<Auth0Config>().await?;
-
         let mut response = get_device_code(&auth0_config).await?;
         if response.status() != StatusCode::Ok {
             return Err(CloudLoginError::Auth0LoginError(
@@ -58,25 +56,21 @@ impl CloudClient {
         }
 
         let device_code = response.body_json::<DeviceCodeResponse>().await?;
+        debug!("Failed to open browser to authenticate with Auth0");
+        Ok((auth0_config, device_code))
+    }
 
-        if webbrowser::open(&device_code.verification_uri_complete).is_ok() {
-            println!(
-                "A web browser has been opened at {}.\nPlease proceed with authentication.",
-                device_code.verification_uri_complete
-            );
-        } else {
-            debug!("Failed to open browser to authenticate with Auth0");
-            println!(
-                "Please visit the following URL: {} and use the following code: {}.\n Then, proceed with authentication.",
-                device_code.verification_uri, device_code.user_code
-            );
-        }
-
+    pub async fn authenticate_with_auth0(
+        &mut self,
+        remote: &str,
+        auth0_config: &Auth0Config,
+        device_code: &DeviceCodeResponse,
+    ) -> Result<String, CloudLoginError> {
         let mut response = tokio::select!(
              response = get_auth0_token(
                 &auth0_config,
                 device_code.interval,
-                device_code.device_code,
+                device_code.device_code.clone(),
             ) => {response?},
             _ = fluvio_future::timer::sleep(std::time::Duration::from_secs(device_code.expires_in)) => {
                 return Err(CloudLoginError::Auth0TimeoutError)
@@ -258,7 +252,7 @@ async fn download_profile(creds: &Credentials) -> Result<Response, CloudLoginErr
 }
 
 #[derive(Deserialize, Debug)]
-struct Auth0Config {
+pub struct Auth0Config {
     domain: String,
     client_id: String,
 }
@@ -271,11 +265,11 @@ struct DeviceCodeRequestBody {
 }
 
 #[derive(Deserialize)]
-struct DeviceCodeResponse {
+pub struct DeviceCodeResponse {
     device_code: String,
-    user_code: String,
+    pub user_code: String,
     verification_uri: String,
-    verification_uri_complete: String,
+    pub verification_uri_complete: String,
     expires_in: u64,
     interval: u64,
 }

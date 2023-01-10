@@ -54,6 +54,11 @@ pub enum CloudLoginError {
     AuthenticationError(String),
     #[error("Account not active. Please validate email address.")]
     AccountNotActive,
+
+    #[error("There is no Auth0 Config in the CloudClient.")]
+    Auth0ConfigNotFound,
+    #[error("There is no Device Code in the CloudClient.")]
+    DeviceCodeNotFound,
 }
 
 #[derive(Error, Debug)]

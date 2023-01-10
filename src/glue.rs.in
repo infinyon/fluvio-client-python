@@ -77,10 +77,16 @@ foreign_class!(class Offset {
     fn Offset::from_end(_: u32) -> Offset;
 });
 foreign_class!(class Cloud {
-    self_type Fluvio;
+    self_type _Cloud::CloudAuth;
     private constructor = empty;
-    fn _Cloud::login(
-        _: bool,
+    fn _Cloud::CloudAuth::new(_ :String) -> Result<_Cloud::CloudAuth, CloudLoginError>;
+    fn _Cloud::CloudAuth::get_auth0_url(
+        &mut self,
+    ) -> Result<(String, String), CloudLoginError>;
+    fn _Cloud::CloudAuth::authenticate_with_auth0(
+        &mut self,
+    ) -> Result<(), CloudLoginError>;
+    fn _Cloud::login_with_username(
         _: String,
         _: Option<String>,
         _: Option<String>,
