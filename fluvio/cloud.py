@@ -1,6 +1,5 @@
 from ._fluvio_python import Cloud
 import logging
-import sys
 
 DEFAULT_REMOTE = "https://infinyon.cloud"
 logger = logging.getLogger(__name__)
@@ -25,7 +24,7 @@ def login(
         cloudClient = Cloud.new(remote)
         auth0_url, user_code = cloudClient.get_auth0_url()
         logger.info(
-            f"Please visit the following URL: {auth0_url} and verify the following code: {user_code} matches.\n Then, proceed with authentication."
+            f"Please visit the following URL: {auth0_url} and verify the following code: {user_code} matches.\n Then, proceed with authentication."  # noqa: E501
         )
 
         cloudClient.authenticate_with_auth0()
