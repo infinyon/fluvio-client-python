@@ -202,6 +202,7 @@ mod _Cloud {
                         return Err(err);
                     }
                 };
+                println!("Fluvio cluster found, switching to profile");
 
                 save_cluster(cluster, self.remote.clone(), self.profile.clone())?;
                 Ok(())
