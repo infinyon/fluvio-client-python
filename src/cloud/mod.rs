@@ -88,7 +88,6 @@ impl CloudClient {
             StatusCode::Ok => {
                 let creds = response.body_json::<CredentialsAuth0Response>().await?;
                 let email = creds.email;
-                println!("Successfully authenticated with Auth0");
                 self.save_credentials(remote.to_owned(), email.clone(), creds.inner)
                     .await?;
                 Ok(email)

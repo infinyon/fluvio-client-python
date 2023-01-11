@@ -28,4 +28,5 @@ def login(
         )
 
         cloudClient.authenticate_with_auth0()
-        logger.debug("fluvio-client-python - success")
+        logger.info("Successfully authenticated with Auth0")
+        logger.info("Fluvio cluster found, switching to profile")
