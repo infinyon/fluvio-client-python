@@ -13,16 +13,6 @@ foreign_class!(class Fluvio {
         _: String
     ) -> Result<TopicProducer, FluvioError>;
 });
-foreign_class!(class PartitionConsumer {
-    self_type PartitionConsumer;
-    private constructor = empty;
-    fn _PartitionConsumer::stream(
-        &self, _: &Offset
-    ) -> Result<PartitionConsumerStream, FluvioError>;
-    fn _PartitionConsumer::stream_with_config(
-        &self, _: &Offset, _: &str
-    ) -> Result<PartitionConsumerStream, FluvioError>;
-});
 
 foreign_class!(class PartitionConsumerStream{
     self_type PartitionConsumerStream;
@@ -92,4 +82,31 @@ foreign_class!(class Cloud {
         _: Option<String>,
         _: Option<String>
     ) -> Result<(), CloudLoginError>;
+});
+foreign_class!(class PartitionConsumer {
+    self_type PartitionConsumer;
+    private constructor = empty;
+    fn _PartitionConsumer::stream(
+        _: &PartitionConsumer,
+        _: &Offset
+    ) -> Result<PartitionConsumerStream, FluvioError>;
+    fn _PartitionConsumer::stream_with_config(
+        _: &PartitionConsumer,
+        _: &Offset,
+        _: &ConsumerConfig,
+    ) -> Result<PartitionConsumerStream, FluvioError>;
+});
+
+foreign_class!(class PartitionConsumerStream {
+    self_type PartitionConsumerStream;
+    private constructor = empty;
+    fn PartitionConsumerStream::next(
+        &mut self
+    ) -> Option<Result<Record, ErrorCode>>;
+});
+
+foreign_class!(class ConsumerConfig {
+    self_type ConsumerConfig;
+    private constructor ConsumerConfig::new() -> ConsumerConfig;
+    fn ConsumerConfig::max_bytes(&mut self, max_bytes: i32);
 });
