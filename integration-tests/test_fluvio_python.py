@@ -1,5 +1,5 @@
 from string import ascii_lowercase
-from fluvio import Fluvio, FluviorError, Offset, ConsumerConfig
+from fluvio import Fluvio, FluviorError, Offset, ConsumerConfig, SmartModuleKind
 import unittest
 import uuid
 import os
@@ -54,7 +54,7 @@ class TestFluvioMethods(unittest.TestCase):
             "integration-tests/smartmodule_filter_on_a.wasm"
         )
         config = ConsumerConfig()
-        config.wasmModulePath(wasm_module_path)
+        config.wasmModulePath(wasm_module_path, SmartModuleKind.Filter)
 
         fluvio = Fluvio.connect()
         producer = fluvio.topic_producer(self.topic)
@@ -65,9 +65,7 @@ class TestFluvioMethods(unittest.TestCase):
         consumer = fluvio.partition_consumer(self.topic, 0)
         records.append(
             bytearray(
-                next(
-                    consumer.stream_with_config(Offset.beginning(), config)
-                ).value()
+                next(consumer.stream_with_config(Offset.beginning(), config)).value()
             ).decode()
         )
         self.assertEqual(len(records), 1)
@@ -84,9 +82,7 @@ class TestFluvioMethods(unittest.TestCase):
             itertools.islice(consumer.stream(Offset.beginning()), 10)
         ):
             print("THIS IS IN AN ITERATOR! %s" % i.value())
-            self.assertEqual(
-                bytearray(i.value()).decode(), "record-%s" % count
-            )
+            self.assertEqual(bytearray(i.value()).decode(), "record-%s" % count)
             self.assertEqual(i.value_string(), "record-%s" % count)
 
     def test_consumer_with_interator_generator(self):

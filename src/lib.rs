@@ -52,7 +52,11 @@ impl ConsumerConfig {
         self.builder.smartmodule(smartmodules);
     }
 
-    pub fn wasm_module_path(&mut self, wasm_module_path: &str, kind: SmartModuleKind) -> Result<(), FluvioError> {
+    pub fn wasm_module_path(
+        &mut self,
+        wasm_module_path: &str,
+        kind: SmartModuleKind,
+    ) -> Result<(), FluvioError> {
         let wasm_module_buffer = std::fs::read(wasm_module_path)?;
         let mut encoder = GzEncoder::new(wasm_module_buffer.as_slice(), Compression::default());
         let mut buffer = Vec::with_capacity(wasm_module_buffer.len());
@@ -74,7 +78,7 @@ impl Into<NativeSmartModuleKind> for SmartModuleKind {
             SmartModuleKind::Map => NativeSmartModuleKind::Map,
             SmartModuleKind::ArrayMap => NativeSmartModuleKind::ArrayMap,
             SmartModuleKind::FilterMap => NativeSmartModuleKind::FilterMap,
-            _ => NativeSmartModuleKind::default() // default is Filter.
+            _ => NativeSmartModuleKind::default(), // default is Filter.
         }
     }
 }
@@ -96,7 +100,6 @@ pub enum SmartModuleKind {
     },
     Generic(SmartModuleContextData),
     */
-
 }
 
 mod _PartitionConsumer {
@@ -114,9 +117,7 @@ mod _PartitionConsumer {
         offset: &Offset,
         config: &ConsumerConfig,
     ) -> Result<PartitionConsumerStream, FluvioError> {
-        let config = config
-            .builder
-            .build()?;
+        let config = config.builder.build()?;
 
         run_block_on(consumer.stream_with_config(offset.clone(), config)).map(|stream| {
             PartitionConsumerStream {

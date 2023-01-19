@@ -5,9 +5,11 @@ from ._fluvio_python import (
     PartitionConsumerStream as _PartitionConsumerStream,
     TopicProducer as _TopicProducer,
     ProducerBatchRecord as _ProducerBatchRecord,
+    SmartModuleKind as _SmartModuleKind,
     Record as _Record,
     Offset as _Offset,
 )
+from enum import Enum
 from ._fluvio_python import Error as FluviorError  # noqa: F401
 import typing
 
@@ -79,14 +81,21 @@ class Offset:
         self._inner = inner
 
 
+class SmartModuleKind(Enum):
+    Filter = _SmartModuleKind.Filter
+    Map = _SmartModuleKind.Map
+    ArrayMap = _SmartModuleKind.ArrayMap
+    FilterMap = _SmartModuleKind.FilterMap
+
+
 class ConsumerConfig:
     _inner: _ConsumerConfig
 
     def __init__(self):
         self._inner = _ConsumerConfig()
 
-    def wasmModulePath(self, wasmModulePath: str):
-        self._inner.wasm_module_path(wasmModulePath)
+    def wasmModulePath(self, wasmModulePath: str, kind: SmartModuleKind):
+        self._inner.wasm_module_path(wasmModulePath, kind.value)
 
 
 class PartitionConsumer:
@@ -151,7 +160,9 @@ class PartitionConsumer:
             `Iterator[Record]`
 
         """
-        return self._generator(self._inner.stream_with_config(offset._inner, config._inner))
+        return self._generator(
+            self._inner.stream_with_config(offset._inner, config._inner)
+        )
 
     def _generator(self, stream: _PartitionConsumerStream) -> typing.Iterator[Record]:
         item = stream.next()
