@@ -79,11 +79,11 @@ foreign_class!(class PartitionConsumer {
     self_type PartitionConsumer;
     private constructor = empty;
     fn _PartitionConsumer::stream(
-        _: &PartitionConsumer,
+        &self,
         _: &Offset
     ) -> Result<PartitionConsumerStream, FluvioError>;
     fn _PartitionConsumer::stream_with_config(
-        _: &PartitionConsumer,
+        &self,
         _: &Offset,
         _: &ConsumerConfig,
     ) -> Result<PartitionConsumerStream, FluvioError>;
@@ -97,8 +97,20 @@ foreign_class!(class PartitionConsumerStream {
     ) -> Option<Result<Record, ErrorCode>>;
 });
 
+
+foreign_enum!(
+    enum SmartModuleKind {
+        Filter = SmartModuleKind::Filter,
+        Map = SmartModuleKind::Map,
+        ArrayMap = SmartModuleKind::ArrayMap,
+        FilterMap = SmartModuleKind::FilterMap,
+    }
+);
+
 foreign_class!(class ConsumerConfig {
     self_type ConsumerConfig;
     private constructor ConsumerConfig::new() -> ConsumerConfig;
     fn ConsumerConfig::max_bytes(&mut self, max_bytes: i32);
+    fn ConsumerConfig::wasm_module_path(&mut self, wasm_module_path: &str, kind: SmartModuleKind);
 });
+

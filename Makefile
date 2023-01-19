@@ -32,7 +32,7 @@ build-dev: venv-pip
 	$(PYTHON) setup.py develop
 
 integration-tests: build-dev
-	$(PYTHON) setup.py test
+	cd integration-tests/ && $(PYTHON) -m unittest
 
 macos-ci-tests: build-dev
 	cd macos-ci-tests && $(PYTHON) -m unittest

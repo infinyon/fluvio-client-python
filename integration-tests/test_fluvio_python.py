@@ -1,5 +1,5 @@
 from string import ascii_lowercase
-from fluvio import Fluvio, FluviorError, Offset
+from fluvio import Fluvio, FluviorError, Offset, ConsumerConfig
 import unittest
 import uuid
 import os
@@ -41,8 +41,9 @@ class TestFluvioMethods(unittest.TestCase):
         """
         Test adds a the alphabet into a topic in the format of record-[letter]
 
-        A wasm smart module is added to the filter and a all messages are retrieved and stored in the records list
-        We can then assert the following:
+        A wasm smart module is added to the filter and a all messages are
+        retrieved and stored in the records list We can then assert the
+        following:
 
         - There should be 1 item
         - It should be record-a
@@ -52,6 +53,8 @@ class TestFluvioMethods(unittest.TestCase):
         wasm_module_path = os.path.abspath(
             "integration-tests/smartmodule_filter_on_a.wasm"
         )
+        config = ConsumerConfig()
+        config.wasmModulePath(wasm_module_path)
 
         fluvio = Fluvio.connect()
         producer = fluvio.topic_producer(self.topic)
@@ -63,7 +66,7 @@ class TestFluvioMethods(unittest.TestCase):
         records.append(
             bytearray(
                 next(
-                    consumer.stream_with_config(Offset.beginning(), wasm_module_path)
+                    consumer.stream_with_config(Offset.beginning(), config)
                 ).value()
             ).decode()
         )
@@ -81,7 +84,9 @@ class TestFluvioMethods(unittest.TestCase):
             itertools.islice(consumer.stream(Offset.beginning()), 10)
         ):
             print("THIS IS IN AN ITERATOR! %s" % i.value())
-            self.assertEqual(bytearray(i.value()).decode(), "record-%s" % count)
+            self.assertEqual(
+                bytearray(i.value()).decode(), "record-%s" % count
+            )
             self.assertEqual(i.value_string(), "record-%s" % count)
 
     def test_consumer_with_interator_generator(self):

@@ -37,7 +37,7 @@ setup(
         'Programming Language :: Python :: 3 :: Only',
     ],
 
-    rust_extensions=[RustExtension("fluvio._fluvio_python", path="Cargo.toml", binding=Binding.RustCPython, debug=False, quiet=False, args=["-vvv"])],
+    rust_extensions=[RustExtension("fluvio._fluvio_python", path="Cargo.toml", binding=Binding.RustCPython, debug=False)],
     packages=["fluvio"],
     # rust extensions are not zip safe, just like C-extensions.
     zip_safe=False,

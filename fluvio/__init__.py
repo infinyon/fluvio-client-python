@@ -1,5 +1,6 @@
 from ._fluvio_python import (
     Fluvio as _Fluvio,
+    ConsumerConfig as _ConsumerConfig,
     PartitionConsumer as _PartitionConsumer,
     PartitionConsumerStream as _PartitionConsumerStream,
     TopicProducer as _TopicProducer,
@@ -78,6 +79,16 @@ class Offset:
         self._inner = inner
 
 
+class ConsumerConfig:
+    _inner: _ConsumerConfig
+
+    def __init__(self):
+        self._inner = _ConsumerConfig()
+
+    def wasmModulePath(self, wasmModulePath: str):
+        self._inner.wasm_module_path(wasmModulePath)
+
+
 class PartitionConsumer:
     """
     An interface for consuming events from a particular partition
@@ -110,7 +121,7 @@ class PartitionConsumer:
         return self._generator(self._inner.stream(offset._inner))
 
     def stream_with_config(
-        self, offset: Offset, wasm_path: str
+        self, offset: Offset, config: ConsumerConfig
     ) -> typing.Iterator[Record]:
         """
         Continuously streams events from a particular offset with a SmartModule
@@ -131,14 +142,16 @@ class PartitionConsumer:
             import os
 
             wmp = os.path.abspath("somefilter.wasm")
-            for i in consumer.stream_with_config(Offset.beginning(), wmp):
+            config = ConsumerConfig()
+            config.wasmModulePath(wmp)
+            for i in consumer.stream_with_config(Offset.beginning(), config):
                 # do something with i
 
         Returns:
             `Iterator[Record]`
 
         """
-        return self._generator(self._inner.stream_with_config(offset._inner, wasm_path))
+        return self._generator(self._inner.stream_with_config(offset._inner, config._inner))
 
     def _generator(self, stream: _PartitionConsumerStream) -> typing.Iterator[Record]:
         item = stream.next()
