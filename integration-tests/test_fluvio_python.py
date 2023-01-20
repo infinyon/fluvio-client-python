@@ -18,6 +18,72 @@ def delete_topic(topic):
     subprocess.run("fluvio topic delete %s" % topic, shell=True)
 
 
+def create_smartmodule(sm_name, sm_path):
+    import subprocess
+
+    subprocess.run(
+        "fluvio smartmodule create %s --wasm-file %s" % (
+            sm_name, sm_path
+        ), shell=True
+    )
+
+
+def delete_smartmodule(sm_name):
+    import subprocess
+
+    subprocess.run("fluvio smartmodule delete %s" % sm_name, shell=True)
+
+
+class TestFluvioSmartModules(unittest.TestCase):
+    def setUp(self):
+        self.topic = str(uuid.uuid4())
+        self.sm_name = str(uuid.uuid4())
+        create_topic(self.topic)
+
+        sm_path = os.path.abspath(
+            "smartmodule_filter_on_a.wasm"
+        )
+        create_smartmodule(self.sm_name, sm_path)
+
+    def tearDown(self):
+        delete_topic(self.topic)
+        delete_smartmodule(self.sm_name)
+
+    def test_consume_with_smart_module_by_name(self):
+        """
+        Test adds a the alphabet into a topic in the format of record-[letter]
+
+        A wasm smart module is added to the filter and a all messages are
+        retrieved and stored in the records list We can then assert the
+        following:
+
+        - There should be 1 item
+        - It should be record-a
+
+        """
+
+        wasm_module_path = os.path.abspath(
+            "integration-tests/smartmodule_filter_on_a.wasm"
+        )
+        config = ConsumerConfig()
+        config.wasmModulePath(wasm_module_path, SmartModuleKind.Filter)
+
+        fluvio = Fluvio.connect()
+        producer = fluvio.topic_producer(self.topic)
+        for i in list(ascii_lowercase):
+            producer.send_string(f"record-{i}")
+        records = []
+
+        consumer = fluvio.partition_consumer(self.topic, 0)
+        records.append(
+            bytearray(
+                next(consumer.stream_with_config(Offset.beginning(), config)).value()
+            ).decode()
+        )
+        self.assertEqual(len(records), 1)
+        self.assertEqual(records[0], "record-a")
+
+
 class TestFluvioMethods(unittest.TestCase):
     def setUp(self):
         self.topic = str(uuid.uuid4())
@@ -37,7 +103,7 @@ class TestFluvioMethods(unittest.TestCase):
         for i in range(10):
             producer.send_string("FOOBAR %s " % i)
 
-    def test_consume_with_smart_module_iterator(self):
+    def test_consume_with_smart_module(self):
         """
         Test adds a the alphabet into a topic in the format of record-[letter]
 

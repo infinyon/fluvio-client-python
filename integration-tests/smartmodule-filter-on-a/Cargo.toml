@@ -1,0 +1,19 @@
+[package]
+name = "smartmodule-filter-on-a"
+version = "0.1.0"
+authors = ["Sebastian Imlay <sebastian.imlay@gmail.com>"]
+edition = "2021"
+
+[lib]
+crate-type = ['cdylib']
+
+[dependencies]
+fluvio-smartmodule = "0.3.1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+
+[profile.release-lto]
+inherits = "release"
+lto = true
+strip = "symbols"
