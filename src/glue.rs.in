@@ -85,7 +85,7 @@ foreign_class!(class PartitionConsumer {
     fn _PartitionConsumer::stream_with_config(
         &self,
         _: &Offset,
-        _: &ConsumerConfig,
+        _: &mut ConsumerConfig,
     ) -> Result<PartitionConsumerStream, FluvioError>;
 });
 
@@ -110,8 +110,13 @@ foreign_enum!(
 foreign_class!(class ConsumerConfig {
     self_type ConsumerConfig;
     private constructor ConsumerConfig::new() -> ConsumerConfig;
-    fn ConsumerConfig::max_bytes(&mut self, max_bytes: i32);
-    fn ConsumerConfig::wasm_module_path(&mut self, wasm_module_path: &str, kind: Option<SmartModuleKind>);
-    fn ConsumerConfig::smartmodule_name(&mut self, sm_name: String, kind: Option<SmartModuleKind>);
+    fn ConsumerConfig::smartmodule(
+        &mut self,
+        name: Option<String>,
+        path: Option<String>,
+        kind: Option<SmartModuleKind>,
+        param_keys: Vec<String>,
+        param_values: Vec<String>,
+    ) -> Result<(), FluvioError>;
 });
 

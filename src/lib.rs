@@ -1,8 +1,8 @@
 #![allow(non_snake_case, unused)]
 use fluvio::consumer::{
-    ConsumerConfig as NativeConsumerConfig, ConsumerConfigBuilder, SmartModuleInvocation,
-    SmartModuleInvocationWasm, SmartModuleKind as NativeSmartModuleKind,
-    SmartModuleContextData,
+    ConsumerConfig as NativeConsumerConfig, ConsumerConfigBuilder, SmartModuleContextData,
+    SmartModuleExtraParams, SmartModuleInvocation, SmartModuleInvocationWasm,
+    SmartModuleKind as NativeSmartModuleKind,
 };
 use fluvio::dataplane::link::ErrorCode;
 use fluvio::{consumer::Record, Fluvio, FluvioError, Offset, PartitionConsumer, TopicProducer};
@@ -34,53 +34,64 @@ mod _Fluvio {
 }
 
 pub struct ConsumerConfig {
-    pub(crate) builder: ConsumerConfigBuilder,
+    pub builder: ConsumerConfigBuilder,
+    pub smartmodules: Vec<SmartModuleInvocation>,
 }
 
 impl ConsumerConfig {
     fn new() -> Self {
         Self {
             builder: NativeConsumerConfig::builder(),
+            smartmodules: Vec::new(),
         }
     }
     pub fn max_bytes(&mut self, max_bytes: i32) {
         self.builder.max_bytes(max_bytes);
     }
 
-    pub fn smartmodule(&mut self, smartmodules: Vec<SmartModuleInvocation>) {
-        self.builder.smartmodule(smartmodules);
-    }
-    pub fn smartmodule_name(
+    pub fn smartmodule(
         &mut self,
-        wasm_module_name: String,
+        name: Option<String>,
+        path: Option<String>,
         kind: Option<SmartModuleKind>,
+        param_keys: Vec<String>,
+        param_values: Vec<String>,
     ) -> Result<(), FluvioError> {
-        self.builder.smartmodule(vec![SmartModuleInvocation {
-            wasm: SmartModuleInvocationWasm::Predefined(wasm_module_name),
-            kind: NativeSmartModuleKind::Generic(SmartModuleContextData::default()),
-            params: Default::default(),
-        }]);
-        Ok(())
-    }
-
-    pub fn wasm_module_path(
-        &mut self,
-        wasm_module_path: &str,
-        kind: Option<SmartModuleKind>,
-    ) -> Result<(), FluvioError> {
-        let wasm_module_buffer = std::fs::read(wasm_module_path)?;
-        let kind : NativeSmartModuleKind = if let Some(kind) = kind {
+        let kind: NativeSmartModuleKind = if let Some(kind) = kind {
             kind.into()
         } else {
             NativeSmartModuleKind::Generic(SmartModuleContextData::default())
         };
-        self.builder.smartmodule(vec![SmartModuleInvocation {
-            wasm: SmartModuleInvocationWasm::adhoc_from_bytes(wasm_module_buffer.as_slice())?,
-            kind,
-            params: Default::default(),
-        }]);
+        use std::collections::BTreeMap;
+        let params: Vec<(String, String)> = param_keys
+            .into_iter()
+            .zip(param_values.into_iter())
+            .collect();
+        let params: BTreeMap<String, String> = BTreeMap::from_iter(params);
+        let params: SmartModuleExtraParams = SmartModuleExtraParams::from(params);
 
+        if let Some(name) = name {
+            self.smartmodules.push(SmartModuleInvocation {
+                wasm: SmartModuleInvocationWasm::Predefined(name),
+                kind: kind.clone(),
+                params: params.clone(),
+            });
+        }
+        if let Some(path) = path {
+            let wasm_module_buffer = std::fs::read(path)?;
+            self.smartmodules.push(SmartModuleInvocation {
+                wasm: SmartModuleInvocationWasm::adhoc_from_bytes(wasm_module_buffer.as_slice())?,
+                kind,
+                params,
+            });
+        }
         Ok(())
+    }
+
+    pub(crate) fn build(&mut self) -> Result<NativeConsumerConfig, FluvioError> {
+        let config = self.builder.smartmodule(self.smartmodules.clone());
+
+        Ok(config.build()?)
     }
 }
 
@@ -128,9 +139,9 @@ mod _PartitionConsumer {
     pub fn stream_with_config(
         consumer: &PartitionConsumer,
         offset: &Offset,
-        config: &ConsumerConfig,
+        config: &mut ConsumerConfig,
     ) -> Result<PartitionConsumerStream, FluvioError> {
-        let config = config.builder.build()?;
+        let config = config.build()?;
 
         run_block_on(consumer.stream_with_config(offset.clone(), config)).map(|stream| {
             PartitionConsumerStream {

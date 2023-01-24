@@ -94,18 +94,42 @@ class ConsumerConfig:
     def __init__(self):
         self._inner = _ConsumerConfig()
 
-    def smartModule(self, path: str = None, name: str = None, kind: SmartModuleKind = None):
+    def smartmodule(
+        self, name: str = None, path: str = None, kind: SmartModuleKind = None
+    ):
+        """
+        This is a method for adding a smartmodule to a consumer config either
+        using a `name` of a `SmortModule` or a `path` to a wasm binary.
+
+        Args:
+
+            name: str
+            path: str
+            kind: SmartModuleKind
+
+        Raises:
+            "Require either a path or a name for a smartmodule."
+            "Only specify one of path or name not both."
+
+        Returns:
+
+            None
+        """
 
         if kind is not None:
             kind = kind.value
 
         if path is None and name is None:
-            raise "Require a path or a name for a smartmodule"
+            raise Exception("Require either a path or a name for a smartmodule.")
+
+        if path is not None and name is not None:
+            raise Exception("Only specify one of path or name not both.")
+
         if name is not None:
-            self._inner.smartmodule_name(name, kind)
+            self._inner.smartmodule(name, None, kind)
 
         if path is not None:
-            self._inner.wasm_module_path(path, kind)
+            self._inner.smartmodule(None, path, kind)
 
 
 class PartitionConsumer:
@@ -162,7 +186,7 @@ class PartitionConsumer:
 
             wmp = os.path.abspath("somefilter.wasm")
             config = ConsumerConfig()
-            config.wasmModulePath(wmp)
+            config.smartmodule(path=wmp)
             for i in consumer.stream_with_config(Offset.beginning(), config):
                 # do something with i
 

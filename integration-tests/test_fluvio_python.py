@@ -1,5 +1,5 @@
 from string import ascii_lowercase
-from fluvio import Fluvio, FluviorError, Offset, ConsumerConfig, SmartModuleKind
+from fluvio import Fluvio, Offset, ConsumerConfig, SmartModuleKind
 import unittest
 import uuid
 import os
@@ -22,9 +22,7 @@ def create_smartmodule(sm_name, sm_path):
     import subprocess
 
     subprocess.run(
-        "fluvio smartmodule create %s --wasm-file %s" % (
-            sm_name, sm_path
-        ), shell=True
+        "fluvio smartmodule create %s --wasm-file %s" % (sm_name, sm_path), shell=True
     )
 
 
@@ -40,9 +38,7 @@ class TestFluvioSmartModules(unittest.TestCase):
         self.sm_name = str(uuid.uuid4())
         create_topic(self.topic)
 
-        sm_path = os.path.abspath(
-            "smartmodule_filter_on_a.wasm"
-        )
+        sm_path = os.path.abspath("smartmodule_filter_on_a.wasm")
         create_smartmodule(self.sm_name, sm_path)
 
     def tearDown(self):
@@ -63,7 +59,7 @@ class TestFluvioSmartModules(unittest.TestCase):
         """
 
         config = ConsumerConfig()
-        config.smartModule(name=self.sm_name, kind=SmartModuleKind.Filter)
+        config.smartmodule(name=self.sm_name, kind=SmartModuleKind.Filter)
 
         fluvio = Fluvio.connect()
         producer = fluvio.topic_producer(self.topic)
@@ -79,6 +75,18 @@ class TestFluvioSmartModules(unittest.TestCase):
         )
         self.assertEqual(len(records), 1)
         self.assertEqual(records[0], "record-a")
+
+    def test_consumer_config_no_name(self):
+        fluvio = Fluvio.connect()
+        consumer = fluvio.partition_consumer(self.topic, 0)
+        config = ConsumerConfig()
+        config.smartmodule(name="does_not_exist", kind=SmartModuleKind.Filter)
+
+        with self.assertRaises(Exception) as ctx:
+            next(consumer.stream_with_config(Offset.beginning(), config))
+        self.assertEqual(
+            ctx.exception.args, ("SmartModule does_not_exist was not found",)
+        )
 
 
 class TestFluvioMethods(unittest.TestCase):
@@ -113,11 +121,9 @@ class TestFluvioMethods(unittest.TestCase):
 
         """
 
-        wasm_module_path = os.path.abspath(
-            "integration-tests/smartmodule_filter_on_a.wasm"
-        )
+        sm_path = os.path.abspath("smartmodule_filter_on_a.wasm")
         config = ConsumerConfig()
-        config.smartModule(path=wasm_module_path, kind=SmartModuleKind.Filter)
+        config.smartmodule(path=sm_path, kind=SmartModuleKind.Filter)
 
         fluvio = Fluvio.connect()
         producer = fluvio.topic_producer(self.topic)
@@ -208,16 +214,42 @@ class TestFluvioErrors(unittest.TestCase):
     def test_produce_on_uncreated_topic(self):
         fluvio = Fluvio.connect()
 
-        error = None
-        try:
+        with self.assertRaises(Exception) as ctx:
             fluvio.topic_producer(self.topic)
-        except FluviorError as e:
-            error = e
-            print("ERROR: %s" % e)
 
-        self.assertTrue(error is not None)
         self.assertEqual(
-            error.args, ("Topic not found: %s" % self.topic,)  # noqa: E501
+            ctx.exception.args, ("Topic not found: %s" % self.topic,)  # noqa: E501
+        )
+
+    def test_consumer_config_no_sm_name_or_path(self):
+        config = ConsumerConfig()
+        with self.assertRaises(Exception) as ctx:
+            config.smartmodule()
+        self.assertEqual(
+            ctx.exception.args, ("Require either a path or a name for a smartmodule.",)
+        )
+
+    def test_consumer_config_no_sm_name(self):
+        config = ConsumerConfig()
+        with self.assertRaises(Exception) as ctx:
+            config.smartmodule(name="foo", path="bar")
+
+        self.assertEqual(
+            ctx.exception.args, ("Only specify one of path or name not both.",)
+        )
+
+    def test_consumer_config_attribute_error(self):
+        config = ConsumerConfig()
+        with self.assertRaises(AttributeError) as ctx:
+            config.smartmodule(kind="foobar")
+        self.assertEqual(ctx.exception.args, ("'str' object has no attribute 'value'",))
+
+    def test_consumer_config_no_file(self):
+        config = ConsumerConfig()
+        with self.assertRaises(Exception) as ctx:
+            config.smartmodule(path="does_not_exist.wasm", kind=SmartModuleKind.Filter)
+        self.assertEqual(
+            ctx.exception.args, ("No such file or directory (os error 2)",)
         )
 
 
