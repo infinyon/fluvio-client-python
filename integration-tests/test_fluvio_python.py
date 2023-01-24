@@ -32,13 +32,13 @@ def delete_smartmodule(sm_name):
     subprocess.run("fluvio smartmodule delete %s" % sm_name, shell=True)
 
 
-class TestFluvioSmartModules(unittest.TestCase):
+class TestFluvioFilterSmartModules(unittest.TestCase):
     def setUp(self):
         self.topic = str(uuid.uuid4())
         self.sm_name = str(uuid.uuid4())
         create_topic(self.topic)
 
-        sm_path = os.path.abspath("smartmodule_filter_on_a.wasm")
+        sm_path = os.path.abspath("smartmodules-for-ci/smartmodule_filter_on_a.wasm")
         create_smartmodule(self.sm_name, sm_path)
 
     def tearDown(self):
@@ -59,7 +59,7 @@ class TestFluvioSmartModules(unittest.TestCase):
         """
 
         config = ConsumerConfig()
-        config.smartmodule(name=self.sm_name, kind=SmartModuleKind.Filter)
+        config.smartmodule(name=self.sm_name)
 
         fluvio = Fluvio.connect()
         producer = fluvio.topic_producer(self.topic)
@@ -87,6 +87,183 @@ class TestFluvioSmartModules(unittest.TestCase):
         self.assertEqual(
             ctx.exception.args, ("SmartModule does_not_exist was not found",)
         )
+
+
+class TestFluvioAggregateSmartModules(unittest.TestCase):
+    def setUp(self):
+        self.topic = str(uuid.uuid4())
+        self.sm_name = str(uuid.uuid4())
+        create_topic(self.topic)
+
+        # Smartmodule source:
+        # https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/aggregate/src/lib.rs#L1-L13
+        sm_path = os.path.abspath(
+            "smartmodules-for-ci/fluvio_smartmodule_aggregate.wasm"
+        )
+        create_smartmodule(self.sm_name, sm_path)
+
+    def tearDown(self):
+        delete_topic(self.topic)
+        delete_smartmodule(self.sm_name)
+
+    def test_consume_with_aggregate_example(self):
+        """
+        This smartmodule is from https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/aggregate/src/lib.rs#L1-L13
+        """
+        config = ConsumerConfig()
+        config.smartmodule(name=self.sm_name, aggregate=[1], SmartModuleKind.Aggregate)
+
+        fluvio = Fluvio.connect()
+        producer = fluvio.topic_producer(self.topic)
+        for i in ["a", "b", "c", "d"]:
+            producer.send_string(f"{i}")
+
+        records = []
+
+        consumer = fluvio.partition_consumer(self.topic, 0)
+        stream = consumer.stream_with_config(Offset.beginning(), config)
+        for i in range(4):
+            records.append(bytearray(next(stream).value()).decode())
+        self.assertEqual(len(records), 4)
+
+        # TODO: These should all be prefixed by "1".
+        self.assertEqual(records[0], "a")
+        self.assertEqual(records[1], "ab")
+        self.assertEqual(records[2], "abc")
+        self.assertEqual(records[3], "abcd")
+
+
+class TestFluvioMapSmartModules(unittest.TestCase):
+    def setUp(self):
+        self.topic = str(uuid.uuid4())
+        self.sm_name = str(uuid.uuid4())
+        create_topic(self.topic)
+
+        # Smartmodule source:
+        # https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/map/src/lib.rs#L1-L10
+        sm_path = os.path.abspath("smartmodules-for-ci/fluvio_smartmodule_map.wasm")
+        create_smartmodule(self.sm_name, sm_path)
+
+    def tearDown(self):
+        delete_topic(self.topic)
+        delete_smartmodule(self.sm_name)
+
+    def test_consume_with_aggregate_example(self):
+        """
+        This smartmodule is from https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/map/src/lib.rs#L1-L10
+        """
+        config = ConsumerConfig()
+        config.smartmodule(name=self.sm_name)
+
+        fluvio = Fluvio.connect()
+        producer = fluvio.topic_producer(self.topic)
+        for i in ["foo", "bar"]:
+            producer.send_string(f"{i}")
+
+        records = []
+
+        consumer = fluvio.partition_consumer(self.topic, 1)
+        stream = consumer.stream_with_config(Offset.beginning(), config)
+        for i in range(2):
+            records.append(bytearray(next(stream).value()).decode())
+        self.assertEqual(len(records), 2)
+        self.assertEqual(records[0], "FOO")
+        self.assertEqual(records[1], "BAR")
+
+
+class TestFluvioFilterMapSmartModules(unittest.TestCase):
+    def setUp(self):
+        self.topic = str(uuid.uuid4())
+        self.sm_name = str(uuid.uuid4())
+        create_topic(self.topic)
+
+        # Smartmodule source:
+        # https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/filter_map/src/lib.rs#L1-L17
+        sm_path = os.path.abspath(
+            "smartmodules-for-ci/fluvio_smartmodule_filter_map.wasm"
+        )
+        create_smartmodule(self.sm_name, sm_path)
+
+    def tearDown(self):
+        delete_topic(self.topic)
+        delete_smartmodule(self.sm_name)
+
+    def test_consume_with_aggregate_example(self):
+        """
+        This smartmodule is from
+        https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/filter_map/src/lib.rs#L1-L17
+        This SmartModule filters out all odd numbers, and divides all even
+        numbers by 2.
+
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] -> [1, 2, 3, 4, 5]
+        """
+        config = ConsumerConfig()
+        config.smartmodule(name=self.sm_name)
+
+        fluvio = Fluvio.connect()
+        producer = fluvio.topic_producer(self.topic)
+        for i in range(1, 11):
+            producer.send_string(f"{i}")
+
+        records = []
+
+        consumer = fluvio.partition_consumer(self.topic, 1)
+        stream = consumer.stream_with_config(Offset.beginning(), config)
+        for i in range(5):
+            records.append(bytearray(next(stream).value()).decode())
+        self.assertEqual(len(records), 5)
+        self.assertEqual(records[0], "1")
+        self.assertEqual(records[1], "2")
+        self.assertEqual(records[2], "3")
+        self.assertEqual(records[3], "4")
+        self.assertEqual(records[4], "5")
+
+
+class TestFluvioArrayMapSmartModules(unittest.TestCase):
+    def setUp(self):
+        self.topic = str(uuid.uuid4())
+        self.sm_name = str(uuid.uuid4())
+        create_topic(self.topic)
+
+        # Smartmodule source:
+        # https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/array_map_json_array/src/lib.rs#L1-L55
+        sm_path = os.path.abspath(
+            "smartmodules-for-ci/fluvio_smartmodule_array_map_array.wasm"
+        )
+        create_smartmodule(self.sm_name, sm_path)
+
+    def tearDown(self):
+        delete_topic(self.topic)
+        delete_smartmodule(self.sm_name)
+
+    def test_consume_with_aggregate_example(self):
+        """
+        This smartmodule is from
+        https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/array_map_json_array/src/lib.rs#L1-L55
+        This SmartModule turns the record "["Apple", "Banana", Cranberry"]"
+        into three records of:
+        "Apple"
+        "Banana"
+        "Cranberry"
+        """
+        config = ConsumerConfig()
+        config.smartmodule(name=self.sm_name)
+
+        fluvio = Fluvio.connect()
+        producer = fluvio.topic_producer(self.topic)
+        producer.send_string('["Apple", "Banana", Cranberry"]')
+
+        records = []
+
+        consumer = fluvio.partition_consumer(self.topic, 1)
+        stream = consumer.stream_with_config(Offset.beginning(), config)
+        for i in range(3):
+            records.append(bytearray(next(stream).value()).decode())
+
+        self.assertEqual(len(records), 3)
+        self.assertEqual(records[0], "Apple")
+        self.assertEqual(records[1], "Banana")
+        self.assertEqual(records[2], "Cranberry")
 
 
 class TestFluvioMethods(unittest.TestCase):
@@ -121,7 +298,7 @@ class TestFluvioMethods(unittest.TestCase):
 
         """
 
-        sm_path = os.path.abspath("smartmodule_filter_on_a.wasm")
+        sm_path = os.path.abspath("smartmodules-for-ci/smartmodule_filter_on_a.wasm")
         config = ConsumerConfig()
         config.smartmodule(path=sm_path, kind=SmartModuleKind.Filter)
 

@@ -87,6 +87,7 @@ class SmartModuleKind(Enum):
     Map = _SmartModuleKind.Map
     ArrayMap = _SmartModuleKind.ArrayMap
     FilterMap = _SmartModuleKind.FilterMap
+    Aggregate = _SmartModuleKind.Aggregate
 
 
 class SmartModuleContextData(Enum):
@@ -102,17 +103,24 @@ class ConsumerConfig:
         self._inner = _ConsumerConfig()
 
     def smartmodule(
-        self, name: str = None, path: str = None, kind: SmartModuleKind = None
+        self,
+        name: str = None,
+        path: str = None,
+        kind: SmartModuleKind = None,
+        params: typing.Dict[str, str] = None,
+        aggregate: typing.List[bytes] = None,
     ):
         """
         This is a method for adding a smartmodule to a consumer config either
-        using a `name` of a `SmortModule` or a `path` to a wasm binary.
+        using a `name` of a `SmartModule` or a `path` to a wasm binary.
 
         Args:
 
             name: str
             path: str
             kind: SmartModuleKind
+            params: Dict[str, str]
+            aggregate: List[bytes]
 
         Raises:
             "Require either a path or a name for a smartmodule."
@@ -132,11 +140,24 @@ class ConsumerConfig:
         if path is not None and name is not None:
             raise Exception("Only specify one of path or name not both.")
 
-        if name is not None:
-            self._inner.smartmodule(name, None, kind)
+        params = {} if params is None else params
+        param_keys = [x for x in params.keys()]
+        param_vals = [x for x in params.values()]
 
-        if path is not None:
-            self._inner.smartmodule(None, path, kind)
+        self._inner.smartmodule(
+            name,
+            path,
+            kind,
+            param_keys,
+            param_vals,
+            aggregate,
+            # These arguments are for Join stuff but that's not implemented on
+            # the python side yet
+            None,
+            None,
+            None,
+            None,
+        )
 
 
 class PartitionConsumer:
