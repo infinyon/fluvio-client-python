@@ -1,6 +1,6 @@
 #![allow(non_snake_case, unused)]
 use fluvio::consumer::{
-    ConsumerConfig as NativeConsumerConfig, ConsumerConfigBuilder, SmartModuleContextData,
+    ConsumerConfig as NativeConsumerConfig, ConsumerConfigBuilder, SmartModuleContextData as NativeSmartModuleContextData,
     SmartModuleExtraParams, SmartModuleInvocation, SmartModuleInvocationWasm,
     SmartModuleKind as NativeSmartModuleKind,
 };
@@ -56,11 +56,52 @@ impl ConsumerConfig {
         kind: Option<SmartModuleKind>,
         param_keys: Vec<String>,
         param_values: Vec<String>,
+
+        context: Option<SmartModuleContextData>,
+        join_param: Option<String>,
+        aggregate_accumulator: Option<Vec<u8>>,
+        join_topic: Option<String>,
+        join_derived_stream: Option<String>
     ) -> Result<(), FluvioError> {
         let kind: NativeSmartModuleKind = if let Some(kind) = kind {
-            kind.into()
+            match kind {
+                SmartModuleKind::Filter => NativeSmartModuleKind::Filter,
+                SmartModuleKind::Map => NativeSmartModuleKind::Map,
+                SmartModuleKind::ArrayMap => NativeSmartModuleKind::ArrayMap,
+                SmartModuleKind::FilterMap => NativeSmartModuleKind::FilterMap,
+                SmartModuleKind::Aggregate => NativeSmartModuleKind::Aggregate {
+                    accumulator: aggregate_accumulator.unwrap_or_default(),
+                },
+                SmartModuleKind::Join => NativeSmartModuleKind::Join(join_param.unwrap_or_default()),
+                SmartModuleKind::JoinStream => NativeSmartModuleKind::JoinStream {
+                    topic: join_topic.unwrap_or_default(),
+                    derivedstream: join_derived_stream.unwrap_or_default(),
+                },
+                _ => NativeSmartModuleKind::default(), // default is Filter.
+            }
         } else {
-            NativeSmartModuleKind::Generic(SmartModuleContextData::default())
+            match context {
+                Some(SmartModuleContextData::Aggregate) => {
+                    NativeSmartModuleKind::Generic(NativeSmartModuleContextData::Aggregate {
+                        accumulator: aggregate_accumulator.unwrap_or_default()
+                    })
+                }
+                Some(SmartModuleContextData::Join) => {
+                    NativeSmartModuleKind::Generic(
+                        NativeSmartModuleContextData::Join(
+                            join_param.unwrap_or_default()
+                        )
+                    )
+                },
+                Some(SmartModuleContextData::JoinStream) => {
+                    NativeSmartModuleKind::Generic(
+                        NativeSmartModuleContextData::JoinStream {
+                            topic: join_topic.unwrap_or_default(),
+                            derivedstream: join_derived_stream.unwrap_or_default(),
+                        })
+                }
+                None => NativeSmartModuleKind::Generic(NativeSmartModuleContextData::default())
+            }
         };
         use std::collections::BTreeMap;
         let params: Vec<(String, String)> = param_keys
@@ -95,35 +136,23 @@ impl ConsumerConfig {
     }
 }
 
-impl Into<NativeSmartModuleKind> for SmartModuleKind {
-    fn into(self) -> NativeSmartModuleKind {
-        match self {
-            SmartModuleKind::Filter => NativeSmartModuleKind::Filter,
-            SmartModuleKind::Map => NativeSmartModuleKind::Map,
-            SmartModuleKind::ArrayMap => NativeSmartModuleKind::ArrayMap,
-            SmartModuleKind::FilterMap => NativeSmartModuleKind::FilterMap,
-            _ => NativeSmartModuleKind::default(), // default is Filter.
-        }
-    }
-}
-
 #[derive(Clone)]
 pub enum SmartModuleKind {
     Filter,
     Map,
     ArrayMap,
     FilterMap,
-    /*
-    Join(String),
-    JoinStream {
-        topic: String,
-        derivedstream: String,
-    },
-    Aggregate {
-        accumulator: Vec<u8>,
-    },
-    Generic(SmartModuleContextData),
-    */
+    Join,
+    JoinStream,
+    Aggregate,
+    Generic,
+}
+
+#[derive(Debug, Clone)]
+pub enum SmartModuleContextData {
+    Aggregate,
+    Join,
+    JoinStream,
 }
 
 mod _PartitionConsumer {

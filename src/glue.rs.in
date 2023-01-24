@@ -97,13 +97,20 @@ foreign_class!(class PartitionConsumerStream {
     ) -> Option<Result<Record, ErrorCode>>;
 });
 
-
 foreign_enum!(
     enum SmartModuleKind {
         Filter = SmartModuleKind::Filter,
         Map = SmartModuleKind::Map,
         ArrayMap = SmartModuleKind::ArrayMap,
         FilterMap = SmartModuleKind::FilterMap,
+    }
+);
+
+foreign_enum!(
+    enum SmartModuleContextData {
+        Agregate = SmartModuleContextData::Aggregate,
+        Join = SmartModuleContextData::Join,
+        JoinStream = SmartModuleContextData::JoinStream,
     }
 );
 
@@ -117,6 +124,12 @@ foreign_class!(class ConsumerConfig {
         kind: Option<SmartModuleKind>,
         param_keys: Vec<String>,
         param_values: Vec<String>,
+
+        context: Option<SmartModuleContextData>,
+        join_param: Option<String>,
+        aggregate_accumulator: Option<Vec<u8>>,
+        join_topic: Option<String>,
+        join_derived_stream: Option<String>
     ) -> Result<(), FluvioError>;
 });
 
