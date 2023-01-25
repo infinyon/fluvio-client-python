@@ -6,7 +6,6 @@ from ._fluvio_python import (
     TopicProducer as _TopicProducer,
     ProducerBatchRecord as _ProducerBatchRecord,
     SmartModuleKind as _SmartModuleKind,
-    SmartModuleContextData as _SmartModuleContextData,
     Record as _Record,
     Offset as _Offset,
 )
@@ -93,12 +92,6 @@ class SmartModuleKind(Enum):
     ArrayMap = _SmartModuleKind.ArrayMap
     FilterMap = _SmartModuleKind.FilterMap
     Aggregate = _SmartModuleKind.Aggregate
-
-
-class SmartModuleContextData(Enum):
-    Aggregate = _SmartModuleContextData.Aggregate
-    Join = _SmartModuleContextData.Join
-    JoinStream = _SmartModuleContextData.JoinStream
 
 
 class ConsumerConfig:
