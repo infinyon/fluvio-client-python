@@ -24,6 +24,9 @@ def create_smartmodule(sm_name, sm_path):
     subprocess.run(
         "fluvio smartmodule create %s --wasm-file %s" % (sm_name, sm_path), shell=True
     )
+    subprocess.run(
+        "fluvio smartmodule list", shell=True
+    )
 
 
 def delete_smartmodule(sm_name):
@@ -93,7 +96,6 @@ class TestFluvioFilterSmartModulesWithParams(unittest.TestCase):
     def setUp(self):
         self.topic = str(uuid.uuid4())
         self.sm_name = str(uuid.uuid4())
-        create_topic(self.topic)
 
         # Source at:
         # https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/filter_with_param/src/lib.rs#L1-L24
@@ -101,6 +103,8 @@ class TestFluvioFilterSmartModulesWithParams(unittest.TestCase):
             "smartmodules-for-ci/fluvio_smartmodule_filter_param.wasm"
         )
         create_smartmodule(self.sm_name, sm_path)
+
+        create_topic(self.topic)
 
     def tearDown(self):
         delete_topic(self.topic)
