@@ -24,9 +24,7 @@ def create_smartmodule(sm_name, sm_path):
     subprocess.run(
         "fluvio smartmodule create %s --wasm-file %s" % (sm_name, sm_path), shell=True
     )
-    subprocess.run(
-        "fluvio smartmodule list", shell=True
-    )
+    subprocess.run("fluvio smartmodule list", shell=True)
 
 
 def delete_smartmodule(sm_name):
@@ -452,7 +450,6 @@ class TestFluvioMethods(unittest.TestCase):
         for count, i in enumerate(
             itertools.islice(consumer.stream(Offset.beginning()), 10)
         ):
-            print("THIS IS IN AN ITERATOR! %s" % i.value())
             self.assertEqual(bytearray(i.value()).decode(), "record-%s" % count)
             self.assertEqual(i.value_string(), "record-%s" % count)
 
@@ -482,7 +479,6 @@ class TestFluvioMethods(unittest.TestCase):
         for count, i in enumerate(
             itertools.islice(consumer.stream(Offset.beginning()), 10)
         ):
-            print("THIS IS IN AN ITERATOR! key - %s, value - %s" % (i.key(), i.value()))
             self.assertEqual(bytearray(i.value()).decode(), "record-%s" % count)
             self.assertEqual(i.value_string(), "record-%s" % count)
             self.assertEqual(i.key_string(), "foo")
