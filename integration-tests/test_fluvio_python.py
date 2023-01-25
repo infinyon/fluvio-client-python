@@ -89,6 +89,73 @@ class TestFluvioFilterSmartModules(unittest.TestCase):
         )
 
 
+class TestFluvioFilterSmartModulesWithParams(unittest.TestCase):
+    def setUp(self):
+        self.topic = str(uuid.uuid4())
+        self.sm_name = str(uuid.uuid4())
+        create_topic(self.topic)
+
+        # Source at:
+        # https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/filter_with_param/src/lib.rs#L1-L24
+        sm_path = os.path.abspath(
+            "smartmodules-for-ci/fluvio_smartmodule_filter_param.wasm"
+        )
+        create_smartmodule(self.sm_name, sm_path)
+
+    def tearDown(self):
+        delete_topic(self.topic)
+        delete_smartmodule(self.sm_name)
+
+    def test_consume_with_filter_params_example_with_params(self):
+        """
+        This smartmodule is from https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/filter_with_param/src/lib.rs#L1-L24  # noqa: E501
+        """
+        config = ConsumerConfig()
+        config.smartmodule(name=self.sm_name, params={"key": "o"})
+
+        fluvio = Fluvio.connect()
+        producer = fluvio.topic_producer(self.topic)
+        for i in ["foo", "bar", "fooquux", "baz"]:
+            producer.send_string(f"{i}")
+
+        records = []
+
+        consumer = fluvio.partition_consumer(self.topic, 0)
+        stream = consumer.stream_with_config(Offset.beginning(), config)
+        for i in range(2):
+            records.append(bytearray(next(stream).value()).decode())
+        self.assertEqual(len(records), 2)
+        self.assertEqual(records[0], "foo")
+        self.assertEqual(records[1], "fooquux")
+
+    def test_consume_with_filter_params_example_without_params(self):
+        """
+        This smartmodule is from https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/filter_with_param/src/lib.rs#L1-L24  # noqa: E501
+        """
+        config = ConsumerConfig()
+        config.smartmodule(name=self.sm_name)
+
+        fluvio = Fluvio.connect()
+        producer = fluvio.topic_producer(self.topic)
+        for i in [
+            "foo",
+            "bar",
+            "fooquux",
+            "baz",
+        ]:
+            producer.send_string(f"{i}")
+
+        records = []
+
+        consumer = fluvio.partition_consumer(self.topic, 0)
+        stream = consumer.stream_with_config(Offset.beginning(), config)
+        for i in range(2):
+            records.append(bytearray(next(stream).value()).decode())
+        self.assertEqual(len(records), 2)
+        self.assertEqual(records[0], "bar")
+        self.assertEqual(records[1], "baz")
+
+
 class TestFluvioAggregateSmartModules(unittest.TestCase):
     def setUp(self):
         self.topic = str(uuid.uuid4())
@@ -106,12 +173,12 @@ class TestFluvioAggregateSmartModules(unittest.TestCase):
         delete_topic(self.topic)
         delete_smartmodule(self.sm_name)
 
-    def test_consume_with_aggregate_example(self):
+    def test_consume_with_aggregate_example_without_kind_param(self):
         """
-        This smartmodule is from https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/aggregate/src/lib.rs#L1-L13
+        This smartmodule is from https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/aggregate/src/lib.rs#L1-L13  # noqa: E501
         """
         config = ConsumerConfig()
-        config.smartmodule(name=self.sm_name, aggregate=[1], SmartModuleKind.Aggregate)
+        config.smartmodule(name=self.sm_name, aggregate="1".encode())
 
         fluvio = Fluvio.connect()
         producer = fluvio.topic_producer(self.topic)
@@ -127,6 +194,60 @@ class TestFluvioAggregateSmartModules(unittest.TestCase):
         self.assertEqual(len(records), 4)
 
         # TODO: These should all be prefixed by "1".
+        self.assertEqual(records[0], "1a")
+        self.assertEqual(records[1], "1ab")
+        self.assertEqual(records[2], "1abc")
+        self.assertEqual(records[3], "1abcd")
+
+    def test_consume_with_aggregate_example_with_kind_param(self):
+        """
+        This smartmodule is from https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/aggregate/src/lib.rs#L1-L13  # noqa: E501
+        """
+        config = ConsumerConfig()
+        config.smartmodule(
+            name=self.sm_name, aggregate="1".encode(), kind=SmartModuleKind.Aggregate
+        )
+
+        fluvio = Fluvio.connect()
+        producer = fluvio.topic_producer(self.topic)
+        for i in ["a", "b", "c", "d"]:
+            producer.send_string(f"{i}")
+
+        records = []
+
+        consumer = fluvio.partition_consumer(self.topic, 0)
+        stream = consumer.stream_with_config(Offset.beginning(), config)
+        for i in range(4):
+            records.append(bytearray(next(stream).value()).decode())
+        self.assertEqual(len(records), 4)
+
+        # TODO: These should all be prefixed by "1".
+        self.assertEqual(records[0], "1a")
+        self.assertEqual(records[1], "1ab")
+        self.assertEqual(records[2], "1abc")
+        self.assertEqual(records[3], "1abcd")
+
+    def test_consume_with_aggregate_example_without_initial_aggregate(self):
+        """
+        This smartmodule is from https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/aggregate/src/lib.rs#L1-L13  # noqa: E501
+        """
+        config = ConsumerConfig()
+        config.smartmodule(name=self.sm_name)
+
+        fluvio = Fluvio.connect()
+        producer = fluvio.topic_producer(self.topic)
+        for i in ["a", "b", "c", "d"]:
+            producer.send_string(f"{i}")
+
+        records = []
+
+        consumer = fluvio.partition_consumer(self.topic, 0)
+        stream = consumer.stream_with_config(Offset.beginning(), config)
+        for i in range(4):
+            records.append(bytearray(next(stream).value()).decode())
+        self.assertEqual(len(records), 4)
+
+        # TODO: These should all **NOT** be prefixed by "1".
         self.assertEqual(records[0], "a")
         self.assertEqual(records[1], "ab")
         self.assertEqual(records[2], "abc")
@@ -150,7 +271,7 @@ class TestFluvioMapSmartModules(unittest.TestCase):
 
     def test_consume_with_aggregate_example(self):
         """
-        This smartmodule is from https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/map/src/lib.rs#L1-L10
+        This smartmodule is from https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/map/src/lib.rs#L1-L10  # noqa: E501
         """
         config = ConsumerConfig()
         config.smartmodule(name=self.sm_name)
@@ -162,7 +283,7 @@ class TestFluvioMapSmartModules(unittest.TestCase):
 
         records = []
 
-        consumer = fluvio.partition_consumer(self.topic, 1)
+        consumer = fluvio.partition_consumer(self.topic, 0)
         stream = consumer.stream_with_config(Offset.beginning(), config)
         for i in range(2):
             records.append(bytearray(next(stream).value()).decode())
@@ -191,7 +312,7 @@ class TestFluvioFilterMapSmartModules(unittest.TestCase):
     def test_consume_with_aggregate_example(self):
         """
         This smartmodule is from
-        https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/filter_map/src/lib.rs#L1-L17
+        https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/filter_map/src/lib.rs#L1-L17  # noqa: E501
         This SmartModule filters out all odd numbers, and divides all even
         numbers by 2.
 
@@ -207,7 +328,7 @@ class TestFluvioFilterMapSmartModules(unittest.TestCase):
 
         records = []
 
-        consumer = fluvio.partition_consumer(self.topic, 1)
+        consumer = fluvio.partition_consumer(self.topic, 0)
         stream = consumer.stream_with_config(Offset.beginning(), config)
         for i in range(5):
             records.append(bytearray(next(stream).value()).decode())
@@ -239,8 +360,8 @@ class TestFluvioArrayMapSmartModules(unittest.TestCase):
     def test_consume_with_aggregate_example(self):
         """
         This smartmodule is from
-        https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/array_map_json_array/src/lib.rs#L1-L55
-        This SmartModule turns the record "["Apple", "Banana", Cranberry"]"
+        https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/array_map_json_array/src/lib.rs#L1-L55  # noqa: E501
+        This SmartModule turns the record "["Apple", "Banana", "Cranberry"]"
         into three records of:
         "Apple"
         "Banana"
@@ -251,19 +372,19 @@ class TestFluvioArrayMapSmartModules(unittest.TestCase):
 
         fluvio = Fluvio.connect()
         producer = fluvio.topic_producer(self.topic)
-        producer.send_string('["Apple", "Banana", Cranberry"]')
+        producer.send_string('["Apple", "Banana", "Cranberry"]')
 
         records = []
 
-        consumer = fluvio.partition_consumer(self.topic, 1)
+        consumer = fluvio.partition_consumer(self.topic, 0)
         stream = consumer.stream_with_config(Offset.beginning(), config)
         for i in range(3):
             records.append(bytearray(next(stream).value()).decode())
 
         self.assertEqual(len(records), 3)
-        self.assertEqual(records[0], "Apple")
-        self.assertEqual(records[1], "Banana")
-        self.assertEqual(records[2], "Cranberry")
+        self.assertEqual(records[0], '"Apple"')
+        self.assertEqual(records[1], '"Banana"')
+        self.assertEqual(records[2], '"Cranberry"')
 
 
 class TestFluvioMethods(unittest.TestCase):

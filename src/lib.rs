@@ -97,7 +97,15 @@ impl ConsumerConfig {
                         derivedstream: join_derived_stream.unwrap_or_default(),
                     })
                 }
-                None => NativeSmartModuleKind::Generic(NativeSmartModuleContextData::default()),
+                None => {
+                    if let Some(accumulator) = aggregate_accumulator {
+                        NativeSmartModuleKind::Generic(NativeSmartModuleContextData::Aggregate {
+                            accumulator,
+                        })
+                    } else {
+                        NativeSmartModuleKind::Generic(NativeSmartModuleContextData::default())
+                    }
+                }
             }
         };
         use std::collections::BTreeMap;
