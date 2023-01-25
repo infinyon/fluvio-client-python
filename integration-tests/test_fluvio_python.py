@@ -62,15 +62,12 @@ class TestFluvioSmartModules(unittest.TestCase):
 
         """
 
-        wasm_module_path = os.path.abspath(
-            "integration-tests/smartmodule_filter_on_a.wasm"
-        )
         config = ConsumerConfig()
-        config.wasmModulePath(wasm_module_path, SmartModuleKind.Filter)
+        config.smartModule(name=self.sm_name, kind=SmartModuleKind.Filter)
 
         fluvio = Fluvio.connect()
         producer = fluvio.topic_producer(self.topic)
-        for i in list(ascii_lowercase):
+        for i in list(ascii_lowercase)[::-1]:
             producer.send_string(f"record-{i}")
         records = []
 
@@ -120,11 +117,11 @@ class TestFluvioMethods(unittest.TestCase):
             "integration-tests/smartmodule_filter_on_a.wasm"
         )
         config = ConsumerConfig()
-        config.wasmModulePath(wasm_module_path, SmartModuleKind.Filter)
+        config.smartModule(path=wasm_module_path, kind=SmartModuleKind.Filter)
 
         fluvio = Fluvio.connect()
         producer = fluvio.topic_producer(self.topic)
-        for i in list(ascii_lowercase):
+        for i in list(ascii_lowercase)[::-1]:
             producer.send_string(f"record-{i}")
         records = []
 

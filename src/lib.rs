@@ -1,9 +1,8 @@
 #![allow(non_snake_case, unused)]
-use flate2::bufread::GzEncoder;
-use flate2::Compression;
 use fluvio::consumer::{
     ConsumerConfig as NativeConsumerConfig, ConsumerConfigBuilder, SmartModuleInvocation,
     SmartModuleInvocationWasm, SmartModuleKind as NativeSmartModuleKind,
+    SmartModuleContextData,
 };
 use fluvio::dataplane::link::ErrorCode;
 use fluvio::{consumer::Record, Fluvio, FluvioError, Offset, PartitionConsumer, TopicProducer};
@@ -51,19 +50,33 @@ impl ConsumerConfig {
     pub fn smartmodule(&mut self, smartmodules: Vec<SmartModuleInvocation>) {
         self.builder.smartmodule(smartmodules);
     }
+    pub fn smartmodule_name(
+        &mut self,
+        wasm_module_name: String,
+        kind: Option<SmartModuleKind>,
+    ) -> Result<(), FluvioError> {
+        self.builder.smartmodule(vec![SmartModuleInvocation {
+            wasm: SmartModuleInvocationWasm::Predefined(wasm_module_name),
+            kind: NativeSmartModuleKind::Generic(SmartModuleContextData::default()),
+            params: Default::default(),
+        }]);
+        Ok(())
+    }
 
     pub fn wasm_module_path(
         &mut self,
         wasm_module_path: &str,
-        kind: SmartModuleKind,
+        kind: Option<SmartModuleKind>,
     ) -> Result<(), FluvioError> {
         let wasm_module_buffer = std::fs::read(wasm_module_path)?;
-        let mut encoder = GzEncoder::new(wasm_module_buffer.as_slice(), Compression::default());
-        let mut buffer = Vec::with_capacity(wasm_module_buffer.len());
-        let encoder = encoder.read_to_end(&mut buffer)?;
+        let kind : NativeSmartModuleKind = if let Some(kind) = kind {
+            kind.into()
+        } else {
+            NativeSmartModuleKind::Generic(SmartModuleContextData::default())
+        };
         self.builder.smartmodule(vec![SmartModuleInvocation {
-            wasm: SmartModuleInvocationWasm::AdHoc(wasm_module_buffer),
-            kind: kind.into(),
+            wasm: SmartModuleInvocationWasm::adhoc_from_bytes(wasm_module_buffer.as_slice())?,
+            kind,
             params: Default::default(),
         }]);
 

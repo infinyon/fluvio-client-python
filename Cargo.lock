@@ -12,7 +12,6 @@ dependencies = [
  "dirs",
  "env_logger",
  "flapigen",
- "flate2",
  "fluvio",
  "fluvio-future",
  "fluvio-types",

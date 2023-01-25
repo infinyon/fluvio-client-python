@@ -94,8 +94,18 @@ class ConsumerConfig:
     def __init__(self):
         self._inner = _ConsumerConfig()
 
-    def wasmModulePath(self, wasmModulePath: str, kind: SmartModuleKind):
-        self._inner.wasm_module_path(wasmModulePath, kind.value)
+    def smartModule(self, path: str = None, name: str = None, kind: SmartModuleKind = None):
+
+        if kind is not None:
+            kind = kind.value
+
+        if path is None and name is None:
+            raise "Require a path or a name for a smartmodule"
+        if name is not None:
+            self._inner.smartmodule_name(name, kind)
+
+        if path is not None:
+            self._inner.wasm_module_path(path, kind)
 
 
 class PartitionConsumer:
