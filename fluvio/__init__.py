@@ -83,6 +83,11 @@ class Offset:
 
 
 class SmartModuleKind(Enum):
+    """
+    Use of this is to explicitly set the kind of a smartmodule. Not required
+    but needed for legacy SmartModules.
+    """
+
     Filter = _SmartModuleKind.Filter
     Map = _SmartModuleKind.Map
     ArrayMap = _SmartModuleKind.ArrayMap
@@ -120,7 +125,7 @@ class ConsumerConfig:
             path: str
             kind: SmartModuleKind
             params: Dict[str, str]
-            aggregate: List[bytes]
+            aggregate: List[bytes] # This is used for the initial value of an aggregate smartmodule
 
         Raises:
             "Require either a path or a name for a smartmodule."
