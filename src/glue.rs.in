@@ -14,14 +14,6 @@ foreign_class!(class Fluvio {
     ) -> Result<TopicProducer, FluvioError>;
 });
 
-foreign_class!(class PartitionConsumerStream{
-    self_type PartitionConsumerStream;
-    private constructor = empty;
-    fn PartitionConsumerStream::next(
-        &mut self
-    ) -> Option<Result<Record, ErrorCode>>;
-});
-
 foreign_class!(
     #[derive(Clone)]
     class ProducerBatchRecord {
