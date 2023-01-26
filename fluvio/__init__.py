@@ -1,12 +1,15 @@
 from ._fluvio_python import (
     Fluvio as _Fluvio,
+    ConsumerConfig as _ConsumerConfig,
     PartitionConsumer as _PartitionConsumer,
     PartitionConsumerStream as _PartitionConsumerStream,
     TopicProducer as _TopicProducer,
     ProducerBatchRecord as _ProducerBatchRecord,
+    SmartModuleKind as _SmartModuleKind,
     Record as _Record,
     Offset as _Offset,
 )
+from enum import Enum
 from ._fluvio_python import Error as FluviorError  # noqa: F401
 import typing
 
@@ -78,6 +81,83 @@ class Offset:
         self._inner = inner
 
 
+class SmartModuleKind(Enum):
+    """
+    Use of this is to explicitly set the kind of a smartmodule. Not required
+    but needed for legacy SmartModules.
+    """
+
+    Filter = _SmartModuleKind.Filter
+    Map = _SmartModuleKind.Map
+    ArrayMap = _SmartModuleKind.ArrayMap
+    FilterMap = _SmartModuleKind.FilterMap
+    Aggregate = _SmartModuleKind.Aggregate
+
+
+class ConsumerConfig:
+    _inner: _ConsumerConfig
+
+    def __init__(self):
+        self._inner = _ConsumerConfig()
+
+    def smartmodule(
+        self,
+        name: str = None,
+        path: str = None,
+        kind: SmartModuleKind = None,
+        params: typing.Dict[str, str] = None,
+        aggregate: typing.List[bytes] = None,
+    ):
+        """
+        This is a method for adding a smartmodule to a consumer config either
+        using a `name` of a `SmartModule` or a `path` to a wasm binary.
+
+        Args:
+
+            name: str
+            path: str
+            kind: SmartModuleKind
+            params: Dict[str, str]
+            aggregate: List[bytes] # This is used for the initial value of an aggregate smartmodule
+
+        Raises:
+            "Require either a path or a name for a smartmodule."
+            "Only specify one of path or name not both."
+
+        Returns:
+
+            None
+        """
+
+        if kind is not None:
+            kind = kind.value
+
+        if path is None and name is None:
+            raise Exception("Require either a path or a name for a smartmodule.")
+
+        if path is not None and name is not None:
+            raise Exception("Only specify one of path or name not both.")
+
+        params = {} if params is None else params
+        param_keys = [x for x in params.keys()]
+        param_vals = [x for x in params.values()]
+
+        self._inner.smartmodule(
+            name,
+            path,
+            kind,
+            param_keys,
+            param_vals,
+            aggregate,
+            # These arguments are for Join stuff but that's not implemented on
+            # the python side yet
+            None,
+            None,
+            None,
+            None,
+        )
+
+
 class PartitionConsumer:
     """
     An interface for consuming events from a particular partition
@@ -110,7 +190,7 @@ class PartitionConsumer:
         return self._generator(self._inner.stream(offset._inner))
 
     def stream_with_config(
-        self, offset: Offset, wasm_path: str
+        self, offset: Offset, config: ConsumerConfig
     ) -> typing.Iterator[Record]:
         """
         Continuously streams events from a particular offset with a SmartModule
@@ -131,14 +211,18 @@ class PartitionConsumer:
             import os
 
             wmp = os.path.abspath("somefilter.wasm")
-            for i in consumer.stream_with_config(Offset.beginning(), wmp):
+            config = ConsumerConfig()
+            config.smartmodule(path=wmp)
+            for i in consumer.stream_with_config(Offset.beginning(), config):
                 # do something with i
 
         Returns:
             `Iterator[Record]`
 
         """
-        return self._generator(self._inner.stream_with_config(offset._inner, wasm_path))
+        return self._generator(
+            self._inner.stream_with_config(offset._inner, config._inner)
+        )
 
     def _generator(self, stream: _PartitionConsumerStream) -> typing.Iterator[Record]:
         item = stream.next()
