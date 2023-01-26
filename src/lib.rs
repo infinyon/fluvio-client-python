@@ -1,8 +1,9 @@
 #![allow(non_snake_case, unused)]
-use flate2::bufread::GzEncoder;
-use flate2::Compression;
-use fluvio::consumer::ConsumerConfig;
-use fluvio::consumer::{SmartModuleInvocation, SmartModuleInvocationWasm, SmartModuleKind};
+use fluvio::consumer::{
+    ConsumerConfig as NativeConsumerConfig, ConsumerConfigBuilder,
+    SmartModuleContextData as NativeSmartModuleContextData, SmartModuleExtraParams,
+    SmartModuleInvocation, SmartModuleInvocationWasm, SmartModuleKind as NativeSmartModuleKind,
+};
 use fluvio::dataplane::link::ErrorCode;
 use fluvio::{consumer::Record, Fluvio, FluvioError, Offset, PartitionConsumer, TopicProducer};
 use fluvio_future::{
@@ -32,20 +33,131 @@ mod _Fluvio {
     }
 }
 
-pub struct ConsumerConfigWrapper {
-    wasm_module: Vec<u8>,
+pub struct ConsumerConfig {
+    pub builder: ConsumerConfigBuilder,
+    pub smartmodules: Vec<SmartModuleInvocation>,
 }
 
-impl ConsumerConfigWrapper {
-    fn new_config_with_wasm_filter(file: &str) -> Result<ConsumerConfigWrapper, std::io::Error> {
-        let raw_buffer = std::fs::read(file)?;
-        let mut encoder = GzEncoder::new(raw_buffer.as_slice(), Compression::default());
-        let mut buffer = Vec::with_capacity(raw_buffer.len());
-        let encoder = encoder.read_to_end(&mut buffer)?;
-        Ok(ConsumerConfigWrapper {
-            wasm_module: buffer,
-        })
+impl ConsumerConfig {
+    fn new() -> Self {
+        Self {
+            builder: NativeConsumerConfig::builder(),
+            smartmodules: Vec::new(),
+        }
     }
+    pub fn max_bytes(&mut self, max_bytes: i32) {
+        self.builder.max_bytes(max_bytes);
+    }
+
+    pub fn smartmodule(
+        &mut self,
+        name: Option<String>,
+        path: Option<String>,
+        kind: Option<SmartModuleKind>,
+        param_keys: Vec<String>,
+        param_values: Vec<String>,
+
+        aggregate_accumulator: Option<Vec<u8>>,
+        context: Option<SmartModuleContextData>,
+        join_param: Option<String>,
+        join_topic: Option<String>,
+        join_derived_stream: Option<String>,
+    ) -> Result<(), FluvioError> {
+        let kind: NativeSmartModuleKind = if let Some(kind) = kind {
+            match kind {
+                SmartModuleKind::Filter => NativeSmartModuleKind::Filter,
+                SmartModuleKind::Map => NativeSmartModuleKind::Map,
+                SmartModuleKind::ArrayMap => NativeSmartModuleKind::ArrayMap,
+                SmartModuleKind::FilterMap => NativeSmartModuleKind::FilterMap,
+                SmartModuleKind::Aggregate => NativeSmartModuleKind::Aggregate {
+                    accumulator: aggregate_accumulator.unwrap_or_default(),
+                },
+                SmartModuleKind::Join => {
+                    NativeSmartModuleKind::Join(join_param.unwrap_or_default())
+                }
+                SmartModuleKind::JoinStream => NativeSmartModuleKind::JoinStream {
+                    topic: join_topic.unwrap_or_default(),
+                    derivedstream: join_derived_stream.unwrap_or_default(),
+                },
+                _ => NativeSmartModuleKind::default(), // default is Filter.
+            }
+        } else {
+            match context {
+                Some(SmartModuleContextData::Aggregate) => {
+                    NativeSmartModuleKind::Generic(NativeSmartModuleContextData::Aggregate {
+                        accumulator: aggregate_accumulator.unwrap_or_default(),
+                    })
+                }
+                Some(SmartModuleContextData::Join) => NativeSmartModuleKind::Generic(
+                    NativeSmartModuleContextData::Join(join_param.unwrap_or_default()),
+                ),
+                Some(SmartModuleContextData::JoinStream) => {
+                    NativeSmartModuleKind::Generic(NativeSmartModuleContextData::JoinStream {
+                        topic: join_topic.unwrap_or_default(),
+                        derivedstream: join_derived_stream.unwrap_or_default(),
+                    })
+                }
+                None => {
+                    if let Some(accumulator) = aggregate_accumulator {
+                        NativeSmartModuleKind::Generic(NativeSmartModuleContextData::Aggregate {
+                            accumulator,
+                        })
+                    } else {
+                        NativeSmartModuleKind::Generic(NativeSmartModuleContextData::default())
+                    }
+                }
+            }
+        };
+        use std::collections::BTreeMap;
+        let params: Vec<(String, String)> = param_keys
+            .into_iter()
+            .zip(param_values.into_iter())
+            .collect();
+        let params: BTreeMap<String, String> = BTreeMap::from_iter(params);
+        let params: SmartModuleExtraParams = SmartModuleExtraParams::from(params);
+
+        if let Some(name) = name {
+            self.smartmodules.push(SmartModuleInvocation {
+                wasm: SmartModuleInvocationWasm::Predefined(name),
+                kind: kind.clone(),
+                params: params.clone(),
+            });
+        }
+        if let Some(path) = path {
+            let wasm_module_buffer = std::fs::read(path)?;
+            self.smartmodules.push(SmartModuleInvocation {
+                wasm: SmartModuleInvocationWasm::adhoc_from_bytes(wasm_module_buffer.as_slice())?,
+                kind,
+                params,
+            });
+        }
+        Ok(())
+    }
+
+    pub(crate) fn build(&mut self) -> Result<NativeConsumerConfig, FluvioError> {
+        let config = self.builder.smartmodule(self.smartmodules.clone());
+
+        Ok(config.build()?)
+    }
+}
+
+#[derive(Clone)]
+pub enum SmartModuleKind {
+    Filter,
+    Map,
+    ArrayMap,
+    FilterMap,
+    Join,
+    JoinStream,
+    Aggregate,
+    Generic,
+}
+
+#[derive(Debug, Clone)]
+pub enum SmartModuleContextData {
+    Aggregate,
+    Join,
+    JoinStream,
 }
 
 mod _PartitionConsumer {
@@ -61,18 +173,10 @@ mod _PartitionConsumer {
     pub fn stream_with_config(
         consumer: &PartitionConsumer,
         offset: &Offset,
-        wasm_module_path: &str,
+        config: &mut ConsumerConfig,
     ) -> Result<PartitionConsumerStream, FluvioError> {
-        let config_wrapper = ConsumerConfigWrapper::new_config_with_wasm_filter(wasm_module_path)?;
-        let mut builder = ConsumerConfig::builder();
-        builder.smartmodule(vec![SmartModuleInvocation {
-            wasm: SmartModuleInvocationWasm::AdHoc(config_wrapper.wasm_module),
-            kind: SmartModuleKind::Filter,
-            params: Default::default(),
-        }]);
-        let config = builder
-            .build()
-            .map_err(|err| FluvioError::Other(err.to_string()))?;
+        let config = config.build()?;
+
         run_block_on(consumer.stream_with_config(offset.clone(), config)).map(|stream| {
             PartitionConsumerStream {
                 inner: Box::pin(stream),

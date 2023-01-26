@@ -13,24 +13,6 @@ foreign_class!(class Fluvio {
         _: String
     ) -> Result<TopicProducer, FluvioError>;
 });
-foreign_class!(class PartitionConsumer {
-    self_type PartitionConsumer;
-    private constructor = empty;
-    fn _PartitionConsumer::stream(
-        &self, _: &Offset
-    ) -> Result<PartitionConsumerStream, FluvioError>;
-    fn _PartitionConsumer::stream_with_config(
-        &self, _: &Offset, _: &str
-    ) -> Result<PartitionConsumerStream, FluvioError>;
-});
-
-foreign_class!(class PartitionConsumerStream{
-    self_type PartitionConsumerStream;
-    private constructor = empty;
-    fn PartitionConsumerStream::next(
-        &mut self
-    ) -> Option<Result<Record, ErrorCode>>;
-});
 
 foreign_class!(
     #[derive(Clone)]
@@ -93,3 +75,62 @@ foreign_class!(class Cloud {
         _: Option<String>
     ) -> Result<(), CloudLoginError>;
 });
+foreign_class!(class PartitionConsumer {
+    self_type PartitionConsumer;
+    private constructor = empty;
+    fn _PartitionConsumer::stream(
+        &self,
+        _: &Offset
+    ) -> Result<PartitionConsumerStream, FluvioError>;
+    fn _PartitionConsumer::stream_with_config(
+        &self,
+        _: &Offset,
+        _: &mut ConsumerConfig,
+    ) -> Result<PartitionConsumerStream, FluvioError>;
+});
+
+foreign_class!(class PartitionConsumerStream {
+    self_type PartitionConsumerStream;
+    private constructor = empty;
+    fn PartitionConsumerStream::next(
+        &mut self
+    ) -> Option<Result<Record, ErrorCode>>;
+});
+
+foreign_enum!(
+    enum SmartModuleKind {
+        Filter = SmartModuleKind::Filter,
+        Map = SmartModuleKind::Map,
+        ArrayMap = SmartModuleKind::ArrayMap,
+        FilterMap = SmartModuleKind::FilterMap,
+        Aggregate= SmartModuleKind::Aggregate,
+    }
+);
+
+foreign_enum!(
+    enum SmartModuleContextData {
+        Aggregate = SmartModuleContextData::Aggregate,
+        Join = SmartModuleContextData::Join,
+        JoinStream = SmartModuleContextData::JoinStream,
+    }
+);
+
+foreign_class!(class ConsumerConfig {
+    self_type ConsumerConfig;
+    private constructor ConsumerConfig::new() -> ConsumerConfig;
+    fn ConsumerConfig::smartmodule(
+        &mut self,
+        name: Option<String>,
+        path: Option<String>,
+        kind: Option<SmartModuleKind>,
+        param_keys: Vec<String>,
+        param_values: Vec<String>,
+
+        aggregate_accumulator: Option<Vec<u8>>,
+        context: Option<SmartModuleContextData>,
+        join_param: Option<String>,
+        join_topic: Option<String>,
+        join_derived_stream: Option<String>
+    ) -> Result<(), FluvioError>;
+});
+
