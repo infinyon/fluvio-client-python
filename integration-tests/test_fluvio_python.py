@@ -9,22 +9,22 @@ import itertools
 def create_topic(topic):
     import subprocess
 
-    subprocess.run("fluvio topic create %s" % topic, shell=True)
+    subprocess.run(["fluvio", "topic", "create", topic], shell=True).check_returncode()
 
 
 def delete_topic(topic):
     import subprocess
 
-    subprocess.run("fluvio topic delete %s" % topic, shell=True)
+    subprocess.run(["fluvio", "topic", "delete", topic], shell=True).check_returncode()
 
 
 def create_smartmodule(sm_name, sm_path):
     import subprocess
 
     subprocess.run(
-        "fluvio smartmodule create %s --wasm-file %s" % (sm_name, sm_path), shell=True
-    )
-    subprocess.run("fluvio smartmodule list", shell=True)
+        ["fluvio", "smartmodule", "create", sm_name, "--wasm-file", sm_path], shell=True
+    ).check_returncode()
+    subprocess.run(["fluvio", "smartmodule", "list"], shell=True)
 
 
 def delete_smartmodule(sm_name):
