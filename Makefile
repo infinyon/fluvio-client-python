@@ -50,11 +50,13 @@ manylinux2014_aarch64:
 manylinux2014_x86_64:
 	python setup.py bdist_wheel --py-limited-api=cp38 --plat-name manylinux2014_x86_64
 
+PDOC_OPTS=--logo='https://www.fluvio.io/images/assets/fluvio-with-text.svg' --favicon='https://www.fluvio.io/images/favicon.ico'
+
 docs-serve: venv-pip build-dev
-	$(PYTHON) -m pdoc fluvio
+	$(PYTHON) -m pdoc fluvio $(PDOC_OPTS)
 
 docs-build: venv-pip build-dev
-	$(PYTHON) -m pdoc fluvio -o docs
+	$(PYTHON) -m pdoc fluvio -o docs/ $(PDOC_OPTS)
 
 clean:
 	rm -rf venv fluvio/*.so target dist build

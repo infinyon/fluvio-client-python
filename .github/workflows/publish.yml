@@ -70,6 +70,7 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
+          name: wheel
           path: ./wheelhouse/*.whl
 
   build_sdist:
@@ -91,6 +92,7 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
+          name: wheel
           path: dist/*.tar.gz
 
   build_cc_wheels:
@@ -147,6 +149,7 @@ jobs:
             CARGO_BUILD_TARGET: ${{ matrix.platform.target }}
       - uses: actions/upload-artifact@v3
         with:
+          name: wheel
           path: dist/*.whl
 
   upload_pypi:
@@ -156,7 +159,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
         with:
-          name: artifact
+          name: wheel
           path: dist
 
       - uses: pypa/gh-action-pypi-publish@master
@@ -165,3 +168,102 @@ jobs:
           user: __token__
           password: ${{ secrets.PYPI_ACCESS_TOKEN }}
           skip_existing: true
+
+  build_docs:
+    name: build static docs
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ["3.11"]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
+          fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Build docs
+        run: |
+          make docs-build
+          touch docs/.nojekyll
+          echo "FLUVIO_PYTHON_CLIENT_VERSION=$(venv/bin/python setup.py --version 2> /dev/null)" >> $GITHUB_ENV
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: docs
+          path: docs
+
+  publish_docs_to_pages:
+    needs: [build_docs]
+    name: push static docs
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
+          fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: docs
+          path: docs-latest
+
+      - name: "Git Fetch & Checkout"
+        run: |
+          git config --local user.email "team@fluvio.io"
+          git config --local user.name "Fluvio Authors"
+          git fetch --all
+          git checkout -b docs --track origin/docs
+          git merge -X theirs origin/main -m "Merge remote-tracking branch 'origin/main into docs" --allow-unrelated-histories
+
+      - name: Commit files
+        run: |
+          git add --force docs
+          git commit -m "Updated Fluvio Python client docs" -a || true
+
+      - name: Push changes
+        if: github.event_name == 'workflow_dispatch'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: docs
+
+  upload_to_github_releases:
+    needs: [build_wheels, build_sdist, build_cc_wheels, build_docs]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: wheel
+          path: dist
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: docs
+          path: docs
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: github.ref == 'refs/heads/main' && github.event_name != 'workflow_dispatch'
+        with:
+          name: latest
+          prerelease: true
+          files: |
+            dist/*
+            docs
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: github.event_name == 'workflow_dispatch'
+        with:
+          name: ${{ github.FLUVIO_PYTHON_CLIENT_VERSION }}
+          files: |
+            dist/*
+            docs
