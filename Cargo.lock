@@ -353,9 +353,9 @@ checksum = "9e1b586273c5702936fe7b7d6896644d8be71e6314cfe09d3167c95f712589e8"
 
 [[package]]
 name = "base64"
-version = "0.20.0"
+version = "0.21.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0ea22880d78093b0cbe17c89f64a7d457941e65759157ec6cb31a31d652b05e5"
+checksum = "a4a4ddaa51a5bc52a6948f74c06d20aaaddb71924eab79b8c97a8c556e942d6a"
 
 [[package]]
 name = "bitflags"
@@ -931,16 +931,16 @@ dependencies = [
 
 [[package]]
 name = "fluvio"
-version = "0.16.0"
+version = "0.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "05dd7e4c85ab7516ec6ffa957fdaededb3acecd53976e95d3b0643063cdd6940"
+checksum = "cd9ed6e5a1622df2ef577624baf69050716044065cc6e1c7811497e66613c706"
 dependencies = [
  "anyhow",
  "async-channel",
  "async-lock",
  "async-rwlock",
  "async-trait",
- "base64 0.20.0",
+ "base64 0.21.0",
  "bytes",
  "cfg-if",
  "chrono",
@@ -964,7 +964,7 @@ dependencies = [
  "siphasher",
  "thiserror",
  "tokio",
- "toml 0.5.11",
+ "toml 0.7.0",
  "tracing",
 ]
 
@@ -984,12 +984,12 @@ dependencies = [
 
 [[package]]
 name = "fluvio-controlplane-metadata"
-version = "0.20.0"
+version = "0.21.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5c124889987d8a4adf98f70627a2bd5924eae9eac43e3f92c7a15b38132d782e"
+checksum = "d559208f71a5887d767a8576a882c66805aca0487ee4f0de33b3a9348782a78f"
 dependencies = [
  "async-trait",
- "base64 0.20.0",
+ "base64 0.21.0",
  "bytes",
  "flate2",
  "fluvio-future",
@@ -1001,7 +1001,7 @@ dependencies = [
  "semver 1.0.16",
  "serde",
  "thiserror",
- "toml 0.5.11",
+ "toml 0.7.0",
  "tracing",
 ]
 
@@ -1067,9 +1067,9 @@ dependencies = [
 
 [[package]]
 name = "fluvio-sc-schema"
-version = "0.16.0"
+version = "0.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a067fbedf0061c6333fcc5521b1d55dc5bc56cad3a54ea1f9cd037423c552499"
+checksum = "578e42c08d8f0e40d1e4c5f272115dd5b5b277fcb784da5cbd1b712312408dca"
 dependencies = [
  "fluvio-controlplane-metadata",
  "fluvio-protocol",
@@ -1084,9 +1084,9 @@ dependencies = [
 
 [[package]]
 name = "fluvio-smartmodule"
-version = "0.3.1"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a10bef73ebe43bf2ec120003b36079424cd3bcad7d8d9f5dbd248078a3fab029"
+checksum = "9f0b2c08fed6c93a89ca5cd68154e64cc5dee332b3aeb6ec90f0759961353388"
 dependencies = [
  "eyre",
  "fluvio-protocol",
@@ -1097,9 +1097,9 @@ dependencies = [
 
 [[package]]
 name = "fluvio-smartmodule-derive"
-version = "0.3.0"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d1465b33d396d943cc819ae8cb2ad8e80998a974189320221a4c90e9439e062c"
+checksum = "00adc30d860f881c2f3b4f8a50fa4701df6a4928014c731f51884cb9c5bae102"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1133,9 +1133,9 @@ dependencies = [
 
 [[package]]
 name = "fluvio-spu-schema"
-version = "0.11.1"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a455b11d3d2115612f9b149570118727f7ce121ac4255d2ca66e77d505d9aca3"
+checksum = "e8c68a8bc68279b2c037c3f32e7a5d717d28a92ebe9e3dfacf90ef043601e421"
 dependencies = [
  "bytes",
  "educe",
@@ -2787,8 +2787,20 @@ checksum = "4fb9d890e4dc9298b70f740f615f2e05b9db37dce531f6b24fb77ac993f9f217"
 dependencies = [
  "serde",
  "serde_spanned",
- "toml_datetime",
- "toml_edit",
+ "toml_datetime 0.5.1",
+ "toml_edit 0.18.0",
+]
+
+[[package]]
+name = "toml"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2f560bc7fb3eb31f5eee1340c68a2160cad39605b7b9c9ec32045ddbdee13b85"
+dependencies = [
+ "serde",
+ "serde_spanned",
+ "toml_datetime 0.6.1",
+ "toml_edit 0.19.0",
 ]
 
 [[package]]
@@ -2796,6 +2808,15 @@ name = "toml_datetime"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4553f467ac8e3d374bc9a177a26801e5d0f9b211aa1673fb137a403afd1c9cf5"
+dependencies = [
+ "serde",
+]
+
+[[package]]
+name = "toml_datetime"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3ab8ed2edee10b50132aed5f331333428b011c99402b5a534154ed15746f9622"
 dependencies = [
  "serde",
 ]
@@ -2810,7 +2831,20 @@ dependencies = [
  "nom8",
  "serde",
  "serde_spanned",
- "toml_datetime",
+ "toml_datetime 0.5.1",
+]
+
+[[package]]
+name = "toml_edit"
+version = "0.19.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "233d8716cdc5d20ec88a18a839edaf545edc71efa4a5ff700ef4a102c26cd8fa"
+dependencies = [
+ "indexmap",
+ "nom8",
+ "serde",
+ "serde_spanned",
+ "toml_datetime 0.6.1",
 ]
 
 [[package]]
