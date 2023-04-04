@@ -484,6 +484,15 @@ class TestFluvioMethods(unittest.TestCase):
             self.assertEqual(i.key_string(), "foo")
             self.assertEqual(i.key(), list("foo".encode()))
 
+    def test_record_timestamp(self):
+        fluvio = Fluvio.connect()
+        producer = fluvio.topic_producer(self.topic)
+        producer.send_string("some_record")
+        producer.flush()
+        consumer = fluvio.partition_consumer(self.topic, 0)
+        record = next(consumer.stream(Offset.beginning()))
+        self.assertGreaterEqual(record.timestamp(), -1)
+
     def test_batch_produce(self):
         fluvio = Fluvio.connect()
         producer = fluvio.topic_producer(self.topic)
