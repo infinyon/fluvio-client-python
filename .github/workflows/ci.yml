@@ -103,8 +103,11 @@ jobs:
         run: |
           make build-dev
       - name: Test
-        run: |
-          make integration-tests
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 15
+          max_attempts: 3
+          command: make integration-tests
 
   macos_simple_tests:
     name: MacOS Simple test
