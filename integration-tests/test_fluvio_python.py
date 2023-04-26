@@ -10,12 +10,7 @@ def create_topic(topic):
     import subprocess
 
     subprocess.run(f"fluvio topic create {topic}", shell=True).check_returncode()
-    list_topics()
 
-def list_topics():
-    import subprocess
-
-    subprocess.run("fluvio topic list", shell=True)
 
 def delete_topic(topic):
     import subprocess
@@ -30,10 +25,6 @@ def create_smartmodule(sm_name, sm_path):
         f"fluvio smartmodule create {sm_name} --wasm-file {sm_path}", shell=True
     ).check_returncode()
 
-def list_smartmodules():
-    import subprocess
-
-    subprocess.run("fluvio smartmodule list", shell=True)
 
 def delete_smartmodule(sm_name):
     import subprocess
@@ -41,18 +32,31 @@ def delete_smartmodule(sm_name):
     subprocess.run("fluvio smartmodule delete %s" % sm_name, shell=True)
 
 
-class TestFluvioFilterSmartModules(unittest.TestCase):
-    def setUp(self):
+class CommonFluvioSmartModuleTestCase(unittest.TestCase):
+    def common_setup(self, sm_path=None):
         self.topic = str(uuid.uuid4())
         self.sm_name = str(uuid.uuid4())
+        self.sm_path = sm_path
+
+        if sm_path is not None:
+            create_smartmodule(self.sm_name, sm_path)
+
         create_topic(self.topic)
 
-        sm_path = os.path.abspath("smartmodules-for-ci/smartmodule_filter_on_a.wasm")
-        create_smartmodule(self.sm_name, sm_path)
+    def setUp(self):
+        self.common_setup()
 
     def tearDown(self):
         delete_topic(self.topic)
-        delete_smartmodule(self.sm_name)
+        if self.sm_path is not None:
+            delete_smartmodule(self.sm_name)
+
+
+class TestFluvioFilterSmartModules(CommonFluvioSmartModuleTestCase):
+    def setUp(self):
+        # Smartmodule source:
+        sm_path = os.path.abspath("smartmodules-for-ci/smartmodule_filter_on_a.wasm")
+        self.common_setup(sm_path)
 
     def test_consume_with_smart_module_by_name(self):
         """
@@ -66,8 +70,6 @@ class TestFluvioFilterSmartModules(unittest.TestCase):
         - It should be record-a
 
         """
-        print("test_consume_with_smart_module_by_name")
-        list_smartmodules()
 
         config = ConsumerConfig()
         config.smartmodule(name=self.sm_name)
@@ -91,7 +93,7 @@ class TestFluvioFilterSmartModules(unittest.TestCase):
         fluvio = Fluvio.connect()
         consumer = fluvio.partition_consumer(self.topic, 0)
         config = ConsumerConfig()
-        config.smartmodule(name="does_not_exist", kind=SmartModuleKind.Filter)
+        config.smartmodule(name="does_not_exist")
 
         with self.assertRaises(Exception) as ctx:
             next(consumer.stream_with_config(Offset.beginning(), config))
@@ -100,23 +102,14 @@ class TestFluvioFilterSmartModules(unittest.TestCase):
         )
 
 
-class TestFluvioFilterSmartModulesWithParams(unittest.TestCase):
+class TestFluvioFilterSmartModulesWithParams(CommonFluvioSmartModuleTestCase):
     def setUp(self):
-        self.topic = str(uuid.uuid4())
-        self.sm_name = str(uuid.uuid4())
-
         # Source at:
         # https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/filter_with_param/src/lib.rs#L1-L24
         sm_path = os.path.abspath(
             "smartmodules-for-ci/fluvio_smartmodule_filter_param.wasm"
         )
-        create_smartmodule(self.sm_name, sm_path)
-
-        create_topic(self.topic)
-
-    def tearDown(self):
-        delete_topic(self.topic)
-        delete_smartmodule(self.sm_name)
+        self.common_setup(sm_path)
 
     def test_consume_with_filter_params_example_with_params(self):
         """
@@ -168,22 +161,14 @@ class TestFluvioFilterSmartModulesWithParams(unittest.TestCase):
         self.assertEqual(records[1], "baz")
 
 
-class TestFluvioAggregateSmartModules(unittest.TestCase):
+class TestFluvioAggregateSmartModules(CommonFluvioSmartModuleTestCase):
     def setUp(self):
-        self.topic = str(uuid.uuid4())
-        self.sm_name = str(uuid.uuid4())
-        create_topic(self.topic)
-
         # Smartmodule source:
         # https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/aggregate/src/lib.rs#L1-L13
         sm_path = os.path.abspath(
             "smartmodules-for-ci/fluvio_smartmodule_aggregate.wasm"
         )
-        create_smartmodule(self.sm_name, sm_path)
-
-    def tearDown(self):
-        delete_topic(self.topic)
-        delete_smartmodule(self.sm_name)
+        self.common_setup(sm_path)
 
     def test_consume_with_aggregate_example_without_kind_param(self):
         """
@@ -266,20 +251,12 @@ class TestFluvioAggregateSmartModules(unittest.TestCase):
         self.assertEqual(records[3], "abcd")
 
 
-class TestFluvioMapSmartModules(unittest.TestCase):
+class TestFluvioMapSmartModules(CommonFluvioSmartModuleTestCase):
     def setUp(self):
-        self.topic = str(uuid.uuid4())
-        self.sm_name = str(uuid.uuid4())
-        create_topic(self.topic)
-
         # Smartmodule source:
         # https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/map/src/lib.rs#L1-L10
         sm_path = os.path.abspath("smartmodules-for-ci/fluvio_smartmodule_map.wasm")
-        create_smartmodule(self.sm_name, sm_path)
-
-    def tearDown(self):
-        delete_topic(self.topic)
-        delete_smartmodule(self.sm_name)
+        self.common_setup(sm_path)
 
     def test_consume_with_aggregate_example(self):
         """
@@ -304,24 +281,16 @@ class TestFluvioMapSmartModules(unittest.TestCase):
         self.assertEqual(records[1], "BAR")
 
 
-class TestFluvioFilterMapSmartModules(unittest.TestCase):
+class TestFluvioFilterMapSmartModules(CommonFluvioSmartModuleTestCase):
     def setUp(self):
-        self.topic = str(uuid.uuid4())
-        self.sm_name = str(uuid.uuid4())
-        create_topic(self.topic)
-
         # Smartmodule source:
         # https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/filter_map/src/lib.rs#L1-L17
         sm_path = os.path.abspath(
             "smartmodules-for-ci/fluvio_smartmodule_filter_map.wasm"
         )
-        create_smartmodule(self.sm_name, sm_path)
+        self.common_setup(sm_path)
 
-    def tearDown(self):
-        delete_topic(self.topic)
-        delete_smartmodule(self.sm_name)
-
-    def test_consume_with_aggregate_example(self):
+    def test_consume_with_filter_map_example(self):
         """
         This smartmodule is from
         https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/filter_map/src/lib.rs#L1-L17  # noqa: E501
@@ -352,24 +321,16 @@ class TestFluvioFilterMapSmartModules(unittest.TestCase):
         self.assertEqual(records[4], "5")
 
 
-class TestFluvioArrayMapSmartModules(unittest.TestCase):
+class TestFluvioArrayMapSmartModules(CommonFluvioSmartModuleTestCase):
     def setUp(self):
-        self.topic = str(uuid.uuid4())
-        self.sm_name = str(uuid.uuid4())
-        create_topic(self.topic)
-
         # Smartmodule source:
         # https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/array_map_json_array/src/lib.rs#L1-L55
         sm_path = os.path.abspath(
             "smartmodules-for-ci/fluvio_smartmodule_array_map_array.wasm"
         )
-        create_smartmodule(self.sm_name, sm_path)
+        self.common_setup(sm_path)
 
-    def tearDown(self):
-        delete_topic(self.topic)
-        delete_smartmodule(self.sm_name)
-
-    def test_consume_with_aggregate_example(self):
+    def test_consume_with_array_map_example(self):
         """
         This smartmodule is from
         https://github.com/infinyon/fluvio/blob/2eacd6fc08e4c11aa5de738bfa178d4fb56c7f72/smartmodule/examples/array_map_json_array/src/lib.rs#L1-L55  # noqa: E501
@@ -399,14 +360,7 @@ class TestFluvioArrayMapSmartModules(unittest.TestCase):
         self.assertEqual(records[2], '"Cranberry"')
 
 
-class TestFluvioMethods(unittest.TestCase):
-    def setUp(self):
-        self.topic = str(uuid.uuid4())
-        create_topic(self.topic)
-
-    def tearDown(self):
-        delete_topic(self.topic)
-
+class TestFluvioMethods(CommonFluvioSmartModuleTestCase):
     def test_connect(self):
         # A very simple test
         Fluvio.connect()
@@ -418,7 +372,7 @@ class TestFluvioMethods(unittest.TestCase):
         for i in range(10):
             producer.send_string("FOOBAR %s " % i)
 
-    def test_consume_with_smart_module(self):
+    def test_consume_with_smart_module_by_file_path(self):
         """
         Test adds a the alphabet into a topic in the format of record-[letter]
 
@@ -515,18 +469,16 @@ class TestFluvioMethods(unittest.TestCase):
             self.assertEqual(i.key(), list(("%s" % count).encode()))
 
 
-class TestFluvioErrors(unittest.TestCase):
-    def setUp(self):
-        self.topic = str(uuid.uuid4())
-
+class TestFluvioErrors(CommonFluvioSmartModuleTestCase):
     def test_produce_on_uncreated_topic(self):
         fluvio = Fluvio.connect()
+        topic_name = "not-created-topic"
 
         with self.assertRaises(Exception) as ctx:
-            fluvio.topic_producer(self.topic)
+            fluvio.topic_producer(topic_name)
 
         self.assertEqual(
-            ctx.exception.args, ("Topic not found: %s" % self.topic,)  # noqa: E501
+            ctx.exception.args, ("Topic not found: %s" % topic_name,)  # noqa: E501
         )
 
     def test_consumer_config_no_sm_name_or_path(self):
@@ -561,14 +513,7 @@ class TestFluvioErrors(unittest.TestCase):
         )
 
 
-class TestFluvioProduceFlush(unittest.TestCase):
-    def setUp(self):
-        self.topic = str(uuid.uuid4())
-        create_topic(self.topic)
-
-    def tearDown(self):
-        delete_topic(self.topic)
-
+class TestFluvioProduceFlush(CommonFluvioSmartModuleTestCase):
     def test_produce_flush(self):
         expected_output = ["record-%s" % i for i in range(10)]
         # Hopefully when the fluvio/producer variable goes out of scope,
