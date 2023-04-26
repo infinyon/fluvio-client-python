@@ -90,7 +90,7 @@ jobs:
         uses: infinyon/fluvio@master
         with:
           cluster-type: local
-          version: latest
+          version: stable
       - name: Check Fluvio Installation
         run: |
           fluvio version
