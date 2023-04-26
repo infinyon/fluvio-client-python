@@ -30,7 +30,7 @@ def create_smartmodule(sm_name, sm_path):
 def delete_smartmodule(sm_name):
     import subprocess
 
-    subprocess.run("fluvio smartmodule delete %s" % sm_name, shell=True)
+    subprocess.run(["fluvio", "smartmodule", "delete", sm_name], shell=True)
 
 
 class TestFluvioFilterSmartModules(unittest.TestCase):
@@ -573,7 +573,7 @@ class TestFluvioProduceFlush(unittest.TestCase):
         import subprocess
 
         result = subprocess.run(
-            "fluvio consume %s -B -d" % self.topic,
+            ["fluvio", "consume", self.topic, "-B", "-d"],
             shell=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
