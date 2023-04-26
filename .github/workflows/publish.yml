@@ -2,11 +2,11 @@ name: Publish
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches: [ main ]
+  # when triggered from a push. Actual pypi steps are skipped
   push:
+    branches: ["main"]
     tags:
-      - 'v*'
+      - "v*"
 jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }} for Python ${{matrix.python-version}}.
@@ -67,7 +67,6 @@ jobs:
         env:
           CIBW_BUILD: "cp${{matrix.python-version}}-manylinux_x86_64 cp${{matrix.python-version}}-macosx_x86_64 cp${{matrix.python-version}}-macosx_universal2 cp${{matrix.python-version}}-macosx_arm64"
 
-
       - uses: actions/upload-artifact@v3
         with:
           name: wheel
@@ -99,13 +98,17 @@ jobs:
     name: Cross Build wheels for ${{ matrix.platform.name }}
     runs-on: ubuntu-latest
     env:
-        CARGO: cross
+      CARGO: cross
     strategy:
       matrix:
-          platform: [
-              { name: "linux_armv7l", target: "armv7-unknown-linux-gnueabihf" },
-              { name: "linux_armv6l", target: "arm-unknown-linux-gnueabihf" },
-              { name: "manylinux2014_aarch64", target: "aarch64-unknown-linux-gnu" },
+        platform:
+          [
+            { name: "linux_armv7l", target: "armv7-unknown-linux-gnueabihf" },
+            { name: "linux_armv6l", target: "arm-unknown-linux-gnueabihf" },
+            {
+              name: "manylinux2014_aarch64",
+              target: "aarch64-unknown-linux-gnu",
+            },
           ]
     steps:
       - uses: actions/checkout@v3
@@ -146,7 +149,7 @@ jobs:
       - name: Build bdist
         run: python setup.py bdist_wheel --py-limited-api=cp38 --plat-name ${{ matrix.platform.name }}
         env:
-            CARGO_BUILD_TARGET: ${{ matrix.platform.target }}
+          CARGO_BUILD_TARGET: ${{ matrix.platform.target }}
       - uses: actions/upload-artifact@v3
         with:
           name: wheel
