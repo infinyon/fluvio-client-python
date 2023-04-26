@@ -1,4 +1,3 @@
-
 foreign_class!(class Fluvio {
     self_type Fluvio;
     private constructor = empty;
@@ -46,6 +45,7 @@ foreign_class!(class Record {
     fn Record::offset(&self) -> i64;
     fn Record::value(&self) -> &[u8];
     fn Record::key(&self) -> Option<&[u8]>;
+    fn Record::timestamp(&self) -> i64;
     fn _Record::value_string(&self) -> Result<String, FromUtf8Error>;
     fn _Record::key_string(&self) -> Option<Result<String, FromUtf8Error>>;
 });

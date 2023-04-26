@@ -42,6 +42,10 @@ class Record:
         """The UTF-8 decoded key for this record."""
         return self._inner.key_string()
 
+    def timestamp(self) -> int:
+        """Timestamp of this record."""
+        return self._inner.timestamp()
+
 
 class Offset:
     """Describes the location of an event stored in a Fluvio partition."""

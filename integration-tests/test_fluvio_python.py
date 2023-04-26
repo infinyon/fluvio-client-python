@@ -43,7 +43,7 @@ class CommonFluvioSmartModuleTestCase(unittest.TestCase):
 
         create_topic(self.topic)
 
-        # FIXME: without this the tests fail. Some topics get created but with offset -1 
+        # FIXME: without this the tests fail. Some topics get created but with offset -1
         import time
 
         time.sleep(1)
@@ -452,6 +452,15 @@ class TestFluvioMethods(CommonFluvioSmartModuleTestCase):
             self.assertEqual(i.value_string(), "record-%s" % count)
             self.assertEqual(i.key_string(), "foo")
             self.assertEqual(i.key(), list("foo".encode()))
+
+    def test_record_timestamp(self):
+        fluvio = Fluvio.connect()
+        producer = fluvio.topic_producer(self.topic)
+        producer.send_string("some_record")
+        producer.flush()
+        consumer = fluvio.partition_consumer(self.topic, 0)
+        record = next(consumer.stream(Offset.beginning()))
+        self.assertGreaterEqual(record.timestamp(), -1)
 
     def test_batch_produce(self):
         fluvio = Fluvio.connect()
