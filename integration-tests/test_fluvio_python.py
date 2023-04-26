@@ -10,7 +10,12 @@ def create_topic(topic):
     import subprocess
 
     subprocess.run(f"fluvio topic create {topic}", shell=True).check_returncode()
+    list_topics()
 
+def list_topics():
+    import subprocess
+
+    subprocess.run("fluvio topic list", shell=True)
 
 def delete_topic(topic):
     import subprocess
@@ -24,8 +29,11 @@ def create_smartmodule(sm_name, sm_path):
     subprocess.run(
         f"fluvio smartmodule create {sm_name} --wasm-file {sm_path}", shell=True
     ).check_returncode()
-    subprocess.run("fluvio smartmodule list", shell=True)
 
+def list_smartmodules():
+    import subprocess
+
+    subprocess.run("fluvio smartmodule list", shell=True)
 
 def delete_smartmodule(sm_name):
     import subprocess
@@ -58,6 +66,8 @@ class TestFluvioFilterSmartModules(unittest.TestCase):
         - It should be record-a
 
         """
+        print("test_consume_with_smart_module_by_name")
+        list_smartmodules()
 
         config = ConsumerConfig()
         config.smartmodule(name=self.sm_name)
