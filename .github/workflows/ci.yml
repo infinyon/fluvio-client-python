@@ -83,10 +83,10 @@ jobs:
           cluster-name: "fluvio"
       - name: Sleep 20 to ensure k3d cluster is ready
         run: sleep 20
-      - name: Install Fluvio Local Cluster
+      - name: Install Fluvio Cluster on k3d
         uses: infinyon/fluvio@master
         with:
-          cluster-type: local
+          cluster-type: k3d
           version: stable
       - name: Check Fluvio Installation
         run: |
