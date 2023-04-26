@@ -10,7 +10,6 @@ class TestFluvioCannotConnect(unittest.TestCase):
     """
 
     def test_connection_failure(self):
-
         error = None
         try:
             Fluvio.connect()
