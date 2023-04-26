@@ -43,7 +43,7 @@ class CommonFluvioSmartModuleTestCase(unittest.TestCase):
 
         create_topic(self.topic)
 
-        # FIXME: without this the tests fail. Some topics get created but with offset -1 
+        # FIXME: without this the tests fail. Some topics get created but with offset -1
         import time
 
         time.sleep(1)
