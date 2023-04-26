@@ -491,8 +491,8 @@ class TestFluvioErrors(CommonFluvioSmartModuleTestCase):
         with self.assertRaises(Exception) as ctx:
             fluvio.topic_producer(topic_name)
 
-        self.assertEqual(
-            ctx.exception.args, ("Topic not found: %s" % topic_name,)  # noqa: E501
+        self.assertIn(
+            "Topic not found: %s" % topic_name, ctx.exception.args[0]  # noqa: E501
         )
 
     def test_consumer_config_no_sm_name_or_path(self):
@@ -516,14 +516,15 @@ class TestFluvioErrors(CommonFluvioSmartModuleTestCase):
         config = ConsumerConfig()
         with self.assertRaises(AttributeError) as ctx:
             config.smartmodule(kind="foobar")
-        self.assertEqual(ctx.exception.args, ("'str' object has no attribute 'value'",))
+        self.assertIn("'str' object has no attribute 'value'", ctx.exception.args[0])
 
     def test_consumer_config_no_file(self):
         config = ConsumerConfig()
         with self.assertRaises(Exception) as ctx:
             config.smartmodule(path="does_not_exist.wasm", kind=SmartModuleKind.Filter)
-        self.assertEqual(
-            ctx.exception.args, ("No such file or directory (os error 2)",)
+        self.assertIn(
+            "No such file or directory (os error 2)",
+            ctx.exception.args[0],
         )
 
 

@@ -5,7 +5,7 @@ use fluvio::consumer::{
     SmartModuleInvocation, SmartModuleInvocationWasm, SmartModuleKind as NativeSmartModuleKind,
 };
 use fluvio::dataplane::link::ErrorCode;
-use fluvio::{consumer::Record, Fluvio, FluvioError, Offset, PartitionConsumer, TopicProducer};
+use fluvio::{consumer::Record, Fluvio, Offset, PartitionConsumer, TopicProducer};
 use fluvio_future::{
     io::{Stream, StreamExt},
     task::run_block_on,
@@ -14,22 +14,26 @@ use std::io::{Error, Read};
 use std::pin::Pin;
 use std::string::FromUtf8Error;
 mod cloud;
+use crate::error::FluvioError;
 use cloud::{CloudClient, CloudLoginError};
 
+mod error;
+
 mod _Fluvio {
+
     use super::*;
     pub fn connect() -> Result<Fluvio, FluvioError> {
-        run_block_on(Fluvio::connect())
+        Ok(run_block_on(Fluvio::connect())?)
     }
     pub fn partition_consumer(
         fluvio: &Fluvio,
         topic: String,
         partition: u32,
     ) -> Result<PartitionConsumer, FluvioError> {
-        run_block_on(fluvio.partition_consumer(topic, partition))
+        Ok(run_block_on(fluvio.partition_consumer(topic, partition))?)
     }
     pub fn topic_producer(fluvio: &Fluvio, topic: String) -> Result<TopicProducer, FluvioError> {
-        run_block_on(fluvio.topic_producer(topic))
+        Ok(run_block_on(fluvio.topic_producer(topic))?)
     }
 }
 
@@ -177,11 +181,13 @@ mod _PartitionConsumer {
     ) -> Result<PartitionConsumerStream, FluvioError> {
         let config = config.build()?;
 
-        run_block_on(consumer.stream_with_config(offset.clone(), config)).map(|stream| {
-            PartitionConsumerStream {
-                inner: Box::pin(stream),
-            }
-        })
+        Ok(
+            run_block_on(consumer.stream_with_config(offset.clone(), config)).map(|stream| {
+                PartitionConsumerStream {
+                    inner: Box::pin(stream),
+                }
+            })?,
+        )
     }
 }
 
@@ -209,21 +215,21 @@ impl ProducerBatchRecord {
 mod _TopicProducer {
     use super::*;
     pub fn send(producer: &TopicProducer, key: &[u8], value: &[u8]) -> Result<(), FluvioError> {
-        run_block_on(producer.send(key, value)).map(|_| ())
+        Ok(run_block_on(producer.send(key, value)).map(|_| ())?)
     }
     pub fn send_all(
         producer: &TopicProducer,
         records: &[ProducerBatchRecord],
     ) -> Result<(), FluvioError> {
-        run_block_on(
+        Ok(run_block_on(
             producer.send_all(records.iter().map(|record| -> (Vec<u8>, Vec<u8>) {
                 (record.key.clone(), record.value.clone())
             })),
         )
-        .map(|_| ())
+        .map(|_| ())?)
     }
     pub fn flush(producer: &TopicProducer) -> Result<(), FluvioError> {
-        run_block_on(producer.flush())
+        Ok(run_block_on(producer.flush())?)
     }
 }
 
