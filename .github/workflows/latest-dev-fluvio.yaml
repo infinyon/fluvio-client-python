@@ -3,9 +3,9 @@ name: Fluvio CI with latest fluvio
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [main]
   schedule:
-    - cron:  '0 14 * * *'
+    - cron: "0 14 * * *"
 
 jobs:
   smoke_test:
@@ -75,7 +75,6 @@ jobs:
           sleep 3
           echo foo | fluvio produce foobar
           fluvio consume foobar -B -d
-
 
       - name: Test
         run: |
