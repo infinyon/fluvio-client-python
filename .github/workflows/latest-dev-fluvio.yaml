@@ -47,23 +47,11 @@ jobs:
       - name: Sleep 20 to ensure k3d cluster is ready
         run: sleep 20
 
-      # TODO: Ideally we'd install fluvio and start the cluster from the
-      # composite action. The composite action doesn't support installing the
-      # `--development` version of fluvio
-      # - name: Install Fluvio Cluster
-      #   uses: infinyon/fluvio@master
-      #   with:
-      #     cluster-type: local
-      #     version: latest
-
-      - name: Install fluvio
-        run: |
-          curl -fsS https://packages.fluvio.io/v1/install.sh | bash
-          echo "${HOME}/.fluvio/bin" >> $GITHUB_PATH
-      - name: Update fluvio client to development and start the local cluster.
-        run: |
-          fluvio update --develop
-          fluvio cluster start --rust-log debug --local
+      - name: Install Fluvio Cluster on k3d
+        uses: infinyon/fluvio@master
+        with:
+          cluster-type: k3d
+          version: latest
 
       - name: Sleep 10 to ensure the fluvio cluster is ready
         run: sleep 10
