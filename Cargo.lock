@@ -14,7 +14,7 @@ dependencies = [
  "env_logger",
  "flapigen",
  "fluvio",
- "fluvio-future",
+ "fluvio-future 0.5.1",
  "fluvio-types",
  "hex",
  "http-types",
@@ -969,7 +969,7 @@ dependencies = [
  "dirs 5.0.0",
  "event-listener",
  "fluvio-compression",
- "fluvio-future",
+ "fluvio-future 0.4.5",
  "fluvio-protocol",
  "fluvio-sc-schema",
  "fluvio-smartmodule",
@@ -1013,7 +1013,7 @@ dependencies = [
  "base64 0.21.0",
  "bytes",
  "flate2",
- "fluvio-future",
+ "fluvio-future 0.4.5",
  "fluvio-protocol",
  "fluvio-stream-model",
  "fluvio-types",
@@ -1033,6 +1033,29 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "37174044230084d1cfd7c02f194c5ec127bb8bc17c76f0cd74e943f2fe86ec34"
 dependencies = [
  "async-io",
+ "async-net",
+ "async-std",
+ "async-trait",
+ "cfg-if",
+ "fluvio-wasm-timer",
+ "futures-lite",
+ "futures-util",
+ "log",
+ "openssl",
+ "openssl-sys",
+ "pin-project",
+ "thiserror",
+ "tracing",
+ "ws_stream_wasm",
+]
+
+[[package]]
+name = "fluvio-future"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a5f2d572470f98b25383ffe78d9c3fba2b986d9891efd78808025397e54eb1ec"
+dependencies = [
+ "async-io",
  "async-native-tls",
  "async-net",
  "async-std",
@@ -1044,7 +1067,6 @@ dependencies = [
  "log",
  "native-tls",
  "openssl",
- "openssl-sys",
  "pin-project",
  "thiserror",
  "tracing",
@@ -1063,7 +1085,7 @@ dependencies = [
  "crc32c",
  "eyre",
  "fluvio-compression",
- "fluvio-future",
+ "fluvio-future 0.4.5",
  "fluvio-protocol-derive",
  "fluvio-types",
  "flv-util",
@@ -1140,7 +1162,7 @@ dependencies = [
  "bytes",
  "cfg-if",
  "event-listener",
- "fluvio-future",
+ "fluvio-future 0.4.5",
  "fluvio-protocol",
  "futures-util",
  "once_cell",
@@ -1161,7 +1183,7 @@ dependencies = [
  "bytes",
  "educe",
  "flate2",
- "fluvio-future",
+ "fluvio-future 0.4.5",
  "fluvio-protocol",
  "fluvio-smartmodule",
  "fluvio-types",
