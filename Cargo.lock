@@ -472,16 +472,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "codespan-reporting"
-version = "0.11.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3538270d33cc669650c4b093848450d380def10c331d38c768e34cac80576e6e"
-dependencies = [
- "termcolor",
- "unicode-width",
-]
-
-[[package]]
 name = "combine"
 version = "4.6.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -639,50 +629,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fb4a30d54f7443bf3d6191dcd486aca19e67cb3c49fa7a06a319966346707e7f"
 dependencies = [
  "cipher",
-]
-
-[[package]]
-name = "cxx"
-version = "1.0.94"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f61f1b6389c3fe1c316bf8a4dccc90a38208354b330925bce1f74a6c4756eb93"
-dependencies = [
- "cc",
- "cxxbridge-flags",
- "cxxbridge-macro",
- "link-cplusplus",
-]
-
-[[package]]
-name = "cxx-build"
-version = "1.0.94"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "12cee708e8962df2aeb38f594aae5d827c022b6460ac71a7a3e2c3c2aae5a07b"
-dependencies = [
- "cc",
- "codespan-reporting",
- "once_cell",
- "proc-macro2",
- "quote",
- "scratch",
- "syn 2.0.15",
-]
-
-[[package]]
-name = "cxxbridge-flags"
-version = "1.0.94"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7944172ae7e4068c533afbb984114a56c46e9ccddda550499caa222902c7f7bb"
-
-[[package]]
-name = "cxxbridge-macro"
-version = "1.0.94"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2345488264226bf682893e25de0769f3360aac9957980ec49361b083ddaa5bc5"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.15",
 ]
 
 [[package]]
@@ -947,7 +893,7 @@ dependencies = [
 [[package]]
 name = "fluvio"
 version = "0.19.0"
-source = "git+https://github.com/infinyon/fluvio.git?tag=v0.10.9-dev-1#b24245b39a29c856c545f0e0c6e98f86d3da5755"
+source = "git+https://github.com/infinyon/fluvio.git?tag=v0.10.9#83a194b9ada7f1834df0644954375d88f246e592"
 dependencies = [
  "anyhow",
  "async-channel",
@@ -985,7 +931,7 @@ dependencies = [
 [[package]]
 name = "fluvio-compression"
 version = "0.2.5"
-source = "git+https://github.com/infinyon/fluvio.git?tag=v0.10.9-dev-1#b24245b39a29c856c545f0e0c6e98f86d3da5755"
+source = "git+https://github.com/infinyon/fluvio.git?tag=v0.10.9#83a194b9ada7f1834df0644954375d88f246e592"
 dependencies = [
  "bytes",
  "flate2",
@@ -998,7 +944,7 @@ dependencies = [
 [[package]]
 name = "fluvio-controlplane-metadata"
 version = "0.22.1"
-source = "git+https://github.com/infinyon/fluvio.git?tag=v0.10.9-dev-1#b24245b39a29c856c545f0e0c6e98f86d3da5755"
+source = "git+https://github.com/infinyon/fluvio.git?tag=v0.10.9#83a194b9ada7f1834df0644954375d88f246e592"
 dependencies = [
  "async-trait",
  "base64 0.21.0",
@@ -1046,7 +992,7 @@ dependencies = [
 [[package]]
 name = "fluvio-protocol"
 version = "0.9.4"
-source = "git+https://github.com/infinyon/fluvio.git?tag=v0.10.9-dev-1#b24245b39a29c856c545f0e0c6e98f86d3da5755"
+source = "git+https://github.com/infinyon/fluvio.git?tag=v0.10.9#83a194b9ada7f1834df0644954375d88f246e592"
 dependencies = [
  "bytes",
  "content_inspector",
@@ -1067,7 +1013,7 @@ dependencies = [
 [[package]]
 name = "fluvio-protocol-derive"
 version = "0.5.1"
-source = "git+https://github.com/infinyon/fluvio.git?tag=v0.10.9-dev-1#b24245b39a29c856c545f0e0c6e98f86d3da5755"
+source = "git+https://github.com/infinyon/fluvio.git?tag=v0.10.9#83a194b9ada7f1834df0644954375d88f246e592"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1078,7 +1024,7 @@ dependencies = [
 [[package]]
 name = "fluvio-sc-schema"
 version = "0.19.0"
-source = "git+https://github.com/infinyon/fluvio.git?tag=v0.10.9-dev-1#b24245b39a29c856c545f0e0c6e98f86d3da5755"
+source = "git+https://github.com/infinyon/fluvio.git?tag=v0.10.9#83a194b9ada7f1834df0644954375d88f246e592"
 dependencies = [
  "anyhow",
  "fluvio-controlplane-metadata",
@@ -1095,7 +1041,7 @@ dependencies = [
 [[package]]
 name = "fluvio-smartmodule"
 version = "0.5.1"
-source = "git+https://github.com/infinyon/fluvio.git?tag=v0.10.9-dev-1#b24245b39a29c856c545f0e0c6e98f86d3da5755"
+source = "git+https://github.com/infinyon/fluvio.git?tag=v0.10.9#83a194b9ada7f1834df0644954375d88f246e592"
 dependencies = [
  "eyre",
  "fluvio-protocol",
@@ -1107,7 +1053,7 @@ dependencies = [
 [[package]]
 name = "fluvio-smartmodule-derive"
 version = "0.4.0"
-source = "git+https://github.com/infinyon/fluvio.git?tag=v0.10.9-dev-1#b24245b39a29c856c545f0e0c6e98f86d3da5755"
+source = "git+https://github.com/infinyon/fluvio.git?tag=v0.10.9#83a194b9ada7f1834df0644954375d88f246e592"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1117,7 +1063,7 @@ dependencies = [
 [[package]]
 name = "fluvio-socket"
 version = "0.14.2"
-source = "git+https://github.com/infinyon/fluvio.git?tag=v0.10.9-dev-1#b24245b39a29c856c545f0e0c6e98f86d3da5755"
+source = "git+https://github.com/infinyon/fluvio.git?tag=v0.10.9#83a194b9ada7f1834df0644954375d88f246e592"
 dependencies = [
  "async-channel",
  "async-lock",
@@ -1141,7 +1087,7 @@ dependencies = [
 [[package]]
 name = "fluvio-spu-schema"
 version = "0.14.0"
-source = "git+https://github.com/infinyon/fluvio.git?tag=v0.10.9-dev-1#b24245b39a29c856c545f0e0c6e98f86d3da5755"
+source = "git+https://github.com/infinyon/fluvio.git?tag=v0.10.9#83a194b9ada7f1834df0644954375d88f246e592"
 dependencies = [
  "bytes",
  "derive_builder",
@@ -1159,7 +1105,7 @@ dependencies = [
 [[package]]
 name = "fluvio-stream-model"
 version = "0.9.2"
-source = "git+https://github.com/infinyon/fluvio.git?tag=v0.10.9-dev-1#b24245b39a29c856c545f0e0c6e98f86d3da5755"
+source = "git+https://github.com/infinyon/fluvio.git?tag=v0.10.9#83a194b9ada7f1834df0644954375d88f246e592"
 dependencies = [
  "async-rwlock",
  "event-listener",
@@ -1170,7 +1116,7 @@ dependencies = [
 [[package]]
 name = "fluvio-types"
 version = "0.4.2"
-source = "git+https://github.com/infinyon/fluvio.git?tag=v0.10.9-dev-1#b24245b39a29c856c545f0e0c6e98f86d3da5755"
+source = "git+https://github.com/infinyon/fluvio.git?tag=v0.10.9#83a194b9ada7f1834df0644954375d88f246e592"
 dependencies = [
  "event-listener",
  "thiserror",
@@ -1484,12 +1430,11 @@ dependencies = [
 
 [[package]]
 name = "iana-time-zone-haiku"
-version = "0.1.1"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0703ae284fc167426161c2e3f1da3ea71d94b21bedbcc9494e92b28e334e3dca"
+checksum = "f31827a206f56af32e590ba56d5d2d085f558508192593743f16b2306495269f"
 dependencies = [
- "cxx",
- "cxx-build",
+ "cc",
 ]
 
 [[package]]
@@ -1651,15 +1596,6 @@ name = "libc"
 version = "0.2.144"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2b00cc1c228a6782d0f076e7b232802e0c5689d41bb5df366f2a6b6621cfdfe1"
-
-[[package]]
-name = "link-cplusplus"
-version = "1.0.8"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ecd207c9c713c34f95a097a5b029ac2ce6010530c7b49d7fea24d977dede04f5"
-dependencies = [
- "cc",
-]
 
 [[package]]
 name = "linux-raw-sys"
@@ -2280,12 +2216,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d29ab0c6d3fc0ee92fe66e2d99f700eab17a8d57d1c1d3b748380fb20baa78cd"
 
 [[package]]
-name = "scratch"
-version = "1.0.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1792db035ce95be60c3f8853017b3999209281c24e2ba5bc8e59bf97a0c590c1"
-
-[[package]]
 name = "security-framework"
 version = "2.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2854,9 +2784,9 @@ dependencies = [
 
 [[package]]
 name = "tracing-core"
-version = "0.1.30"
+version = "0.1.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "24eb03ba0eab1fd845050058ce5e616558e8f8d8fca633e6b163fe25c797213a"
+checksum = "0955b8137a1df6f1a2e9a37d8a6656291ff0297c1a97c24e0d8425fe2312f79a"
 dependencies = [
  "once_cell",
  "valuable",
@@ -2927,12 +2857,6 @@ checksum = "5c5713f0fc4b5db668a2ac63cdb7bb4469d8c9fed047b1d0292cc7b0ce2ba921"
 dependencies = [
  "tinyvec",
 ]
-
-[[package]]
-name = "unicode-width"
-version = "0.1.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c0edd1e5b14653f783770bce4a4dabb4a5108a5370a5f5d8cfe8710c361f6c8b"
 
 [[package]]
 name = "universal-hash"
