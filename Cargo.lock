@@ -15,7 +15,7 @@ dependencies = [
  "flapigen",
  "fluvio",
  "fluvio-future",
- "fluvio-types",
+ "fluvio-types 0.4.2 (git+https://github.com/infinyon/fluvio.git?tag=v0.10.10)",
  "hex",
  "http-types",
  "log",
@@ -917,7 +917,7 @@ dependencies = [
  "fluvio-smartmodule",
  "fluvio-socket",
  "fluvio-spu-schema",
- "fluvio-types",
+ "fluvio-types 0.4.2 (git+https://github.com/infinyon/fluvio.git?tag=v0.10.10-dev-1)",
  "futures-util",
  "once_cell",
  "pin-project",
@@ -957,7 +957,7 @@ dependencies = [
  "fluvio-future",
  "fluvio-protocol",
  "fluvio-stream-model",
- "fluvio-types",
+ "fluvio-types 0.4.2 (git+https://github.com/infinyon/fluvio.git?tag=v0.10.10-dev-1)",
  "flv-util",
  "lenient_semver",
  "semver 1.0.17",
@@ -1005,7 +1005,7 @@ dependencies = [
  "fluvio-compression",
  "fluvio-future",
  "fluvio-protocol-derive",
- "fluvio-types",
+ "fluvio-types 0.4.2 (git+https://github.com/infinyon/fluvio.git?tag=v0.10.10-dev-1)",
  "flv-util",
  "once_cell",
  "semver 1.0.17",
@@ -1034,7 +1034,7 @@ dependencies = [
  "fluvio-controlplane-metadata",
  "fluvio-protocol",
  "fluvio-socket",
- "fluvio-types",
+ "fluvio-types 0.4.2 (git+https://github.com/infinyon/fluvio.git?tag=v0.10.10-dev-1)",
  "paste",
  "serde",
  "static_assertions",
@@ -1100,7 +1100,7 @@ dependencies = [
  "fluvio-future",
  "fluvio-protocol",
  "fluvio-smartmodule",
- "fluvio-types",
+ "fluvio-types 0.4.2 (git+https://github.com/infinyon/fluvio.git?tag=v0.10.10-dev-1)",
  "serde",
  "static_assertions",
  "tracing",
@@ -1114,6 +1114,15 @@ dependencies = [
  "async-rwlock",
  "event-listener",
  "once_cell",
+ "tracing",
+]
+
+[[package]]
+name = "fluvio-types"
+version = "0.4.2"
+source = "git+https://github.com/infinyon/fluvio.git?tag=v0.10.10#98e548270827672a2ba17729708ff0b13f147181"
+dependencies = [
+ "thiserror",
  "tracing",
 ]
 
