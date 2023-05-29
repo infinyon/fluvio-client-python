@@ -2,9 +2,7 @@ name: Publish
 
 on:
   workflow_dispatch:
-  # when triggered from a push. Actual pypi steps are skipped
   push:
-    branches: ["main"]
     tags:
       - "v*"
 jobs:
@@ -158,6 +156,7 @@ jobs:
   upload_pypi:
     needs: [build_wheels, build_sdist, build_cc_wheels]
     runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
 
     steps:
       - uses: actions/download-artifact@v3
@@ -166,7 +165,6 @@ jobs:
           path: dist
 
       - uses: pypa/gh-action-pypi-publish@master
-        if: github.event_name == 'workflow_dispatch'
         with:
           user: __token__
           password: ${{ secrets.PYPI_ACCESS_TOKEN }}
@@ -240,6 +238,7 @@ jobs:
   upload_to_github_releases:
     needs: [build_wheels, build_sdist, build_cc_wheels, build_docs]
     runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
 
     steps:
       - uses: actions/download-artifact@v3
@@ -254,19 +253,8 @@ jobs:
 
       - name: Release
         uses: softprops/action-gh-release@v1
-        if: github.ref == 'refs/heads/main' && github.event_name != 'workflow_dispatch'
         with:
-          name: latest
-          prerelease: true
           files: |
             dist/*
             docs
 
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        if: github.event_name == 'workflow_dispatch'
-        with:
-          name: ${{ github.FLUVIO_PYTHON_CLIENT_VERSION }}
-          files: |
-            dist/*
-            docs
