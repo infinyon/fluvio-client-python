@@ -15,7 +15,7 @@ dependencies = [
  "flapigen",
  "fluvio",
  "fluvio-future",
- "fluvio-types 0.4.2 (git+https://github.com/infinyon/fluvio.git?tag=v0.10.11-dev-2)",
+ "fluvio-types",
  "hex",
  "http-types",
  "log",
@@ -917,7 +917,7 @@ dependencies = [
  "fluvio-smartmodule",
  "fluvio-socket",
  "fluvio-spu-schema",
- "fluvio-types 0.4.2 (git+https://github.com/infinyon/fluvio.git?tag=v0.10.11)",
+ "fluvio-types",
  "futures-util",
  "once_cell",
  "pin-project",
@@ -957,7 +957,7 @@ dependencies = [
  "fluvio-future",
  "fluvio-protocol",
  "fluvio-stream-model",
- "fluvio-types 0.4.2 (git+https://github.com/infinyon/fluvio.git?tag=v0.10.11)",
+ "fluvio-types",
  "flv-util",
  "lenient_semver",
  "semver 1.0.17",
@@ -1005,7 +1005,7 @@ dependencies = [
  "fluvio-compression",
  "fluvio-future",
  "fluvio-protocol-derive",
- "fluvio-types 0.4.2 (git+https://github.com/infinyon/fluvio.git?tag=v0.10.11)",
+ "fluvio-types",
  "flv-util",
  "once_cell",
  "semver 1.0.17",
@@ -1034,7 +1034,7 @@ dependencies = [
  "fluvio-controlplane-metadata",
  "fluvio-protocol",
  "fluvio-socket",
- "fluvio-types 0.4.2 (git+https://github.com/infinyon/fluvio.git?tag=v0.10.11)",
+ "fluvio-types",
  "paste",
  "serde",
  "static_assertions",
@@ -1100,7 +1100,7 @@ dependencies = [
  "fluvio-future",
  "fluvio-protocol",
  "fluvio-smartmodule",
- "fluvio-types 0.4.2 (git+https://github.com/infinyon/fluvio.git?tag=v0.10.11)",
+ "fluvio-types",
  "serde",
  "static_assertions",
  "tracing",
@@ -1123,15 +1123,6 @@ version = "0.4.2"
 source = "git+https://github.com/infinyon/fluvio.git?tag=v0.10.11#6a365c3b44c3b7fe34d76d101c59359321fbecbb"
 dependencies = [
  "event-listener",
- "thiserror",
- "tracing",
-]
-
-[[package]]
-name = "fluvio-types"
-version = "0.4.2"
-source = "git+https://github.com/infinyon/fluvio.git?tag=v0.10.11-dev-2#fed60b0a815a8b135a8a04308dde171970795061"
-dependencies = [
  "thiserror",
  "tracing",
 ]
@@ -1783,9 +1774,9 @@ checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 
 [[package]]
 name = "openssl"
-version = "0.10.52"
+version = "0.10.55"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "01b8574602df80f7b85fdfc5392fa884a4e3b3f4f35402c070ab34c3d3f78d56"
+checksum = "345df152bc43501c5eb9e4654ff05f794effb78d4efe3d53abc158baddc0703d"
 dependencies = [
  "bitflags",
  "cfg-if",
@@ -1824,9 +1815,9 @@ dependencies = [
 
 [[package]]
 name = "openssl-sys"
-version = "0.9.87"
+version = "0.9.90"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8e17f59264b2809d77ae94f0e1ebabc434773f370d6ca667bd223ea10e06cc7e"
+checksum = "374533b0e45f3a7ced10fcaeccca020e66656bc03dac384f852e4e5a7a8104a6"
 dependencies = [
  "cc",
  "libc",
