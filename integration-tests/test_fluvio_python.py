@@ -15,6 +15,7 @@ def create_topic(topic):
 def delete_topic(topic):
     import time
     import subprocess
+
     time.sleep(1)
 
     subprocess.run(f"fluvio topic delete {topic}", shell=True).check_returncode()
