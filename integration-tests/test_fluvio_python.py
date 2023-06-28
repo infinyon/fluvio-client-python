@@ -13,6 +13,7 @@ def create_topic(topic):
 
 
 def delete_topic(topic):
+    import time
     import subprocess
     time.sleep(1)
 
