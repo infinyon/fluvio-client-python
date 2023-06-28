@@ -13,7 +13,10 @@ def create_topic(topic):
 
 
 def delete_topic(topic):
+    import time
     import subprocess
+
+    time.sleep(1)
 
     subprocess.run(f"fluvio topic delete {topic}", shell=True).check_returncode()
 
@@ -46,7 +49,7 @@ class CommonFluvioSmartModuleTestCase(unittest.TestCase):
         # FIXME: without this the tests fail. Some topics get created but with offset -1
         import time
 
-        time.sleep(1)
+        time.sleep(2)
 
     def setUp(self):
         self.common_setup()
