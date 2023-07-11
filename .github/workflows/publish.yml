@@ -61,7 +61,7 @@ jobs:
           platforms: arm64
 
       - name: Build wheels for ${{matrix.python-version}} on ${{matrix.os}}
-        uses: pypa/cibuildwheel@v2.12.0
+        uses: pypa/cibuildwheel@v2.14.0
         env:
           CIBW_BUILD: "cp${{matrix.python-version}}-manylinux_x86_64 cp${{matrix.python-version}}-macosx_x86_64 cp${{matrix.python-version}}-macosx_universal2 cp${{matrix.python-version}}-macosx_arm64"
 
