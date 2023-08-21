@@ -1,10 +1,12 @@
 #![allow(non_snake_case, unused)]
+use fluvio::config::{TlsCerts, TlsConfig, TlsPaths, TlsPolicy};
 use fluvio::consumer::{
     ConsumerConfig as NativeConsumerConfig, ConsumerConfigBuilder,
     SmartModuleContextData as NativeSmartModuleContextData, SmartModuleExtraParams,
     SmartModuleInvocation, SmartModuleInvocationWasm, SmartModuleKind as NativeSmartModuleKind,
 };
 use fluvio::dataplane::link::ErrorCode;
+use fluvio::FluvioConfig as NativeFluvioConfig;
 use fluvio::{consumer::Record, Fluvio, Offset, PartitionConsumer, TopicProducer};
 use fluvio_future::{
     io::{Stream, StreamExt},
@@ -20,11 +22,16 @@ use cloud::{CloudClient, CloudLoginError};
 mod error;
 
 mod _Fluvio {
-
     use super::*;
+
     pub fn connect() -> Result<Fluvio, FluvioError> {
         Ok(run_block_on(Fluvio::connect())?)
     }
+
+    pub fn connect_with_config(config: &FluvioConfig) -> Result<Fluvio, FluvioError> {
+        Ok(run_block_on(Fluvio::connect_with_config(&config.inner))?)
+    }
+
     pub fn partition_consumer(
         fluvio: &Fluvio,
         topic: String,
@@ -32,8 +39,77 @@ mod _Fluvio {
     ) -> Result<PartitionConsumer, FluvioError> {
         Ok(run_block_on(fluvio.partition_consumer(topic, partition))?)
     }
+
     pub fn topic_producer(fluvio: &Fluvio, topic: String) -> Result<TopicProducer, FluvioError> {
         Ok(run_block_on(fluvio.topic_producer(topic))?)
+    }
+}
+
+pub struct FluvioConfig {
+    inner: NativeFluvioConfig,
+}
+
+impl FluvioConfig {
+    /// Load config file from default config dir
+    pub fn load() -> Result<FluvioConfig, FluvioError> {
+        let inner = NativeFluvioConfig::load()?;
+
+        Ok(FluvioConfig { inner })
+    }
+
+    /// Create without tls
+    pub fn new(addr: &str) -> FluvioConfig {
+        let inner = NativeFluvioConfig::new(addr);
+
+        FluvioConfig { inner }
+    }
+
+    pub fn set_endpoint(&mut self, endpoint: &str) {
+        self.inner.endpoint = endpoint.to_owned();
+    }
+
+    pub fn set_use_spu_local_address(&mut self, val: bool) {
+        self.inner.use_spu_local_address = val;
+    }
+
+    pub fn disable_tls(&mut self) {
+        self.inner.tls = TlsPolicy::Disabled;
+    }
+
+    pub fn set_anonymous_tls(&mut self) {
+        self.inner.tls = TlsPolicy::Anonymous;
+    }
+
+    pub fn set_inline_tls(&mut self, domain: &str, key: &str, cert: &str, ca_cert: &str) {
+        self.inner.tls = TlsPolicy::Verified(TlsConfig::Inline(TlsCerts {
+            domain: domain.to_owned(),
+            key: key.to_owned(),
+            cert: cert.to_owned(),
+            ca_cert: ca_cert.to_owned(),
+        }));
+    }
+
+    pub fn set_tls_file_paths(
+        &mut self,
+        domain: &str,
+        key_path: &str,
+        cert_path: &str,
+        ca_cert_path: &str,
+    ) {
+        self.inner.tls = TlsPolicy::Verified(TlsConfig::Files(TlsPaths {
+            domain: domain.to_owned(),
+            key: key_path.into(),
+            cert: cert_path.into(),
+            ca_cert: ca_cert_path.into(),
+        }));
+    }
+
+    pub fn set_client_id(&mut self, id: &str) {
+        self.inner.client_id = Some(id.to_owned());
+    }
+
+    pub fn unset_client_id(&mut self) {
+        self.inner.client_id = None;
     }
 }
 

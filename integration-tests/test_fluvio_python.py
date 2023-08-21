@@ -1,5 +1,5 @@
 from string import ascii_lowercase
-from fluvio import Fluvio, Offset, ConsumerConfig, SmartModuleKind
+from fluvio import Fluvio, Offset, ConsumerConfig, SmartModuleKind, FluvioConfig
 import unittest
 import uuid
 import os
@@ -372,6 +372,10 @@ class TestFluvioMethods(CommonFluvioSmartModuleTestCase):
     def test_connect(self):
         # A very simple test
         Fluvio.connect()
+
+    def test_connect_with_config(self):
+        config = FluvioConfig.load()
+        Fluvio.connect_with_config(config)
 
     def test_produce(self):
         fluvio = Fluvio.connect()
