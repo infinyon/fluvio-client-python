@@ -352,7 +352,7 @@ class Fluvio:
     @classmethod
     def connect_with_config(cls, config: FluvioConfig):
         """Creates a new Fluvio client using the given configuration"""
-        return cls(_Fluvio.connect_with_config(config))
+        return cls(_Fluvio.connect_with_config(config._inner))
 
     def partition_consumer(self, topic: str, partition: int) -> PartitionConsumer:
         """Creates a new `PartitionConsumer` for the given topic and partition
