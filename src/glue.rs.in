@@ -2,6 +2,7 @@ foreign_class!(class Fluvio {
     self_type Fluvio;
     private constructor = empty;
     fn _Fluvio::connect() -> Result<Fluvio, FluvioError>;
+    fn _Fluvio::connect_with_config(config: &FluvioConfig) -> Result<Fluvio, FluvioError>;
     fn _Fluvio::partition_consumer(
         &self,
         _: String,
@@ -11,6 +12,21 @@ foreign_class!(class Fluvio {
         &self,
         _: String
     ) -> Result<TopicProducer, FluvioError>;
+});
+
+foreign_class!(class FluvioConfig {
+    self_type FluvioConfig;
+    private constructor = empty;
+    fn FluvioConfig::load() -> Result<FluvioConfig, FluvioError>;
+    fn FluvioConfig::new(addr: &str) -> FluvioConfig;
+    fn FluvioConfig::set_endpoint(&mut self, endpoint: &str);
+    fn FluvioConfig::set_use_spu_local_address(&mut self, val: bool);
+    fn FluvioConfig::disable_tls(&mut self);
+    fn FluvioConfig::set_anonymous_tls(&mut self);
+    fn FluvioConfig::set_inline_tls(&mut self, domain: &str, key: &str, cert: &str, ca_cert: &str);
+    fn FluvioConfig::set_tls_file_paths(&mut self, domain: &str, key_path: &str, cert_path: &str, ca_cert_path: &str);
+    fn FluvioConfig::set_client_id(&mut self, id: &str);
+    fn FluvioConfig::unset_client_id(&mut self);
 });
 
 foreign_class!(

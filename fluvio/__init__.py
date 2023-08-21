@@ -1,5 +1,6 @@
 from ._fluvio_python import (
     Fluvio as _Fluvio,
+    FluvioConfig as _FluvioConfig,
     ConsumerConfig as _ConsumerConfig,
     PartitionConsumer as _PartitionConsumer,
     PartitionConsumerStream as _PartitionConsumerStream,
@@ -275,6 +276,49 @@ class TopicProducer:
         return self._inner.send_all(records_inner)
 
 
+class FluvioConfig:
+    """Configuration for Fluvio client"""
+
+    _inner: _FluvioConfig
+
+    def __init__(self, inner: _FluvioConfig):
+        self._inner = inner
+
+    @classmethod
+    def load(cls):
+        return cls(_FluvioConfig.load())
+
+    @classmethod
+    def new(cls, addr: str):
+        return cls(_FluvioConfig.new(addr))
+
+    def set_endpoint(self, endpoint: str):
+        self._inner.set_endpoint(endpoint)
+
+    def set_use_spu_local_address(self, val: bool):
+        self._inner.set_use_spu_local_address(val)
+
+    def disable_tls(self):
+        self._inner.disable_tls()
+
+    def set_anonymous_tls(self):
+        self._inner.set_anonymous_tls()
+
+    def set_inline_tls(self, domain: str, key: str, cert: str, ca_cert: str):
+        self._inner.set_inline_tls(domain, key, cert, ca_cert)
+
+    def set_tls_file_paths(
+        self, domain: str, key_path: str, cert_path: str, ca_cert_path: str
+    ):
+        self._inner.set_tls_file_paths(domain, key_path, cert_path, ca_cert_path)
+
+    def set_client_id(self, client_id: str):
+        self._inner.set_client_id(client_id)
+
+    def unset_client_id(self):
+        self._inner.unset_client_id()
+
+
 class Fluvio:
     """An interface for interacting with Fluvio streaming."""
 
@@ -294,6 +338,11 @@ class Fluvio:
         settings.
         """
         return cls(_Fluvio.connect())
+
+    @classmethod
+    def connect_with_config(cls, config: FluvioConfig):
+        """Creates a new Fluvio client using the given configuration"""
+        return cls(_Fluvio.connect_with_config(config))
 
     def partition_consumer(self, topic: str, partition: int) -> PartitionConsumer:
         """Creates a new `PartitionConsumer` for the given topic and partition
