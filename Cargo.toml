@@ -15,7 +15,7 @@ log = "^0.4.17"
 
 [dependencies]
 cpython = { version = "0.7", features = ["extension-module"] }
-fluvio-future = { version = "0.5.1", features = ["task", "io", "native2_tls", "subscriber"] }
+fluvio-future = { version = "0.6.0", features = ["task", "io", "native2_tls", "subscriber"] }
 thiserror = "1.0.21"
 serde = "1.0.117"
 tracing = "0.1.37"
