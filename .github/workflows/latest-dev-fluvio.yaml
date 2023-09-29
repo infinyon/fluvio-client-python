@@ -29,7 +29,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Update the fluvio client to use the latest on the fluvio master branch.
         run: |
-          cargo add fluvio --git https://github.com/infinyon/fluvio --branch master
+          # work around cargo bug
+          #cargo add fluvio --git https://github.com/infinyon/fluvio --branch master
+          sed -i "s/fluvio = { features = .*/fluvio = { features = \[\"admin\"\], git = \"https:\/\/github.com\/infinyon\/fluvio.git\" }/g" Cargo.toml
+
           git diff Cargo.toml
 
       - name: check
