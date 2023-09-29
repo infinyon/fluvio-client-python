@@ -60,3 +60,13 @@ docs-build: venv-pip build-dev
 
 clean:
 	rm -rf venv fluvio/*.so target dist build
+
+changelog:
+	# backfill from older
+	# git cliff v0.15.2..HEAD -t v0.15.7 -p CHANGELOG.md
+
+	# normal changelog update
+	# git cliff -l -p ./CHANGELOG.md
+
+	# info
+	git cliff  -l
