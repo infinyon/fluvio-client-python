@@ -35,4 +35,4 @@ rpassword = "5.0.0"
 anyhow = "1.0"
 
 fluvio = { features = ["admin"], git = "https://github.com/infinyon/fluvio.git", tag = "v0.10.15" }
-fluvio-types = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.10.15" }
+fluvio-types = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.10.16" }
