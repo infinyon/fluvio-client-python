@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest] # TODO: add windows-2019,
-        python-version: ["38", "39", "310", "311"]
+        python-version: ["38", "39", "310", "311", "312"]
     env:
       CIBW_SKIP: "cp36-* pp* *-win32"
       CIBW_ARCHS_MACOS: x86_64 universal2
