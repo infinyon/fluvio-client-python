@@ -23,13 +23,15 @@ lint-write: venv-pip
 
 build-wheel: venv-pip
 	rm -rf ./fluvio.egg-info/
-	$(PYTHON) setup.py bdist_wheel
+	$(PYTHON) -m build --wheel
+	#$(PYTHON) setup.py bdist_wheel
 
 install-wheel: build-wheel
 	$(PIP) install --upgrade --force-reinstall --no-index --pre --find-links=dist/ fluvio
 
 build-dev: venv-pip
-	$(PYTHON) setup.py develop
+	$(PYTHON) -m pip install --editable .
+	# $(PYTHON) setup.py develop
 
 integration-tests: build-dev
 	cd integration-tests/ && $(PYTHON) -m unittest
