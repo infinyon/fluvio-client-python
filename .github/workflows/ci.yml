@@ -34,7 +34,7 @@ jobs:
             target/
           key: ${{ matrix.os }}-cargo-${{matrix.python-version}}-${{ hashFiles('**/Cargo.lock') }}
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install ${{ matrix.rust }}
@@ -74,7 +74,7 @@ jobs:
           toolchain: ${{ matrix.rust }}
           override: true
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - uses: AbsaOSS/k3d-action@v2
@@ -122,7 +122,7 @@ jobs:
           toolchain: ${{ matrix.rust }}
           override: true
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Build
