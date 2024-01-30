@@ -39,7 +39,7 @@ setup(
         RustExtension(
             "fluvio._fluvio_python",
             path="Cargo.toml",
-            binding=Binding.RustCPython,
+            binding=Binding.PyO3,
             debug=False,
         )
     ],
