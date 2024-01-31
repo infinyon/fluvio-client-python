@@ -54,7 +54,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         rust: [stable]
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
@@ -113,7 +113,7 @@ jobs:
       matrix:
         os: [macos-latest]
         rust: [stable]
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
     steps:
       - uses: actions/checkout@v4
       - name: Install ${{ matrix.rust }}
