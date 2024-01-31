@@ -2,6 +2,45 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.16.0] - 2023-01-31
+
+### Miscellaneous Tasks
+- Release 0.16.0
+
+### Bump
+- Bump fluvio-types from v0.10.15 to v0.10.16 (#319)
+- Bump toml from 0.7.6 to 0.8.1 (#312)
+- Bump fluvio from v0.10.15 to v0.10.16 (#318)
+- Bump black from 23.9.1 to 23.10.0 (#323)
+- Bump rustix from 0.37.23 to 0.37.25 (#324)
+- Bump tokio from 1.29.1 to 1.33.0 (#321)
+- Bump setuptools-rust from 1.7.0 to 1.8.1 (#328)
+- Bump fluvio-types from v0.10.16 to v0.10.17 (#330)
+- Bump fluvio from v0.10.16 to v0.10.17 (#329)
+- Bump black from 23.10.0 to 23.11.0 (#332)
+- Bump fluvio-types from v0.10.17 to v0.11.0 (#336)
+- Bump tokio from 1.33.0 to 1.34.0 (#333)
+- Bump fluvio from v0.10.17 to v0.11.0 (#335)
+- Bump url from 2.4.0 to 2.5.0 (#338)
+- Bump actions/setup-python from 4 to 5 (#342)
+- Bump actions/download-artifact from 3 to 4 (#347)
+- Bump actions/upload-artifact from 3 to 4 (#348)
+- Bump openssl from 0.10.55 to 0.10.60 (#341)
+- Bump black from 23.11.0 to 23.12.0 (#346)
+- Bump unsafe-libyaml from 0.2.9 to 0.2.10 (#350)
+- Bump tokio from 1.34.0 to 1.35.1 (#349)
+- Bump fluvio-types from v0.11.0 to v0.11.2 (#343)
+- Bump fluvio from v0.11.0 to v0.11.3 (#353)
+- Bump actions/cache from 3 to 4 (#355)
+- Bump env_logger from 0.10.0 to 0.11.0 (#356)
+- Bump black from 23.12.0 to 24.1.1 (#357)
+
+### Testing
+- CI enable python 3.12 (#360)
+
+### Build
+- changed bindings from rust-cpython to pyO3 (#359)
+
 ## [0.15.7] - 2023-09-29
 
 ### Miscellaneous Tasks
