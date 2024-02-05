@@ -2,6 +2,8 @@ use thiserror::Error;
 
 use fluvio::FluvioError as FluvioClientError;
 
+use crate::PyFluvioError;
+
 #[derive(Error, Debug)]
 pub enum FluvioError {
     #[error(transparent)]
@@ -14,6 +16,6 @@ pub enum FluvioError {
 
 impl From<FluvioError> for pyo3::PyErr {
     fn from(err: FluvioError) -> pyo3::PyErr {
-        pyo3::exceptions::PyException::new_err(err.to_string())
+        PyFluvioError::new_err(err.to_string())
     }
 }

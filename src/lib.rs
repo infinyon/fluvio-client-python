@@ -6,13 +6,10 @@ use fluvio::consumer::{
     SmartModuleInvocation, SmartModuleInvocationWasm, SmartModuleKind as NativeSmartModuleKind,
 };
 use fluvio::dataplane::link::ErrorCode;
-use fluvio::{FluvioConfig as NativeFluvioConfig};
+use fluvio::FluvioConfig as NativeFluvioConfig;
 use fluvio::{
-    consumer::Record as NativeRecord,
-    Fluvio as NativeFluvio,
-    Offset as NativeOffset,
-    PartitionConsumer as NativePartitionConsumer,
-    TopicProducer as NativeTopicProducer
+    consumer::Record as NativeRecord, Fluvio as NativeFluvio, Offset as NativeOffset,
+    PartitionConsumer as NativePartitionConsumer, TopicProducer as NativeTopicProducer,
 };
 use fluvio_future::{
     io::{Stream, StreamExt},
@@ -23,10 +20,10 @@ use std::string::FromUtf8Error;
 mod cloud;
 // use crate::error::FluvioError;
 mod error;
-use error::FluvioError;
 use cloud::{CloudClient, CloudLoginError};
-use pyo3::{prelude::*};
+use error::FluvioError;
 use pyo3::exceptions::{PyException, PyValueError};
+use pyo3::prelude::*;
 
 pyo3::create_exception!(mymodule, PyFluvioError, PyException);
 
@@ -46,30 +43,45 @@ fn _fluvio_python(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     Ok(())
 }
 
+fn utf8_to_py_err(err: FromUtf8Error) -> PyErr {
+    PyFluvioError::new_err(err.to_string())
+}
+fn error_to_py_err(err: anyhow::Error) -> PyErr {
+    PyFluvioError::new_err(err.to_string())
+}
+
 #[pyclass]
 struct Fluvio(NativeFluvio);
 
 #[pymethods]
-impl Fluvio{
+impl Fluvio {
     #[staticmethod]
-    fn connect() -> Result<Fluvio, FluvioError> {
-        Ok(Fluvio(run_block_on(NativeFluvio::connect())?))
+    fn connect() -> PyResult<Fluvio> {
+        Ok(Fluvio(
+            run_block_on(NativeFluvio::connect()).map_err(error_to_py_err)?,
+        ))
     }
 
     #[staticmethod]
-    fn connect_with_config(config: &FluvioConfig) -> Result<Fluvio, FluvioError> {
-        Ok(Fluvio(run_block_on(NativeFluvio::connect_with_config(&config.inner))?))
+    fn connect_with_config(config: &FluvioConfig) -> PyResult<Fluvio> {
+        Ok(Fluvio(
+            run_block_on(NativeFluvio::connect_with_config(&config.inner))
+                .map_err(error_to_py_err)?,
+        ))
     }
 
-    fn partition_consumer(&self, topic: String, partition: u32) -> Result<PartitionConsumer, FluvioError> {
-        Ok(PartitionConsumer(run_block_on(self.0.partition_consumer(topic, partition))?))
+    fn partition_consumer(&self, topic: String, partition: u32) -> PyResult<PartitionConsumer> {
+        Ok(PartitionConsumer(
+            run_block_on(self.0.partition_consumer(topic, partition)).map_err(error_to_py_err)?,
+        ))
     }
-    
-    fn topic_producer(&self, topic: String) -> Result<TopicProducer, FluvioError> {
-        Ok(TopicProducer(run_block_on(self.0.topic_producer(topic))?))
+
+    fn topic_producer(&self, topic: String) -> PyResult<TopicProducer> {
+        Ok(TopicProducer(
+            run_block_on(self.0.topic_producer(topic)).map_err(error_to_py_err)?,
+        ))
     }
 }
-
 
 #[pyclass]
 pub struct FluvioConfig {
@@ -283,7 +295,7 @@ pub enum SmartModuleContextData {
 struct Offset(NativeOffset);
 
 #[pymethods]
-impl Offset{
+impl Offset {
     #[staticmethod]
     fn absolute(index: i64) -> Result<Offset, FluvioError> {
         Ok(Offset(NativeOffset::absolute(index)?))
@@ -315,10 +327,7 @@ struct PartitionConsumer(NativePartitionConsumer);
 
 #[pymethods]
 impl PartitionConsumer {
-    fn stream(
-        &self,
-        offset: &Offset,
-    ) -> Result<PartitionConsumerStream, FluvioError> {
+    fn stream(&self, offset: &Offset) -> Result<PartitionConsumerStream, FluvioError> {
         Ok(PartitionConsumerStream {
             inner: Box::pin(run_block_on(self.0.stream(offset.0.clone()))?),
         })
@@ -341,7 +350,8 @@ impl PartitionConsumer {
     }
 }
 
-type PartitionConsumerIteratorInner = Pin<Box<dyn Stream<Item = Result<NativeRecord, ErrorCode>> + Send>>;
+type PartitionConsumerIteratorInner =
+    Pin<Box<dyn Stream<Item = Result<NativeRecord, ErrorCode>> + Send>>;
 
 #[pyclass]
 pub struct PartitionConsumerStream {
@@ -351,7 +361,11 @@ pub struct PartitionConsumerStream {
 #[pymethods]
 impl PartitionConsumerStream {
     fn next(&mut self) -> Result<Option<Record>, PyErr> {
-        Ok(Some(Record(run_block_on(self.inner.next()).unwrap().map_err(|err| PyException::new_err(err.to_string()))?)))
+        Ok(Some(Record(
+            run_block_on(self.inner.next())
+                .unwrap()
+                .map_err(|err| PyException::new_err(err.to_string()))?,
+        )))
     }
 }
 
@@ -374,18 +388,16 @@ impl ProducerBatchRecord {
 struct TopicProducer(NativeTopicProducer);
 
 #[pymethods]
-impl TopicProducer{
+impl TopicProducer {
     fn send(&self, key: Vec<u8>, value: Vec<u8>) -> Result<(), FluvioError> {
         Ok(run_block_on(self.0.send(key, value)).map(|_| ())?)
     }
-    fn send_all(
-        &self,
-        records: Vec<ProducerBatchRecord>,
-    ) -> Result<(), FluvioError> {
+    fn send_all(&self, records: Vec<ProducerBatchRecord>) -> Result<(), FluvioError> {
         Ok(run_block_on(
-            self.0.send_all(records.iter().map(|record| -> (Vec<u8>, Vec<u8>) {
-                (record.key.clone(), record.value.clone())
-            })),
+            self.0
+                .send_all(records.iter().map(|record| -> (Vec<u8>, Vec<u8>) {
+                    (record.key.clone(), record.value.clone())
+                })),
         )
         .map(|_| ())?)
     }
@@ -397,19 +409,15 @@ impl TopicProducer{
 #[pyclass]
 pub struct Record(NativeRecord);
 
-fn to_py_err(err: FromUtf8Error) -> PyErr{
-    PyException::new_err(err.to_string())
-}
-
 #[pymethods]
-impl Record{
+impl Record {
     fn value_string(&self) -> Result<String, PyErr> {
-        String::from_utf8(self.0.value().to_vec()).map_err(to_py_err)
+        String::from_utf8(self.0.value().to_vec()).map_err(utf8_to_py_err)
     }
 
     fn key_string(&self) -> Result<String, PyErr> {
         let key = self.0.key().unwrap_or(b"");
-        String::from_utf8(key.to_vec()).map_err(to_py_err)
+        String::from_utf8(key.to_vec()).map_err(utf8_to_py_err)
     }
 
     fn offset(&self) -> i64 {
