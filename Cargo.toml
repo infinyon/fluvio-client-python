@@ -9,13 +9,11 @@ crate-type = ["cdylib"]
 name = "_fluvio_python"
 
 [build-dependencies]
-flapigen = "0.6.0-pre7"
 env_logger = "^0.11"
 log = "^0.4.17"
 
 [dependencies]
-cpython = { version = "0.7" }
-pyo3 = { version = "0.20", features = ["extension-module"] }
+pyo3 = { version = "0.20.2", features = ["extension-module"] }
 fluvio-future = { version = "0.6.0", features = ["task", "io", "native2_tls", "subscriber"] }
 thiserror = "1.0.21"
 serde = "1.0.117"

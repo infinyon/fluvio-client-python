@@ -11,3 +11,9 @@ pub enum FluvioError {
     #[error("IO Error: {0}")]
     IoError(#[from] std::io::Error),
 }
+
+impl From<FluvioError> for pyo3::PyErr {
+    fn from(err: FluvioError) -> pyo3::PyErr {
+        pyo3::exceptions::PyException::new_err(err.to_string())
+    }
+}
