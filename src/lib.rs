@@ -1,5 +1,5 @@
 #![allow(non_snake_case, unused)]
-use fluvio::config::{TlsCerts, TlsConfig, TlsPaths, TlsPolicy};
+use fluvio::config::{ConfigFile, Profile, TlsCerts, TlsConfig, TlsPaths, TlsPolicy};
 use fluvio::consumer::{
     ConsumerConfig as NativeConsumerConfig, ConsumerConfigBuilder,
     SmartModuleContextData as NativeSmartModuleContextData, SmartModuleExtraParams,
@@ -15,8 +15,11 @@ use fluvio_future::{
     io::{Stream, StreamExt},
     task::run_block_on,
 };
+use std::io::{self, Write};
 use std::pin::Pin;
 use std::string::FromUtf8Error;
+use tracing::info;
+use url::Host;
 mod cloud;
 // use crate::error::FluvioError;
 mod error;
@@ -39,6 +42,7 @@ fn _fluvio_python(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<SmartModuleKind>()?;
     m.add_class::<Record>()?;
     m.add_class::<Offset>()?;
+    m.add_class::<Cloud>()?;
     m.add("Error", py.get_type::<PyFluvioError>())?;
     Ok(())
 }
@@ -437,82 +441,14 @@ impl Record {
     }
 }
 
-mod _Cloud {
-    use super::*;
-    use fluvio::config::{ConfigFile, FluvioConfig, Profile};
-    use std::io;
-    use std::io::Write;
-    use tracing::info;
-    use url::Host;
-    const DEFAULT_PROFILE_NAME: &'static str = "cloud";
-    use crate::cloud::{Auth0Config, DeviceCodeResponse};
-    pub struct CloudAuth {
-        pub auth0_config: Option<Auth0Config>,
-        pub device_code: Option<DeviceCodeResponse>,
-        pub client: CloudClient,
-        remote: String,
-        profile: Option<String>,
-    }
-    impl CloudAuth {
-        pub fn new(remote: String) -> Result<CloudAuth, CloudLoginError> {
-            run_block_on(async {
-                let client = CloudClient::with_default_path()?;
-                Ok(CloudAuth {
-                    client,
-                    remote,
-                    auth0_config: None,
-                    device_code: None,
-                    profile: None,
-                })
-            })
-        }
-        pub fn get_auth0_url(&mut self) -> Result<(String, String), CloudLoginError> {
-            run_block_on(async {
-                let (auth0_config, device_code) = self
-                    .client
-                    .get_auth0_and_device_code(self.remote.as_str())
-                    .await?;
-                let (complete_url, user_code) = (
-                    device_code.verification_uri_complete.clone(),
-                    device_code.user_code.clone(),
-                );
-                self.auth0_config = Some(auth0_config);
-                self.device_code = Some(device_code);
-                Ok((complete_url, user_code))
-            })
-        }
-        pub fn authenticate_with_auth0(&mut self) -> Result<(), CloudLoginError> {
-            run_block_on(async {
-                let auth0_config = self
-                    .auth0_config
-                    .as_ref()
-                    .ok_or(CloudLoginError::Auth0ConfigNotFound)?;
-                let device_code = self
-                    .device_code
-                    .as_ref()
-                    .ok_or(CloudLoginError::DeviceCodeNotFound)?;
-                self.client
-                    .authenticate_with_auth0(self.remote.as_str(), auth0_config, device_code)
-                    .await?;
-                let cluster = match self.client.download_profile().await {
-                    Ok(cluster) => cluster,
-                    Err(CloudLoginError::ClusterDoesNotExist(_))
-                    | Err(CloudLoginError::ProfileNotAvailable) => {
-                        println!("Warning: You don't have any clusters, please create cluster if you want to perform fluvio functions");
-                        return Ok(());
-                    }
-                    Err(err) => {
-                        return Err(err);
-                    }
-                };
-                println!("Fluvio cluster found, switching to profile");
+#[pyclass]
+struct Cloud {
+    DEFAULT_PROFILE_NAME: &'static str, // = "cloud"
+}
 
-                save_cluster(cluster, self.remote.clone(), self.profile.clone())?;
-                Ok(())
-            })
-        }
-    }
-
+#[pymethods]
+impl Cloud {
+    #[staticmethod]
     pub fn login_with_username(
         remote: String,
         profile: Option<String>,
@@ -555,38 +491,105 @@ mod _Cloud {
             Ok(())
         })
     }
+}
 
-    fn save_cluster(
-        cluster: FluvioConfig,
-        remote: String,
-        profile: Option<String>,
-    ) -> Result<(), CloudLoginError> {
-        let mut config_file = ConfigFile::load_default_or_new()?;
-        let config = config_file.mut_config();
-        let profile_name = if let Some(profile) = profile {
-            profile
-        } else {
-            profile_from_remote(remote).unwrap_or_else(|| DEFAULT_PROFILE_NAME.to_string())
-        };
+fn save_cluster(
+    cluster: NativeFluvioConfig,
+    remote: String,
+    profile: Option<String>,
+) -> Result<(), CloudLoginError> {
+    let mut config_file = ConfigFile::load_default_or_new()?;
+    let config = config_file.mut_config();
+    let profile_name = if let Some(profile) = profile {
+        profile
+    } else {
+        profile_from_remote(remote).unwrap_or_else(|| "cloud".to_string())
+    };
 
-        let profile = Profile::new(profile_name.clone());
-        config.add_cluster(cluster, profile_name.clone());
-        config.add_profile(profile, profile_name.clone());
-        config.set_current_profile(&profile_name);
-        config_file.save()?;
-        info!(%profile_name, "Successfully saved profile");
-        Ok(())
-    }
+    let profile = Profile::new(profile_name.clone());
+    config.add_cluster(cluster, profile_name.clone());
+    config.add_profile(profile, profile_name.clone());
+    config.set_current_profile(&profile_name);
+    config_file.save()?;
+    info!(%profile_name, "Successfully saved profile");
+    Ok(())
+}
 
-    fn profile_from_remote(remote: String) -> Option<String> {
-        let url = url::Url::parse(remote.as_str()).ok()?;
-        let host = url.host()?;
-        match host {
-            Host::Ipv4(ip4) => Some(format!("{}", ip4)),
-            Host::Ipv6(ip6) => Some(format!("{}", ip6)),
-            Host::Domain(domain) => Some(domain.to_owned().replace('.', "-")),
-        }
+fn profile_from_remote(remote: String) -> Option<String> {
+    let url = url::Url::parse(remote.as_str()).ok()?;
+    let host = url.host()?;
+    match host {
+        Host::Ipv4(ip4) => Some(format!("{}", ip4)),
+        Host::Ipv6(ip6) => Some(format!("{}", ip6)),
+        Host::Domain(domain) => Some(domain.to_owned().replace('.', "-")),
     }
 }
 
-// include!(concat!(env!("OUT_DIR"), "/glue.rs"));
+pub struct CloudAuth {
+    pub auth0_config: Option<cloud::Auth0Config>,
+    pub device_code: Option<cloud::DeviceCodeResponse>,
+    pub client: CloudClient,
+    remote: String,
+    profile: Option<String>,
+}
+impl CloudAuth {
+    pub fn new(remote: String) -> Result<CloudAuth, CloudLoginError> {
+        run_block_on(async {
+            let client = CloudClient::with_default_path()?;
+            Ok(CloudAuth {
+                client,
+                remote,
+                auth0_config: None,
+                device_code: None,
+                profile: None,
+            })
+        })
+    }
+
+    pub fn get_auth0_url(&mut self) -> Result<(String, String), CloudLoginError> {
+        run_block_on(async {
+            let (auth0_config, device_code) = self
+                .client
+                .get_auth0_and_device_code(self.remote.as_str())
+                .await?;
+            let (complete_url, user_code) = (
+                device_code.verification_uri_complete.clone(),
+                device_code.user_code.clone(),
+            );
+            self.auth0_config = Some(auth0_config);
+            self.device_code = Some(device_code);
+            Ok((complete_url, user_code))
+        })
+    }
+
+    pub fn authenticate_with_auth0(&mut self) -> Result<(), CloudLoginError> {
+        run_block_on(async {
+            let auth0_config = self
+                .auth0_config
+                .as_ref()
+                .ok_or(CloudLoginError::Auth0ConfigNotFound)?;
+            let device_code = self
+                .device_code
+                .as_ref()
+                .ok_or(CloudLoginError::DeviceCodeNotFound)?;
+            self.client
+                .authenticate_with_auth0(self.remote.as_str(), auth0_config, device_code)
+                .await?;
+            let cluster = match self.client.download_profile().await {
+                Ok(cluster) => cluster,
+                Err(CloudLoginError::ClusterDoesNotExist(_))
+                | Err(CloudLoginError::ProfileNotAvailable) => {
+                    println!("Warning: You don't have any clusters, please create cluster if you want to perform fluvio functions");
+                    return Ok(());
+                }
+                Err(err) => {
+                    return Err(err);
+                }
+            };
+            println!("Fluvio cluster found, switching to profile");
+
+            save_cluster(cluster, self.remote.clone(), self.profile.clone())?;
+            Ok(())
+        })
+    }
+}
