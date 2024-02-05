@@ -3,7 +3,7 @@ from setuptools_rust import Binding, RustExtension, Strip
 
 setup(
     name="fluvio",
-    version="0.15.7",
+    version="0.16.0",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     author="Fluvio Contributors",
@@ -39,7 +39,7 @@ setup(
         RustExtension(
             "fluvio._fluvio_python",
             path="Cargo.toml",
-            binding=Binding.RustCPython,
+            binding=Binding.PyO3,
             debug=False,
         )
     ],
