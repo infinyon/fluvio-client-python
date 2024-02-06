@@ -470,7 +470,7 @@ impl Cloud {
             let email = email.trim();
             let password = match password {
                 Some(pw) => pw.clone(),
-                None => rpassword::read_password_from_tty(Some("Password: "))?,
+                None => rpassword::prompt_password("Password: ")?,
             };
             client.authenticate(email, &password, &remote).await?;
 
