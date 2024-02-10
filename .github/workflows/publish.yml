@@ -151,7 +151,7 @@ jobs:
           CARGO_BUILD_TARGET: ${{ matrix.platform.target }}
       - uses: actions/upload-artifact@v4
         with:
-          name: wheel
+          name: wheel-${{ matrix.platform.target }}
           path: dist/*.whl
           overwrite: true
 
@@ -163,7 +163,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: wheel
+          name: wheel-${{ matrix.platform.target }}
           path: dist
 
       - uses: pypa/gh-action-pypi-publish@master
