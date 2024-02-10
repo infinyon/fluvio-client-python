@@ -69,6 +69,7 @@ jobs:
         with:
           name: wheel
           path: ./wheelhouse/*.whl
+          overwrite: true
 
   build_sdist:
     name: Build source distribution
@@ -152,6 +153,7 @@ jobs:
         with:
           name: wheel
           path: dist/*.whl
+          overwrite: true
 
   upload_pypi:
     needs: [build_wheels, build_sdist, build_cc_wheels]
