@@ -204,6 +204,8 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
+    permissions:
+      contents: write           # 'write' access to repository contents
     steps:
       - uses: actions/checkout@v4
         with:

@@ -37,11 +37,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install ${{ matrix.rust }}
-        uses: actions-rs/toolchain@v1
+      - name: Install rust ${{ matrix.rust }}
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
-          override: true
       - name: check fmt, flake8 and black
         run: make lint
       - name: Verify Docs generate
@@ -68,11 +67,10 @@ jobs:
             ~/.cargo/.crates2.json
             target/
           key: ${{ matrix.os }}-cargo-${{matrix.python-version}}-${{ hashFiles('**/Cargo.lock') }}
-      - name: Install ${{ matrix.rust }}
-        uses: actions-rs/toolchain@v1
+      - name: Install rust ${{ matrix.rust }}
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
-          override: true
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
@@ -116,11 +114,10 @@ jobs:
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
     steps:
       - uses: actions/checkout@v4
-      - name: Install ${{ matrix.rust }}
-        uses: actions-rs/toolchain@v1
+      - name: Install rust ${{ matrix.rust }}
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
-          override: true
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
