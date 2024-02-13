@@ -132,10 +132,9 @@ jobs:
           toolchain: stable
 
       - name: Install cross
-        uses: actions-rs/install@v0.1
+        uses: taiki-e/install-action@v2
         with:
-          crate: cross
-          version: latest
+          tool: cross
 
       - name: Install setuptools and setuptools-rust
         run: |
@@ -165,7 +164,7 @@ jobs:
           path: dist
           merge-multiple: true
 
-      - uses: pypa/gh-action-pypi-publish@master
+      - uses: pypa/gh-action-pypi-publish@v1.8.11
         with:
           user: __token__
           password: ${{ secrets.PYPI_ACCESS_TOKEN }}
@@ -205,6 +204,8 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
+    permissions:
+      contents: write           # 'write' access to repository contents
     steps:
       - uses: actions/checkout@v4
         with:
