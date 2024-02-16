@@ -243,7 +243,7 @@ class PartitionConsumer:
             self._inner.stream_with_config(offset._inner, config._inner)
         )
 
-    async def stream_with_config(
+    async def async_stream_with_config(
         self, offset: Offset, config: ConsumerConfig
     ) -> typing.Iterator[Record]:
         """

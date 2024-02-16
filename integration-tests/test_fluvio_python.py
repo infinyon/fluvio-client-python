@@ -397,7 +397,7 @@ class TestAsyncFluvioMethods(CommonAsyncFluvioSmartModuleTestCase):
 
         producer = fluvio.topic_producer(self.topic)
         for i in range(10):
-            producer.async_send_string("FOOBAR %s " % i)
+            await producer.async_send_string("FOOBAR %s " % i)
 
     async def test_consumer_with_interator(self):
         fluvio = Fluvio.connect()
