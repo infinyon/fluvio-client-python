@@ -8,16 +8,21 @@ use fluvio::consumer::{
 use fluvio::dataplane::link::ErrorCode;
 use fluvio::FluvioConfig as NativeFluvioConfig;
 use fluvio::{
-    consumer::Record as NativeRecord, Fluvio as NativeFluvio, Offset as NativeOffset,
+    consumer::Record as NativeRecord, Fluvio as NativeFluvio,
+    MultiplePartitionConsumer as NativeMultiplePartitionConsumer, Offset as NativeOffset,
     PartitionConsumer as NativePartitionConsumer, TopicProducer as NativeTopicProducer,
 };
 use fluvio_future::{
     io::{Stream, StreamExt},
     task::run_block_on,
 };
+use futures::future::BoxFuture;
+use futures::pin_mut;
+use futures::TryFutureExt;
 use std::io::{self, Write};
 use std::pin::Pin;
 use std::string::FromUtf8Error;
+use std::sync::Arc;
 use tracing::info;
 use url::Host;
 mod cloud;
@@ -329,11 +334,36 @@ impl Offset {
 #[pyclass]
 struct PartitionConsumer(NativePartitionConsumer);
 
+impl Clone for PartitionConsumer {
+    fn clone(&self) -> Self {
+        PartitionConsumer(self.0.clone())
+    }
+}
+
 #[pymethods]
 impl PartitionConsumer {
     fn stream(&self, offset: &Offset) -> Result<PartitionConsumerStream, FluvioError> {
         Ok(PartitionConsumerStream {
             inner: Box::pin(run_block_on(self.0.stream(offset.0.clone()))?),
+        })
+    }
+    fn async_stream<'b>(&'b self, offset: &Offset, py: Python<'b>) -> PyResult<&PyAny> {
+        let sl = self.clone();
+        let offset = offset.0.clone();
+        pyo3_asyncio::async_std::future_into_py(py, async move {
+            let stream =
+                sl.0.stream(offset)
+                    .await
+                    .map_err(|err| FluvioError::AnyhowError(err))?;
+            Ok(Python::with_gil(|py| {
+                Py::new(
+                    py,
+                    PartitionConsumerStream {
+                        inner: Box::pin(stream),
+                    },
+                )
+                .unwrap()
+            }))
         })
     }
     fn stream_with_config(
@@ -351,6 +381,109 @@ impl PartitionConsumer {
                 }
             })?,
         )
+    }
+    fn async_stream_with_config<'b>(
+        &'b self,
+        offset: &Offset,
+        config: &mut ConsumerConfig,
+        py: Python<'b>,
+    ) -> PyResult<&PyAny> {
+        let sl = self.clone();
+        let offset = offset.0.clone();
+        let config: NativeConsumerConfig = config.build()?.0;
+        pyo3_asyncio::async_std::future_into_py(py, async move {
+            let stream =
+                sl.0.stream_with_config(offset, config)
+                    .await
+                    .map_err(|err| FluvioError::AnyhowError(err))?;
+            Ok(Python::with_gil(|py| {
+                Py::new(
+                    py,
+                    PartitionConsumerStream {
+                        inner: Box::pin(stream),
+                    },
+                )
+                .unwrap()
+            }))
+        })
+    }
+}
+
+#[pyclass]
+struct MultiplePartitionConsumer(NativeMultiplePartitionConsumer);
+
+impl Clone for MultiplePartitionConsumer {
+    fn clone(&self) -> Self {
+        MultiplePartitionConsumer(self.0.clone())
+    }
+}
+
+#[pymethods]
+impl MultiplePartitionConsumer {
+    fn stream(&self, offset: &Offset) -> Result<PartitionConsumerStream, FluvioError> {
+        Ok(PartitionConsumerStream {
+            inner: Box::pin(run_block_on(self.0.stream(offset.0.clone()))?),
+        })
+    }
+    fn async_stream<'b>(&'b self, offset: &Offset, py: Python<'b>) -> PyResult<&PyAny> {
+        let sl = self.clone();
+        let offset = offset.0.clone();
+        pyo3_asyncio::async_std::future_into_py(py, async move {
+            let stream =
+                sl.0.stream(offset)
+                    .await
+                    .map_err(|err| FluvioError::AnyhowError(err))?;
+            Ok(Python::with_gil(|py| {
+                Py::new(
+                    py,
+                    PartitionConsumerStream {
+                        inner: Box::pin(stream),
+                    },
+                )
+                .unwrap()
+            }))
+        })
+    }
+    fn stream_with_config(
+        &self,
+        offset: &Offset,
+        config: &mut ConsumerConfig,
+    ) -> Result<PartitionConsumerStream, FluvioError> {
+        // let config = config.build()?;
+        let config: NativeConsumerConfig = config.build()?.0;
+
+        Ok(
+            run_block_on(self.0.stream_with_config(offset.0.clone(), config)).map(|stream| {
+                PartitionConsumerStream {
+                    inner: Box::pin(stream),
+                }
+            })?,
+        )
+    }
+    fn async_stream_with_config<'b>(
+        &'b self,
+        offset: &Offset,
+        config: &mut ConsumerConfig,
+        py: Python<'b>,
+    ) -> PyResult<&PyAny> {
+        let sl = self.clone();
+        let offset = offset.0.clone();
+        let config: NativeConsumerConfig = config.build()?.0;
+        pyo3_asyncio::async_std::future_into_py(py, async move {
+            let stream =
+                sl.0.stream_with_config(offset, config)
+                    .await
+                    .map_err(|err| FluvioError::AnyhowError(err))?;
+            Ok(Python::with_gil(|py| {
+                Py::new(
+                    py,
+                    PartitionConsumerStream {
+                        inner: Box::pin(stream),
+                    },
+                )
+                .unwrap()
+            }))
+        })
     }
 }
 
@@ -388,6 +521,7 @@ impl ProducerBatchRecord {
     }
 }
 
+#[derive(Clone)]
 #[pyclass]
 struct TopicProducer(NativeTopicProducer);
 
@@ -395,6 +529,16 @@ struct TopicProducer(NativeTopicProducer);
 impl TopicProducer {
     fn send(&self, key: Vec<u8>, value: Vec<u8>) -> Result<(), FluvioError> {
         Ok(run_block_on(self.0.send(key, value)).map(|_| ())?)
+    }
+    fn async_send<'b>(&'b self, key: Vec<u8>, value: Vec<u8>, py: Python<'b>) -> PyResult<&PyAny> {
+        let sl = self.clone();
+        pyo3_asyncio::async_std::future_into_py(py, async move {
+            sl.0.send(key, value)
+                .await
+                .map(|_| ())
+                .map_err(|err| FluvioError::AnyhowError(err))?;
+            Ok(Python::with_gil(|py| py.None()))
+        })
     }
     fn send_all(&self, records: Vec<ProducerBatchRecord>) -> Result<(), FluvioError> {
         Ok(run_block_on(
@@ -405,8 +549,35 @@ impl TopicProducer {
         )
         .map(|_| ())?)
     }
+    fn async_send_all<'b>(
+        &'b self,
+        records: Vec<ProducerBatchRecord>,
+        py: Python<'b>,
+    ) -> PyResult<&PyAny> {
+        let sl = self.clone();
+        pyo3_asyncio::async_std::future_into_py(py, async move {
+            sl.0.send_all(
+                records
+                    .into_iter()
+                    .map(|record| -> (Vec<u8>, Vec<u8>) { (record.key, record.value) }),
+            )
+            .await
+            .map(|_| ())
+            .map_err(|err| FluvioError::AnyhowError(err))?;
+            Ok(Python::with_gil(|py| py.None()))
+        })
+    }
     fn flush(&self) -> Result<(), FluvioError> {
         Ok(run_block_on(self.0.flush())?)
+    }
+    fn async_flush<'b>(&'b self, py: Python<'b>) -> PyResult<&PyAny> {
+        let sl = self.clone();
+        pyo3_asyncio::async_std::future_into_py(py, async move {
+            sl.0.flush()
+                .map_err(|err| FluvioError::AnyhowError(err))
+                .await?;
+            Ok(Python::with_gil(|py| py.None()))
+        })
     }
 }
 
