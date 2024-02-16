@@ -6,7 +6,7 @@ use fluvio::consumer::{
     SmartModuleInvocation, SmartModuleInvocationWasm, SmartModuleKind as NativeSmartModuleKind,
 };
 use fluvio::dataplane::link::ErrorCode;
-use fluvio::FluvioConfig as NativeFluvioConfig;
+use fluvio::{FluvioConfig as NativeFluvioConfig, PartitionSelectionStrategy as NativePartitionSelectionStrategy};
 use fluvio::{
     consumer::Record as NativeRecord, Fluvio as NativeFluvio,
     MultiplePartitionConsumer as NativeMultiplePartitionConsumer, Offset as NativeOffset,
@@ -16,6 +16,7 @@ use fluvio_future::{
     io::{Stream, StreamExt},
     task::run_block_on,
 };
+use fluvio_types::PartitionId;
 use futures::future::BoxFuture;
 use futures::pin_mut;
 use futures::TryFutureExt;
@@ -48,6 +49,8 @@ fn _fluvio_python(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Record>()?;
     m.add_class::<Offset>()?;
     m.add_class::<Cloud>()?;
+    m.add_class::<MultiplePartitionConsumer>()?;
+    m.add_class::<PartitionSelectionStrategy>()?;
     m.add("Error", py.get_type::<PyFluvioError>())?;
     Ok(())
 }
@@ -85,10 +88,49 @@ impl Fluvio {
         ))
     }
 
+    fn multi_partition_consumer(&self, strategy: PartitionSelectionStrategy) -> PyResult<MultiplePartitionConsumer> {
+        Ok(MultiplePartitionConsumer(
+            run_block_on(self.0.consumer(strategy.into_inner())).map_err(error_to_py_err)?,
+        ))
+    }
+
     fn topic_producer(&self, topic: String) -> PyResult<TopicProducer> {
         Ok(TopicProducer(
             run_block_on(self.0.topic_producer(topic)).map_err(error_to_py_err)?,
         ))
+    }
+}
+
+#[derive(Clone)]
+#[pyclass]
+pub struct PartitionSelectionStrategy {
+    inner: NativePartitionSelectionStrategy,
+}
+
+impl  PartitionSelectionStrategy {
+    fn into_inner(self) -> NativePartitionSelectionStrategy {
+        self.inner
+    }
+}
+
+#[pymethods]
+impl  PartitionSelectionStrategy {
+    #[staticmethod]
+    fn with_all(topic: &str) -> Self {
+        Self {
+            inner: NativePartitionSelectionStrategy::All(topic.to_owned()),
+        }
+    }
+
+    #[staticmethod]
+    fn with_multiple(selections: Vec<(&str, PartitionId)>) -> Self {
+        let vals = selections
+            .into_iter()
+            .map(|(topic, partitions)| (topic.to_owned(), partitions))
+            .collect();
+        Self {
+            inner: NativePartitionSelectionStrategy::Multiple(vals),
+        }
     }
 }
 
