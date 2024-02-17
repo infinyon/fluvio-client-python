@@ -199,7 +199,7 @@ class PartitionConsumer:
     async def async_stream(self, offset: Offset) -> typing.Iterator[Record]:
         """
         Continuously streams events from a particular offset in the consumer’s
-        partition. This returns a `AsyncIterator[Record]` which is an
+        partition. This returns a `Iterator[Record]` which is an
         iterator.
 
         Streaming is one of the two ways to consume events in Fluvio. It is a
@@ -269,7 +269,7 @@ class PartitionConsumer:
             wmp = os.path.abspath("somefilter.wasm")
             config = ConsumerConfig()
             config.smartmodule(path=wmp)
-            for i in consumer.stream_with_config(Offset.beginning(), config):
+            for i in consumer.async_stream_with_config(Offset.beginning(), config):
                 # do something with i
 
         Returns:
@@ -320,7 +320,7 @@ class MultiplePartitionConsumer:
     async def async_stream(self, offset: Offset) -> typing.Iterator[Record]:
         """
         Continuously streams events from a particular offset in the consumer’s
-        partition. This returns a `AsyncIterator[Record]` which is an
+        partition. This returns a `Iterator[Record]` which is an
         iterator.
 
         Streaming is one of the two ways to consume events in Fluvio. It is a
@@ -390,7 +390,7 @@ class MultiplePartitionConsumer:
             wmp = os.path.abspath("somefilter.wasm")
             config = ConsumerConfig()
             config.smartmodule(path=wmp)
-            for i in consumer.stream_with_config(Offset.beginning(), config):
+            for i in consumer.async_stream_with_config(Offset.beginning(), config):
                 # do something with i
 
         Returns:
@@ -582,10 +582,7 @@ class Fluvio:
         """Creates a new `MultiplePartitionConsumer` for the given topic and its all partitions
 
         Currently, consumers are scoped to both a specific Fluvio topic and to
-        a particular partition within that topic. That means that if you have a
-        topic with multiple partitions, then in order to receive all of the
-        events in all of the partitions, you will need to create one consumer
-        per partition.
+        its all partitions within that topic.
         """
         strategy = PartitionSelectionStrategy.with_all(topic)
         return PartitionConsumer(self._inner.multi_partition_consumer(strategy._inner))
@@ -593,11 +590,7 @@ class Fluvio:
     def multi_topic_partition_consumer(self, selections: typing.List[typing.Tuple[str, int]]) -> MultiplePartitionConsumer:
         """Creates a new `MultiplePartitionConsumer` for the given topics and partitions
 
-        Currently, consumers are scoped to both a specific Fluvio topic and to
-        a particular partition within that topic. That means that if you have a
-        topic with multiple partitions, then in order to receive all of the
-        events in all of the partitions, you will need to create one consumer
-        per partition.
+        Currently, consumers are scoped to a list of Fluvio topic and partition tuple.
         """
         strategy = PartitionSelectionStrategy.with_multiple(selections)
         return PartitionConsumer(self._inner.multi_partition_consumer(strategy._inner))
