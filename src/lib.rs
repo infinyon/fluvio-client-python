@@ -20,6 +20,7 @@ use fluvio_types::PartitionId;
 use futures::future::BoxFuture;
 use futures::pin_mut;
 use futures::TryFutureExt;
+use async_lock;
 use std::io::{self, Write};
 use std::pin::Pin;
 use std::string::FromUtf8Error;
@@ -43,6 +44,7 @@ fn _fluvio_python(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<ConsumerConfig>()?;
     m.add_class::<PartitionConsumer>()?;
     m.add_class::<PartitionConsumerStream>()?;
+    m.add_class::<AsyncPartitionConsumerStream>()?;
     m.add_class::<TopicProducer>()?;
     m.add_class::<ProducerBatchRecord>()?;
     m.add_class::<SmartModuleKind>()?;
@@ -398,9 +400,7 @@ impl PartitionConsumer {
             Ok(Python::with_gil(|py| {
                 Py::new(
                     py,
-                    PartitionConsumerStream {
-                        inner: Box::pin(stream),
-                    },
+                    AsyncPartitionConsumerStream::new(Box::new(stream)),
                 )
                 .unwrap()
             }))
@@ -439,9 +439,7 @@ impl PartitionConsumer {
             Ok(Python::with_gil(|py| {
                 Py::new(
                     py,
-                    PartitionConsumerStream {
-                        inner: Box::pin(stream),
-                    },
+                    AsyncPartitionConsumerStream::new(stream),
                 )
                 .unwrap()
             }))
@@ -476,9 +474,7 @@ impl MultiplePartitionConsumer {
             Ok(Python::with_gil(|py| {
                 Py::new(
                     py,
-                    PartitionConsumerStream {
-                        inner: Box::pin(stream),
-                    },
+                    AsyncPartitionConsumerStream::new(stream),
                 )
                 .unwrap()
             }))
@@ -517,9 +513,7 @@ impl MultiplePartitionConsumer {
             Ok(Python::with_gil(|py| {
                 Py::new(
                     py,
-                    PartitionConsumerStream {
-                        inner: Box::pin(stream),
-                    },
+                    AsyncPartitionConsumerStream::new(stream),
                 )
                 .unwrap()
             }))
@@ -543,6 +537,37 @@ impl PartitionConsumerStream {
                 .unwrap()
                 .map_err(|err| PyException::new_err(err.to_string()))?,
         )))
+    }
+}
+
+type AsyncPartitionConsumerIteratorInner =
+    Arc<async_lock::Mutex<Pin<Box<dyn Stream<Item = Result<NativeRecord, ErrorCode>> + Send>>>>;
+
+#[derive(Clone)]
+#[pyclass]
+pub struct AsyncPartitionConsumerStream {
+    pub inner: AsyncPartitionConsumerIteratorInner,
+}
+
+impl AsyncPartitionConsumerStream {
+    pub fn new(s: impl Stream<Item = Result<NativeRecord, ErrorCode>> + Send + 'static) -> Self {
+        Self {
+            inner: Arc::new(async_lock::Mutex::new(Box::pin(s))),
+        }
+    }
+}
+
+#[pymethods]
+impl AsyncPartitionConsumerStream {
+    pub fn async_next<'b>(&mut self, py: Python<'b>) -> PyResult<&'b PyAny> {
+        let sl = self.clone();
+        pyo3_asyncio::async_std::future_into_py(py, async move {
+            let record = sl.inner.lock().await.next()
+                .await
+                .unwrap()
+                .map_err(|err| PyException::new_err(err.to_string()))?;
+            Ok(Python::with_gil(|py| Py::new(py, Record(record)).unwrap()))
+        })
     }
 }
 
