@@ -1,4 +1,5 @@
 #![allow(non_snake_case, unused)]
+use async_lock;
 use fluvio::config::{ConfigFile, Profile, TlsCerts, TlsConfig, TlsPaths, TlsPolicy};
 use fluvio::consumer::{
     ConsumerConfig as NativeConsumerConfig, ConsumerConfigBuilder,
@@ -6,11 +7,14 @@ use fluvio::consumer::{
     SmartModuleInvocation, SmartModuleInvocationWasm, SmartModuleKind as NativeSmartModuleKind,
 };
 use fluvio::dataplane::link::ErrorCode;
-use fluvio::{FluvioConfig as NativeFluvioConfig, PartitionSelectionStrategy as NativePartitionSelectionStrategy};
 use fluvio::{
     consumer::Record as NativeRecord, Fluvio as NativeFluvio,
     MultiplePartitionConsumer as NativeMultiplePartitionConsumer, Offset as NativeOffset,
     PartitionConsumer as NativePartitionConsumer, TopicProducer as NativeTopicProducer,
+};
+use fluvio::{
+    FluvioConfig as NativeFluvioConfig,
+    PartitionSelectionStrategy as NativePartitionSelectionStrategy,
 };
 use fluvio_future::{
     io::{Stream, StreamExt},
@@ -20,7 +24,6 @@ use fluvio_types::PartitionId;
 use futures::future::BoxFuture;
 use futures::pin_mut;
 use futures::TryFutureExt;
-use async_lock;
 use std::io::{self, Write};
 use std::pin::Pin;
 use std::string::FromUtf8Error;
@@ -90,7 +93,10 @@ impl Fluvio {
         ))
     }
 
-    fn multi_partition_consumer(&self, strategy: PartitionSelectionStrategy) -> PyResult<MultiplePartitionConsumer> {
+    fn multi_partition_consumer(
+        &self,
+        strategy: PartitionSelectionStrategy,
+    ) -> PyResult<MultiplePartitionConsumer> {
         Ok(MultiplePartitionConsumer(
             run_block_on(self.0.consumer(strategy.into_inner())).map_err(error_to_py_err)?,
         ))
@@ -109,14 +115,14 @@ pub struct PartitionSelectionStrategy {
     inner: NativePartitionSelectionStrategy,
 }
 
-impl  PartitionSelectionStrategy {
+impl PartitionSelectionStrategy {
     fn into_inner(self) -> NativePartitionSelectionStrategy {
         self.inner
     }
 }
 
 #[pymethods]
-impl  PartitionSelectionStrategy {
+impl PartitionSelectionStrategy {
     #[staticmethod]
     fn with_all(topic: &str) -> Self {
         Self {
@@ -398,11 +404,7 @@ impl PartitionConsumer {
                     .await
                     .map_err(|err| FluvioError::AnyhowError(err))?;
             Ok(Python::with_gil(|py| {
-                Py::new(
-                    py,
-                    AsyncPartitionConsumerStream::new(Box::new(stream)),
-                )
-                .unwrap()
+                Py::new(py, AsyncPartitionConsumerStream::new(Box::new(stream))).unwrap()
             }))
         })
     }
@@ -437,11 +439,7 @@ impl PartitionConsumer {
                     .await
                     .map_err(|err| FluvioError::AnyhowError(err))?;
             Ok(Python::with_gil(|py| {
-                Py::new(
-                    py,
-                    AsyncPartitionConsumerStream::new(stream),
-                )
-                .unwrap()
+                Py::new(py, AsyncPartitionConsumerStream::new(stream)).unwrap()
             }))
         })
     }
@@ -472,11 +470,7 @@ impl MultiplePartitionConsumer {
                     .await
                     .map_err(|err| FluvioError::AnyhowError(err))?;
             Ok(Python::with_gil(|py| {
-                Py::new(
-                    py,
-                    AsyncPartitionConsumerStream::new(stream),
-                )
-                .unwrap()
+                Py::new(py, AsyncPartitionConsumerStream::new(stream)).unwrap()
             }))
         })
     }
@@ -511,11 +505,7 @@ impl MultiplePartitionConsumer {
                     .await
                     .map_err(|err| FluvioError::AnyhowError(err))?;
             Ok(Python::with_gil(|py| {
-                Py::new(
-                    py,
-                    AsyncPartitionConsumerStream::new(stream),
-                )
-                .unwrap()
+                Py::new(py, AsyncPartitionConsumerStream::new(stream)).unwrap()
             }))
         })
     }
@@ -562,7 +552,11 @@ impl AsyncPartitionConsumerStream {
     pub fn async_next<'b>(&mut self, py: Python<'b>) -> PyResult<&'b PyAny> {
         let sl = self.clone();
         pyo3_asyncio::async_std::future_into_py(py, async move {
-            let record = sl.inner.lock().await.next()
+            let record = sl
+                .inner
+                .lock()
+                .await
+                .next()
                 .await
                 .unwrap()
                 .map_err(|err| PyException::new_err(err.to_string()))?;
