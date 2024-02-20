@@ -200,7 +200,7 @@ class PartitionConsumer:
     async def async_stream(self, offset: Offset) -> typing.AsyncIterator[Record]:
         """
         Continuously streams events from a particular offset in the consumer’s
-        partition. This returns a `Iterator[Record]` which is an
+        partition. This returns a `AsyncIterator[Record]` which is an
         iterator.
 
         Streaming is one of the two ways to consume events in Fluvio. It is a
@@ -252,7 +252,7 @@ class PartitionConsumer:
         """
         Continuously streams events from a particular offset with a SmartModule
         WASM module in the consumer’s partition. This returns a
-        `Iterator[Record]` which is an iterator.
+        `AsyncIterator[Record]` which is an async iterator.
 
         Streaming is one of the two ways to consume events in Fluvio. It is a
         continuous request for new records arriving in a partition, beginning
@@ -274,7 +274,7 @@ class PartitionConsumer:
                 # do something with i
 
         Returns:
-            `Iterator[Record]`
+            `AsyncIterator[Record]`
 
         """
         return self._async_generator(
@@ -313,7 +313,7 @@ class MultiplePartitionConsumer:
     def stream(self, offset: Offset) -> typing.Iterator[Record]:
         """
         Continuously streams events from a particular offset in the consumer’s
-        partition. This returns a `Iterator[Record]` which is an
+        partitions. This returns a `Iterator[Record]` which is an
         iterator.
 
         Streaming is one of the two ways to consume events in Fluvio. It is a
@@ -327,8 +327,8 @@ class MultiplePartitionConsumer:
     async def async_stream(self, offset: Offset) -> typing.AsyncIterator[Record]:
         """
         Continuously streams events from a particular offset in the consumer’s
-        partition. This returns a `Iterator[Record]` which is an
-        iterator.
+        partitions. This returns a `AsyncIterator[Record]` which is an
+        async iterator.
 
         Streaming is one of the two ways to consume events in Fluvio. It is a
         continuous request for new records arriving in a partition, beginning
@@ -343,7 +343,7 @@ class MultiplePartitionConsumer:
     ) -> typing.Iterator[Record]:
         """
         Continuously streams events from a particular offset with a SmartModule
-        WASM module in the consumer’s partition. This returns a
+        WASM module in the consumer’s partitions. This returns a
         `Iterator[Record]` which is an iterator.
 
         Streaming is one of the two ways to consume events in Fluvio. It is a
@@ -378,8 +378,8 @@ class MultiplePartitionConsumer:
     ) -> typing.AsyncIterator[Record]:
         """
         Continuously streams events from a particular offset with a SmartModule
-        WASM module in the consumer’s partition. This returns a
-        `Iterator[Record]` which is an iterator.
+        WASM module in the consumer’s partitions. This returns a
+        `AsyncIterator[Record]` which is an async iterator.
 
         Streaming is one of the two ways to consume events in Fluvio. It is a
         continuous request for new records arriving in a partition, beginning
@@ -401,7 +401,7 @@ class MultiplePartitionConsumer:
                 # do something with i
 
         Returns:
-            `Iterator[Record]`
+            `AsyncIterator[Record]`
 
         """
         return self._async_generator(
