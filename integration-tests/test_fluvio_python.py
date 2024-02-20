@@ -406,11 +406,15 @@ class TestAsyncFluvioMethods(CommonAsyncFluvioSmartModuleTestCase):
             await producer.async_send_string("record-%s" % i)
 
         consumer = fluvio.partition_consumer(self.topic, 0)
-        for count, i in enumerate(
-            itertools.islice(await consumer.async_stream(Offset.beginning()), 10)
-        ):
+        astream = await consumer.async_stream(Offset.beginning())
+        
+        count = 0
+        async for i in astream:
             self.assertEqual(bytearray(i.value()).decode(), "record-%s" % count)
             self.assertEqual(i.value_string(), "record-%s" % count)
+            count += 1
+            if count == 10:
+                break
 
     async def test_multi_partition_consumer_with_interator(self):
         fluvio = Fluvio.connect()
@@ -419,11 +423,15 @@ class TestAsyncFluvioMethods(CommonAsyncFluvioSmartModuleTestCase):
             await producer.async_send_string("record-%s" % i)
 
         consumer = fluvio.multi_partition_consumer(self.topic)
-        for count, i in enumerate(
-            itertools.islice(await consumer.async_stream(Offset.beginning()), 10)
-        ):
+        astream = await consumer.async_stream(Offset.beginning())
+        
+        count = 0
+        async for i in astream:
             self.assertEqual(bytearray(i.value()).decode(), "record-%s" % count)
             self.assertEqual(i.value_string(), "record-%s" % count)
+            count += 1
+            if count == 10:
+                break
 
     async def test_multi_partition_multi_topic_consumer_with_interator(self):
         fluvio = Fluvio.connect()
@@ -432,11 +440,15 @@ class TestAsyncFluvioMethods(CommonAsyncFluvioSmartModuleTestCase):
             await producer.async_send_string("record-%s" % i)
 
         consumer = fluvio.multi_topic_partition_consumer([(self.topic, 0)])
-        for count, i in enumerate(
-            itertools.islice(await consumer.async_stream(Offset.beginning()), 10)
-        ):
+        astream = await consumer.async_stream(Offset.beginning())
+        
+        count = 0
+        async for i in astream:
             self.assertEqual(bytearray(i.value()).decode(), "record-%s" % count)
             self.assertEqual(i.value_string(), "record-%s" % count)
+            count += 1
+            if count == 10:
+                break
 
 
 class TestFluvioMethods(CommonFluvioSmartModuleTestCase):

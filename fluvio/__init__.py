@@ -6,6 +6,7 @@ from ._fluvio_python import (
     MultiplePartitionConsumer as _MultiplePartitionConsumer,
     PartitionSelectionStrategy as _PartitionSelectionStrategy,
     PartitionConsumerStream as _PartitionConsumerStream,
+    AsyncPartitionConsumerStream as _AsyncPartitionConsumerStream,
     TopicProducer as _TopicProducer,
     ProducerBatchRecord as _ProducerBatchRecord,
     SmartModuleKind as _SmartModuleKind,
@@ -196,7 +197,7 @@ class PartitionConsumer:
         """
         return self._generator(self._inner.stream(offset._inner))
     
-    async def async_stream(self, offset: Offset) -> typing.Iterator[Record]:
+    async def async_stream(self, offset: Offset) -> typing.AsyncIterator[Record]:
         """
         Continuously streams events from a particular offset in the consumer’s
         partition. This returns a `Iterator[Record]` which is an
@@ -208,7 +209,7 @@ class PartitionConsumer:
         using an Offset and periodically receive events, either individually or
         in batches.
         """
-        return self._generator(await self._inner.async_stream(offset._inner))
+        return self._async_generator(await self._inner.async_stream(offset._inner))
 
     def stream_with_config(
         self, offset: Offset, config: ConsumerConfig
@@ -247,7 +248,7 @@ class PartitionConsumer:
 
     async def async_stream_with_config(
         self, offset: Offset, config: ConsumerConfig
-    ) -> typing.Iterator[Record]:
+    ) -> typing.AsyncIterator[Record]:
         """
         Continuously streams events from a particular offset with a SmartModule
         WASM module in the consumer’s partition. This returns a
@@ -276,8 +277,8 @@ class PartitionConsumer:
             `Iterator[Record]`
 
         """
-        return self._generator(
-            self._inner.async_stream_with_config(offset._inner, config._inner)
+        return self._async_generator(
+            await self._inner.async_stream_with_config(offset._inner, config._inner)
         )
 
     def _generator(self, stream: _PartitionConsumerStream) -> typing.Iterator[Record]:
@@ -285,6 +286,12 @@ class PartitionConsumer:
         while item is not None:
             yield Record(item)
             item = stream.next()
+
+    async def _async_generator(self, astream: _AsyncPartitionConsumerStream) -> typing.AsyncIterator[Record]:
+        item = await astream.async_next()
+        while item is not None:
+            yield Record(item)
+            item = await astream.async_next()
     
 class MultiplePartitionConsumer:
     """
@@ -317,7 +324,7 @@ class MultiplePartitionConsumer:
         """
         return self._generator(self._inner.stream(offset._inner))
     
-    async def async_stream(self, offset: Offset) -> typing.Iterator[Record]:
+    async def async_stream(self, offset: Offset) -> typing.AsyncIterator[Record]:
         """
         Continuously streams events from a particular offset in the consumer’s
         partition. This returns a `Iterator[Record]` which is an
@@ -329,7 +336,7 @@ class MultiplePartitionConsumer:
         using an Offset and periodically receive events, either individually or
         in batches.
         """
-        return self._generator(await self._inner.async_stream(offset._inner))
+        return self._async_generator(await self._inner.async_stream(offset._inner))
 
     def stream_with_config(
         self, offset: Offset, config: ConsumerConfig
@@ -368,7 +375,7 @@ class MultiplePartitionConsumer:
 
     async def async_stream_with_config(
         self, offset: Offset, config: ConsumerConfig
-    ) -> typing.Iterator[Record]:
+    ) -> typing.AsyncIterator[Record]:
         """
         Continuously streams events from a particular offset with a SmartModule
         WASM module in the consumer’s partition. This returns a
@@ -397,8 +404,8 @@ class MultiplePartitionConsumer:
             `Iterator[Record]`
 
         """
-        return self._generator(
-            self._inner.async_stream_with_config(offset._inner, config._inner)
+        return self._async_generator(
+            await self._inner.async_stream_with_config(offset._inner, config._inner)
         )
 
     def _generator(self, stream: _PartitionConsumerStream) -> typing.Iterator[Record]:
@@ -407,6 +414,11 @@ class MultiplePartitionConsumer:
             yield Record(item)
             item = stream.next()
     
+    async def _async_generator(self, astream: _AsyncPartitionConsumerStream) -> typing.AsyncIterator[Record]:
+        item = await astream.async_next()
+        while item is not None:
+            yield Record(item)
+            item = await astream.async_next()
 
 
 class TopicProducer:
