@@ -59,6 +59,7 @@ class CommonFluvioSmartModuleTestCase(unittest.TestCase):
         if self.sm_path is not None:
             delete_smartmodule(self.sm_name)
 
+
 class CommonAsyncFluvioSmartModuleTestCase(unittest.IsolatedAsyncioTestCase):
     def common_setup(self, sm_path=None):
         self.topic = str(uuid.uuid4())
@@ -391,6 +392,7 @@ class TestFluvioArrayMapSmartModules(CommonFluvioSmartModuleTestCase):
         self.assertEqual(records[1], '"Banana"')
         self.assertEqual(records[2], '"Cranberry"')
 
+
 class TestAsyncFluvioMethods(CommonAsyncFluvioSmartModuleTestCase):
     async def test_async_produce(self):
         fluvio = Fluvio.connect()
@@ -407,7 +409,7 @@ class TestAsyncFluvioMethods(CommonAsyncFluvioSmartModuleTestCase):
 
         consumer = fluvio.partition_consumer(self.topic, 0)
         astream = await consumer.async_stream(Offset.beginning())
-        
+
         count = 0
         async for i in astream:
             self.assertEqual(bytearray(i.value()).decode(), "record-%s" % count)
@@ -424,7 +426,7 @@ class TestAsyncFluvioMethods(CommonAsyncFluvioSmartModuleTestCase):
 
         consumer = fluvio.multi_partition_consumer(self.topic)
         astream = await consumer.async_stream(Offset.beginning())
-        
+
         count = 0
         async for i in astream:
             self.assertEqual(bytearray(i.value()).decode(), "record-%s" % count)
@@ -441,7 +443,7 @@ class TestAsyncFluvioMethods(CommonAsyncFluvioSmartModuleTestCase):
 
         consumer = fluvio.multi_topic_partition_consumer([(self.topic, 0)])
         astream = await consumer.async_stream(Offset.beginning())
-        
+
         count = 0
         async for i in astream:
             self.assertEqual(bytearray(i.value()).decode(), "record-%s" % count)
