@@ -270,7 +270,7 @@ class PartitionConsumer:
             wmp = os.path.abspath("somefilter.wasm")
             config = ConsumerConfig()
             config.smartmodule(path=wmp)
-            async for i in consumer.async_stream_with_config(Offset.beginning(), config):
+            async for i in await consumer.async_stream_with_config(Offset.beginning(), config):
                 # do something with i
 
         Returns:
@@ -397,7 +397,7 @@ class MultiplePartitionConsumer:
             wmp = os.path.abspath("somefilter.wasm")
             config = ConsumerConfig()
             config.smartmodule(path=wmp)
-            async for i in consumer.async_stream_with_config(Offset.beginning(), config):
+            async for i in await consumer.async_stream_with_config(Offset.beginning(), config):
                 # do something with i
 
         Returns:
