@@ -196,7 +196,7 @@ class PartitionConsumer:
         in batches.
         """
         return self._generator(self._inner.stream(offset._inner))
-    
+
     async def async_stream(self, offset: Offset) -> typing.AsyncIterator[Record]:
         """
         Continuously streams events from a particular offset in the consumer’s
@@ -287,12 +287,15 @@ class PartitionConsumer:
             yield Record(item)
             item = stream.next()
 
-    async def _async_generator(self, astream: _AsyncPartitionConsumerStream) -> typing.AsyncIterator[Record]:
+    async def _async_generator(
+        self, astream: _AsyncPartitionConsumerStream
+    ) -> typing.AsyncIterator[Record]:
         item = await astream.async_next()
         while item is not None:
             yield Record(item)
             item = await astream.async_next()
-    
+
+
 class MultiplePartitionConsumer:
     """
     An interface for consuming events from multiple partitions
@@ -323,7 +326,7 @@ class MultiplePartitionConsumer:
         in batches.
         """
         return self._generator(self._inner.stream(offset._inner))
-    
+
     async def async_stream(self, offset: Offset) -> typing.AsyncIterator[Record]:
         """
         Continuously streams events from a particular offset in the consumer’s
@@ -413,8 +416,10 @@ class MultiplePartitionConsumer:
         while item is not None:
             yield Record(item)
             item = stream.next()
-    
-    async def _async_generator(self, astream: _AsyncPartitionConsumerStream) -> typing.AsyncIterator[Record]:
+
+    async def _async_generator(
+        self, astream: _AsyncPartitionConsumerStream
+    ) -> typing.AsyncIterator[Record]:
         item = await astream.async_next()
         while item is not None:
             yield Record(item)
@@ -458,7 +463,6 @@ class TopicProducer:
         """
         await self._inner.async_send(key, value)
 
-
     def flush(self) -> None:
         """
         Send all the queued records in the producer batches.
@@ -486,6 +490,7 @@ class TopicProducer:
         """
         records_inner = [_ProducerBatchRecord(x, y) for (x, y) in records]
         await self._inner.async_send_all(records_inner)
+
 
 class PartitionSelectionStrategy:
     """Stragegy to select partitions"""
@@ -599,7 +604,9 @@ class Fluvio:
         strategy = PartitionSelectionStrategy.with_all(topic)
         return PartitionConsumer(self._inner.multi_partition_consumer(strategy._inner))
 
-    def multi_topic_partition_consumer(self, selections: typing.List[typing.Tuple[str, int]]) -> MultiplePartitionConsumer:
+    def multi_topic_partition_consumer(
+        self, selections: typing.List[typing.Tuple[str, int]]
+    ) -> MultiplePartitionConsumer:
         """Creates a new `MultiplePartitionConsumer` for the given topics and partitions
 
         Currently, consumers are scoped to a list of Fluvio topic and partition tuple.
