@@ -9,6 +9,9 @@ from ._fluvio_python import (
     SmartModuleKind as _SmartModuleKind,
     Record as _Record,
     Offset as _Offset,
+    FluvioAdmin as _FluvioAdmin,
+    TopicSpec as _TopicSpec,
+    PartitionMap as _PartitionMap,
 )
 from enum import Enum
 from ._fluvio_python import Error as FluviorError  # noqa: F401
@@ -369,3 +372,43 @@ class Fluvio:
         each event should go to.
         """
         return TopicProducer(self._inner.topic_producer(topic))
+
+class PartitionMap:
+    _inner: _PartitionMap
+
+    def __init__(self, inner: _PartitionMap):
+        self._inner = inner
+
+    @classmethod
+    def new(cls, partition: int, replicas: typing.List[int]):
+        return cls(_PartitionMap.new(partition, replicas))
+
+class TopicSpec:
+    _inner: _TopicSpec
+
+    def __init__(self, inner: _TopicSpec):
+        self._inner = inner
+
+    @classmethod
+    def new_assigned(cls, partition_maps: typing.List[PartitionMap]):
+        partition_maps = [x._inner for x in partition_maps]
+        return cls(_TopicSpec.new_computed(partition_maps))
+
+    @classmethod
+    def new_computed(cls, partitions: int, replication: int, ignore: bool):
+        return cls(_TopicSpec.new_computed(partitions, replication, ignore))
+
+class FluvioAdmin:
+    _inner: _FluvioAdmin
+
+    def __init__(self, inner: _FluvioAdmin):
+        self._inner = inner
+
+    def connect():
+        return FluvioAdmin(_FluvioAdmin.connect())
+
+    def connect_with_config(config: FluvioConfig):
+        return FluvioAdmin(_FluvioAdmin.connect_with_config(config._inner))
+
+    def create_topic(self, topic: str, dry_run: bool, spec: TopicSpec):
+        self._inner.create_topic(topic, dry_run, spec._inner)
