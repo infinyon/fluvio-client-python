@@ -8,10 +8,14 @@ use fluvio::consumer::{
 };
 use fluvio::dataplane::link::ErrorCode;
 use fluvio::{
-    consumer::Record as NativeRecord, Fluvio as NativeFluvio,
-    MultiplePartitionConsumer as NativeMultiplePartitionConsumer, Offset as NativeOffset,
-    PartitionConsumer as NativePartitionConsumer, TopicProducer as NativeTopicProducer,
-    FluvioAdmin as NativeFluvioAdmin,
+    consumer::Record as NativeRecord, Fluvio as NativeFluvio, FluvioAdmin as NativeFluvioAdmin,
+    MultiplePartitionConsumer as NativeMultiplePartitionConsumer,
+    Offset as NativeOffset, PartitionConsumer as NativePartitionConsumer,
+    TopicProducer as NativeTopicProducer,
+};
+use fluvio_controlplane_metadata::partition::PartitionSpec as NativePartitionSpec;
+use fluvio_controlplane_metadata::topic::{
+    PartitionMap as NativePartitionMap, TopicSpec as NativeTopicSpec,
 };
 use fluvio::{
     FluvioConfig as NativeFluvioConfig,
@@ -25,16 +29,16 @@ use fluvio_types::PartitionId;
 use futures::future::BoxFuture;
 use futures::pin_mut;
 use futures::TryFutureExt;
-use fluvio_controlplane_metadata::topic::{TopicSpec as NativeTopicSpec, PartitionMap as NativePartitionMap};
-use fluvio_controlplane_metadata::partition::PartitionSpec as NativePartitionSpec;
 use fluvio_sc_schema::topic::PartitionMaps as NativePartitionMaps;
 use fluvio_sc_schema::objects::{CommonCreateRequest as NativeCommonCreateRequest, Metadata as NativeMetadata,
     WatchResponse as NativeWatchResponse};
 use fluvio_sc_schema::smartmodule::SmartModuleSpec as NativeSmartModuleSpec;
-use fluvio_types::{PartitionId as NativePartitionId, SpuId as NativeSpuId,
-    PartitionCount as NativePartitionCount, ReplicationFactor as NativeReplicationFactor,
-    IgnoreRackAssignment as NativeIgnoreRackAssignment};
-use std::io::{self, Write, Error as IoError};
+use fluvio_types::{
+    IgnoreRackAssignment as NativeIgnoreRackAssignment, PartitionCount as NativePartitionCount,
+    PartitionId as NativePartitionId, ReplicationFactor as NativeReplicationFactor,
+    SpuId as NativeSpuId,
+};
+use std::io::{self, Error as IoError, Write};
 use std::pin::Pin;
 use std::string::FromUtf8Error;
 use std::sync::Arc;
@@ -848,7 +852,10 @@ impl CloudAuth {
 
 macro_rules! create_impl {
     ($admin: ident, $name:ident, $dry_run: ident, $spec: ident) => {
-        Ok(run_block_on($admin.inner.create($name, $dry_run, $spec.inner)).map_err(error_to_py_err)?)
+        Ok(
+            run_block_on($admin.inner.create($name, $dry_run, $spec.inner))
+                .map_err(error_to_py_err)?,
+        )
     };
 }
 
@@ -859,21 +866,17 @@ macro_rules! delete_impl {
 }
 
 macro_rules! list_impl {
-    ($admin: ident, $filters:ident) => {
-        {
-            let stream = run_block_on($admin.inner.list($filters)).map_err(error_to_py_err)?;
-            Ok(stream.into_iter().map(|s| s.into()).collect())
-        }
-    };
+    ($admin: ident, $filters:ident) => {{
+        let stream = run_block_on($admin.inner.list($filters)).map_err(error_to_py_err)?;
+        Ok(stream.into_iter().map(|s| s.into()).collect())
+    }};
 }
 
 macro_rules! watch_impl {
-    ($admin: ident, $stream_ty: ty) => {
-        {
-            let stream = run_block_on($admin.inner.watch()).map_err(error_to_py_err)?;
-            Ok(<$stream_ty>::new(Box::pin(stream)))
-        }
-    };
+    ($admin: ident, $stream_ty: ty) => {{
+        let stream = run_block_on($admin.inner.watch()).map_err(error_to_py_err)?;
+        Ok(<$stream_ty>::new(Box::pin(stream)))
+    }};
 }
 
 #[pyclass]
@@ -885,14 +888,14 @@ struct FluvioAdmin {
 impl FluvioAdmin {
     #[staticmethod]
     pub fn connect() -> PyResult<FluvioAdmin> {
-        Ok(FluvioAdmin{
+        Ok(FluvioAdmin {
             inner: run_block_on(NativeFluvioAdmin::connect()).map_err(error_to_py_err)?,
         })
     }
 
     #[staticmethod]
     pub fn connect_with_config(config: &FluvioConfig) -> PyResult<FluvioAdmin> {
-        Ok(FluvioAdmin{
+        Ok(FluvioAdmin {
             inner: run_block_on(NativeFluvioAdmin::connect_with_config(&config.inner))
                 .map_err(error_to_py_err)?,
         })
@@ -902,8 +905,15 @@ impl FluvioAdmin {
         create_impl!(self, name, dry_run, spec)
     }
 
-    pub fn create_topic_with_config(&self, rq: CommonCreateRequest, spec: TopicSpec) -> PyResult<()> {
-        Ok(run_block_on(self.inner.create_with_config(rq.inner, spec.inner)).map_err(error_to_py_err)?)
+    pub fn create_topic_with_config(
+        &self,
+        rq: CommonCreateRequest,
+        spec: TopicSpec,
+    ) -> PyResult<()> {
+        Ok(
+            run_block_on(self.inner.create_with_config(rq.inner, spec.inner))
+                .map_err(error_to_py_err)?,
+        )
     }
 
     pub fn delete_topic(&self, name: String, dry_run: bool) -> PyResult<()> {
@@ -919,17 +929,29 @@ impl FluvioAdmin {
         list_impl!(self, filters)
     }
 
-    pub fn list_topics_with_params(&self, filters: Vec<String>, summary: bool) -> PyResult<Vec<MetadataTopicSpec>> {
-        let data = run_block_on(self.inner.list_with_params(filters, summary)).map_err(error_to_py_err)?;
+    pub fn list_topics_with_params(
+        &self,
+        filters: Vec<String>,
+        summary: bool,
+    ) -> PyResult<Vec<MetadataTopicSpec>> {
+        let data =
+            run_block_on(self.inner.list_with_params(filters, summary)).map_err(error_to_py_err)?;
         Ok(data.into_iter().map(|s| s.into()).collect())
     }
 
     pub fn watch_topic(&self) -> PyResult<WatchTopicStream> {
         let stream = run_block_on(self.inner.watch()).map_err(error_to_py_err)?;
-        Ok(WatchTopicStream{inner: Box::pin(stream)})
+        Ok(WatchTopicStream {
+            inner: Box::pin(stream),
+        })
     }
 
-    pub fn create_smart_module(&self, name: String, dry_run: bool, spec: SmartModuleSpec) -> PyResult<()> {
+    pub fn create_smart_module(
+        &self,
+        name: String,
+        dry_run: bool,
+        spec: SmartModuleSpec,
+    ) -> PyResult<()> {
         create_impl!(self, name, dry_run, spec)
     }
 
@@ -937,7 +959,10 @@ impl FluvioAdmin {
         delete_impl!(self, name, NativeSmartModuleSpec)
     }
 
-    pub fn list_smart_modules(&self, filters: Vec<String>) -> PyResult<Vec<MetadataSmartModuleSpec>> {
+    pub fn list_smart_modules(
+        &self,
+        filters: Vec<String>,
+    ) -> PyResult<Vec<MetadataSmartModuleSpec>> {
         list_impl!(self, filters)
     }
 
@@ -988,9 +1013,9 @@ impl PartitionMap {
     #[staticmethod]
     fn new(partition: NativePartitionId, replicas: Vec<NativeSpuId>) -> Self {
         PartitionMap {
-            inner: NativePartitionMap{
+            inner: NativePartitionMap {
                 id: partition,
-                replicas
+                replicas,
             },
         }
     }
@@ -1013,7 +1038,7 @@ impl CommonCreateRequest {
     #[staticmethod]
     pub fn new(name: String, dry_run: bool, timeout: Option<u32>) -> CommonCreateRequest {
         CommonCreateRequest {
-            inner: NativeCommonCreateRequest{
+            inner: NativeCommonCreateRequest {
                 name,
                 dry_run,
                 timeout,
@@ -1029,9 +1054,7 @@ struct MetadataTopicSpec {
 
 impl From<NativeMetadata<NativeTopicSpec>> for MetadataTopicSpec {
     fn from(data: NativeMetadata<NativeTopicSpec>) -> Self {
-        MetadataTopicSpec {
-            inner: data,
-        }
+        MetadataTopicSpec { inner: data }
     }
 }
 
@@ -1042,9 +1065,7 @@ struct WatchResponseTopicSpec {
 
 impl From<NativeWatchResponse<NativeTopicSpec>> for WatchResponseTopicSpec {
     fn from(data: NativeWatchResponse<NativeTopicSpec>) -> Self {
-        WatchResponseTopicSpec {
-            inner: data,
-        }
+        WatchResponseTopicSpec { inner: data }
     }
 }
 
@@ -1059,13 +1080,12 @@ pub struct WatchTopicStream {
 #[pymethods]
 impl WatchTopicStream {
     fn next(&mut self) -> Result<Option<WatchResponseTopicSpec>, PyErr> {
-        Ok(Some(
-            WatchResponseTopicSpec {
-                inner: run_block_on(self.inner.next())
-                    .unwrap()
-                    .map_err(|err| PyException::new_err(err.to_string()))?.into(),
-            }
-        ))
+        Ok(Some(WatchResponseTopicSpec {
+            inner: run_block_on(self.inner.next())
+                .unwrap()
+                .map_err(|err| PyException::new_err(err.to_string()))?
+                .into(),
+        }))
     }
 }
 
@@ -1082,9 +1102,7 @@ struct MetadataSmartModuleSpec {
 
 impl From<NativeMetadata<NativeSmartModuleSpec>> for MetadataSmartModuleSpec {
     fn from(data: NativeMetadata<NativeSmartModuleSpec>) -> Self {
-        MetadataSmartModuleSpec {
-            inner: data,
-        }
+        MetadataSmartModuleSpec { inner: data }
     }
 }
 
@@ -1095,9 +1113,7 @@ struct WatchResponseSmartModuleSpec {
 
 impl From<NativeWatchResponse<NativeSmartModuleSpec>> for WatchResponseSmartModuleSpec {
     fn from(data: NativeWatchResponse<NativeSmartModuleSpec>) -> Self {
-        WatchResponseSmartModuleSpec {
-            inner: data,
-        }
+        WatchResponseSmartModuleSpec { inner: data }
     }
 }
 
@@ -1111,22 +1127,19 @@ pub struct WatchSmartModuleStream {
 
 impl WatchSmartModuleStream {
     pub fn new(inner: WatchSmartModuleIteratorInner) -> Self {
-        WatchSmartModuleStream {
-            inner,
-        }
+        WatchSmartModuleStream { inner }
     }
 }
 
 #[pymethods]
 impl WatchSmartModuleStream {
     fn next(&mut self) -> Result<Option<WatchResponseSmartModuleSpec>, PyErr> {
-        Ok(Some(
-            WatchResponseSmartModuleSpec {
-                inner: run_block_on(self.inner.next())
-                    .unwrap()
-                    .map_err(|err| PyException::new_err(err.to_string()))?.into(),
-            }
-        ))
+        Ok(Some(WatchResponseSmartModuleSpec {
+            inner: run_block_on(self.inner.next())
+                .unwrap()
+                .map_err(|err| PyException::new_err(err.to_string()))?
+                .into(),
+        }))
     }
 }
 
@@ -1137,9 +1150,7 @@ struct PartitionSpec {
 
 impl From<NativePartitionSpec> for PartitionSpec {
     fn from(data: NativePartitionSpec) -> Self {
-        PartitionSpec {
-            inner: data,
-        }
+        PartitionSpec { inner: data }
     }
 }
 
@@ -1150,8 +1161,6 @@ struct MetadataPartitionSpec {
 
 impl From<NativeMetadata<NativePartitionSpec>> for MetadataPartitionSpec {
     fn from(data: NativeMetadata<NativePartitionSpec>) -> Self {
-        MetadataPartitionSpec {
-            inner: data,
-        }
+        MetadataPartitionSpec { inner: data }
     }
 }
