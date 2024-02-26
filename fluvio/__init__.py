@@ -631,6 +631,7 @@ class Fluvio:
         """
         return TopicProducer(self._inner.topic_producer(topic))
 
+
 class PartitionMap:
     _inner: _PartitionMap
 
@@ -640,6 +641,7 @@ class PartitionMap:
     @classmethod
     def new(cls, partition: int, replicas: typing.List[int]):
         return cls(_PartitionMap.new(partition, replicas))
+
 
 class TopicSpec:
     _inner: _TopicSpec
@@ -655,6 +657,7 @@ class TopicSpec:
     @classmethod
     def new_computed(cls, partitions: int, replication: int, ignore: bool):
         return cls(_TopicSpec.new_computed(partitions, replication, ignore))
+
 
 class FluvioAdmin:
     _inner: _FluvioAdmin

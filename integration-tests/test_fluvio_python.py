@@ -650,12 +650,12 @@ class TestFluvioProduceFlush(CommonFluvioSmartModuleTestCase):
 
         self.assertEqual(expected_output, stdout)
 
+
 class CommonFluvioAdminTestCase(unittest.TestCase):
     def common_setup(self, sm_path=None):
         self.topic = str(uuid.uuid4())
         self.sm_name = str(uuid.uuid4())
         self.sm_path = sm_path
-
 
     def setUp(self):
         self.common_setup()
