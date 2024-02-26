@@ -33,5 +33,5 @@ serde_json = "1.0.59"
 rpassword = "7.3.1"
 anyhow = "1.0"
 
-fluvio = { features = ["admin"], git = "https://github.com/infinyon/fluvio.git", tag = "v0.11.4" }
+fluvio = { features = ["admin", "rustls"], git = "https://github.com/infinyon/fluvio.git", tag = "v0.11.4" }
 fluvio-types = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.11.4" }
