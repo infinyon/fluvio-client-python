@@ -1,5 +1,6 @@
 from string import ascii_lowercase
 from fluvio import Fluvio, Offset, ConsumerConfig, SmartModuleKind, FluvioConfig
+from fluvio import FluvioAdmin, TopicSpec
 import unittest
 import uuid
 import os
@@ -648,3 +649,22 @@ class TestFluvioProduceFlush(CommonFluvioSmartModuleTestCase):
         stdout = result.stdout
 
         self.assertEqual(expected_output, stdout)
+
+class CommonFluvioAdminTestCase(unittest.TestCase):
+    def common_setup(self, sm_path=None):
+        self.topic = str(uuid.uuid4())
+        self.sm_name = str(uuid.uuid4())
+        self.sm_path = sm_path
+
+
+    def setUp(self):
+        self.common_setup()
+
+
+class TestFluvioAdminTopic(CommonFluvioAdminTestCase):
+    def test_admin_topic(self):
+        fluvio_admin = FluvioAdmin.connect()
+        topic_spec = TopicSpec.new_computed(3, 1, False)
+
+        # create topic
+        fluvio_admin.create_topic(self.topic, False, topic_spec)

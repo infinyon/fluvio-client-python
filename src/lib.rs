@@ -11,6 +11,7 @@ use fluvio::{
     consumer::Record as NativeRecord, Fluvio as NativeFluvio,
     MultiplePartitionConsumer as NativeMultiplePartitionConsumer, Offset as NativeOffset,
     PartitionConsumer as NativePartitionConsumer, TopicProducer as NativeTopicProducer,
+    FluvioAdmin as NativeFluvioAdmin,
 };
 use fluvio::{
     FluvioConfig as NativeFluvioConfig,
@@ -24,7 +25,16 @@ use fluvio_types::PartitionId;
 use futures::future::BoxFuture;
 use futures::pin_mut;
 use futures::TryFutureExt;
-use std::io::{self, Write};
+use fluvio_controlplane_metadata::topic::{TopicSpec as NativeTopicSpec, PartitionMap as NativePartitionMap};
+use fluvio_controlplane_metadata::partition::PartitionSpec as NativePartitionSpec;
+use fluvio_sc_schema::topic::PartitionMaps as NativePartitionMaps;
+use fluvio_sc_schema::objects::{CommonCreateRequest as NativeCommonCreateRequest, Metadata as NativeMetadata,
+    WatchResponse as NativeWatchResponse};
+use fluvio_sc_schema::smartmodule::SmartModuleSpec as NativeSmartModuleSpec;
+use fluvio_types::{PartitionId as NativePartitionId, SpuId as NativeSpuId,
+    PartitionCount as NativePartitionCount, ReplicationFactor as NativeReplicationFactor,
+    IgnoreRackAssignment as NativeIgnoreRackAssignment};
+use std::io::{self, Write, Error as IoError};
 use std::pin::Pin;
 use std::string::FromUtf8Error;
 use std::sync::Arc;
@@ -56,6 +66,9 @@ fn _fluvio_python(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Cloud>()?;
     m.add_class::<MultiplePartitionConsumer>()?;
     m.add_class::<PartitionSelectionStrategy>()?;
+    m.add_class::<FluvioAdmin>()?;
+    m.add_class::<TopicSpec>()?;
+    m.add_class::<PartitionMap>()?;
     m.add("Error", py.get_type::<PyFluvioError>())?;
     Ok(())
 }
@@ -830,5 +843,315 @@ impl CloudAuth {
             save_cluster(cluster, self.remote.clone(), self.profile.clone())?;
             Ok(())
         })
+    }
+}
+
+macro_rules! create_impl {
+    ($admin: ident, $name:ident, $dry_run: ident, $spec: ident) => {
+        Ok(run_block_on($admin.inner.create($name, $dry_run, $spec.inner)).map_err(error_to_py_err)?)
+    };
+}
+
+macro_rules! delete_impl {
+    ($admin: ident, $name:ident, $t: ty) => {
+        Ok(run_block_on($admin.inner.delete::<$t>($name)).map_err(error_to_py_err)?)
+    };
+}
+
+macro_rules! list_impl {
+    ($admin: ident, $filters:ident) => {
+        {
+            let stream = run_block_on($admin.inner.list($filters)).map_err(error_to_py_err)?;
+            Ok(stream.into_iter().map(|s| s.into()).collect())
+        }
+    };
+}
+
+macro_rules! watch_impl {
+    ($admin: ident, $stream_ty: ty) => {
+        {
+            let stream = run_block_on($admin.inner.watch()).map_err(error_to_py_err)?;
+            Ok(<$stream_ty>::new(Box::pin(stream)))
+        }
+    };
+}
+
+#[pyclass]
+struct FluvioAdmin {
+    inner: NativeFluvioAdmin,
+}
+
+#[pymethods]
+impl FluvioAdmin {
+    #[staticmethod]
+    pub fn connect() -> PyResult<FluvioAdmin> {
+        Ok(FluvioAdmin{
+            inner: run_block_on(NativeFluvioAdmin::connect()).map_err(error_to_py_err)?,
+        })
+    }
+
+    #[staticmethod]
+    pub fn connect_with_config(config: &FluvioConfig) -> PyResult<FluvioAdmin> {
+        Ok(FluvioAdmin{
+            inner: run_block_on(NativeFluvioAdmin::connect_with_config(&config.inner))
+                .map_err(error_to_py_err)?,
+        })
+    }
+
+    pub fn create_topic(&self, name: String, dry_run: bool, spec: TopicSpec) -> PyResult<()> {
+        create_impl!(self, name, dry_run, spec)
+    }
+
+    pub fn create_topic_with_config(&self, rq: CommonCreateRequest, spec: TopicSpec) -> PyResult<()> {
+        Ok(run_block_on(self.inner.create_with_config(rq.inner, spec.inner)).map_err(error_to_py_err)?)
+    }
+
+    pub fn delete_topic(&self, name: String, dry_run: bool) -> PyResult<()> {
+        delete_impl!(self, name, NativeTopicSpec)
+    }
+
+    pub fn all_topics(&self) -> PyResult<Vec<MetadataTopicSpec>> {
+        let data = run_block_on(self.inner.all()).map_err(error_to_py_err)?;
+        Ok(data.into_iter().map(|s| s.into()).collect())
+    }
+
+    pub fn list_topics(&self, filters: Vec<String>) -> PyResult<Vec<MetadataTopicSpec>> {
+        list_impl!(self, filters)
+    }
+
+    pub fn list_topics_with_params(&self, filters: Vec<String>, summary: bool) -> PyResult<Vec<MetadataTopicSpec>> {
+        let data = run_block_on(self.inner.list_with_params(filters, summary)).map_err(error_to_py_err)?;
+        Ok(data.into_iter().map(|s| s.into()).collect())
+    }
+
+    pub fn watch_topic(&self) -> PyResult<WatchTopicStream> {
+        let stream = run_block_on(self.inner.watch()).map_err(error_to_py_err)?;
+        Ok(WatchTopicStream{inner: Box::pin(stream)})
+    }
+
+    pub fn create_smart_module(&self, name: String, dry_run: bool, spec: SmartModuleSpec) -> PyResult<()> {
+        create_impl!(self, name, dry_run, spec)
+    }
+
+    pub fn delete_smart_module(&self, name: String) -> PyResult<()> {
+        delete_impl!(self, name, NativeSmartModuleSpec)
+    }
+
+    pub fn list_smart_modules(&self, filters: Vec<String>) -> PyResult<Vec<MetadataSmartModuleSpec>> {
+        list_impl!(self, filters)
+    }
+
+    pub fn watch_smart_module(&self) -> PyResult<WatchSmartModuleStream> {
+        watch_impl!(self, WatchSmartModuleStream)
+    }
+
+    pub fn list_partitions(&self, filters: Vec<String>) -> PyResult<Vec<MetadataPartitionSpec>> {
+        list_impl!(self, filters)
+    }
+}
+
+#[derive(Clone)]
+#[pyclass]
+struct TopicSpec {
+    inner: NativeTopicSpec,
+}
+
+#[pymethods]
+impl TopicSpec {
+    #[staticmethod]
+    pub fn new_assigned(maps: Vec<PartitionMap>) -> TopicSpec {
+        TopicSpec {
+            inner: NativeTopicSpec::new_assigned(into_native_partition_maps(maps)),
+        }
+    }
+
+    #[staticmethod]
+    pub fn new_computed(partitions: u32, replications: u32, ignore: Option<bool>) -> TopicSpec {
+        TopicSpec {
+            inner: NativeTopicSpec::new_computed(partitions, replications, ignore),
+        }
+    }
+}
+
+fn into_native_partition_maps(maps: Vec<PartitionMap>) -> Vec<NativePartitionMap> {
+    maps.into_iter().map(|map| map.into()).collect()
+}
+
+#[derive(Clone)]
+#[pyclass]
+struct PartitionMap {
+    inner: NativePartitionMap,
+}
+
+#[pymethods]
+impl PartitionMap {
+    #[staticmethod]
+    fn new(partition: NativePartitionId, replicas: Vec<NativeSpuId>) -> Self {
+        PartitionMap {
+            inner: NativePartitionMap{
+                id: partition,
+                replicas
+            },
+        }
+    }
+}
+
+impl Into<NativePartitionMap> for PartitionMap {
+    fn into(self) -> NativePartitionMap {
+        self.inner
+    }
+}
+
+#[derive(Clone)]
+#[pyclass]
+struct CommonCreateRequest {
+    inner: NativeCommonCreateRequest,
+}
+
+#[pymethods]
+impl CommonCreateRequest {
+    #[staticmethod]
+    pub fn new(name: String, dry_run: bool, timeout: Option<u32>) -> CommonCreateRequest {
+        CommonCreateRequest {
+            inner: NativeCommonCreateRequest{
+                name,
+                dry_run,
+                timeout,
+            },
+        }
+    }
+}
+
+#[pyclass]
+struct MetadataTopicSpec {
+    inner: NativeMetadata<NativeTopicSpec>,
+}
+
+impl From<NativeMetadata<NativeTopicSpec>> for MetadataTopicSpec {
+    fn from(data: NativeMetadata<NativeTopicSpec>) -> Self {
+        MetadataTopicSpec {
+            inner: data,
+        }
+    }
+}
+
+#[pyclass]
+struct WatchResponseTopicSpec {
+    inner: NativeWatchResponse<NativeTopicSpec>,
+}
+
+impl From<NativeWatchResponse<NativeTopicSpec>> for WatchResponseTopicSpec {
+    fn from(data: NativeWatchResponse<NativeTopicSpec>) -> Self {
+        WatchResponseTopicSpec {
+            inner: data,
+        }
+    }
+}
+
+type WatchTopicIteratorInner =
+    Pin<Box<dyn Stream<Item = Result<NativeWatchResponse<NativeTopicSpec>, IoError>> + Send>>;
+
+#[pyclass]
+pub struct WatchTopicStream {
+    pub inner: WatchTopicIteratorInner,
+}
+
+#[pymethods]
+impl WatchTopicStream {
+    fn next(&mut self) -> Result<Option<WatchResponseTopicSpec>, PyErr> {
+        Ok(Some(
+            WatchResponseTopicSpec {
+                inner: run_block_on(self.inner.next())
+                    .unwrap()
+                    .map_err(|err| PyException::new_err(err.to_string()))?.into(),
+            }
+        ))
+    }
+}
+
+#[derive(Clone)]
+#[pyclass]
+struct SmartModuleSpec {
+    inner: NativeSmartModuleSpec,
+}
+
+#[pyclass]
+struct MetadataSmartModuleSpec {
+    inner: NativeMetadata<NativeSmartModuleSpec>,
+}
+
+impl From<NativeMetadata<NativeSmartModuleSpec>> for MetadataSmartModuleSpec {
+    fn from(data: NativeMetadata<NativeSmartModuleSpec>) -> Self {
+        MetadataSmartModuleSpec {
+            inner: data,
+        }
+    }
+}
+
+#[pyclass]
+struct WatchResponseSmartModuleSpec {
+    inner: NativeWatchResponse<NativeSmartModuleSpec>,
+}
+
+impl From<NativeWatchResponse<NativeSmartModuleSpec>> for WatchResponseSmartModuleSpec {
+    fn from(data: NativeWatchResponse<NativeSmartModuleSpec>) -> Self {
+        WatchResponseSmartModuleSpec {
+            inner: data,
+        }
+    }
+}
+
+type WatchSmartModuleIteratorInner =
+    Pin<Box<dyn Stream<Item = Result<NativeWatchResponse<NativeSmartModuleSpec>, IoError>> + Send>>;
+
+#[pyclass]
+pub struct WatchSmartModuleStream {
+    pub inner: WatchSmartModuleIteratorInner,
+}
+
+impl WatchSmartModuleStream {
+    pub fn new(inner: WatchSmartModuleIteratorInner) -> Self {
+        WatchSmartModuleStream {
+            inner,
+        }
+    }
+}
+
+#[pymethods]
+impl WatchSmartModuleStream {
+    fn next(&mut self) -> Result<Option<WatchResponseSmartModuleSpec>, PyErr> {
+        Ok(Some(
+            WatchResponseSmartModuleSpec {
+                inner: run_block_on(self.inner.next())
+                    .unwrap()
+                    .map_err(|err| PyException::new_err(err.to_string()))?.into(),
+            }
+        ))
+    }
+}
+
+#[pyclass]
+struct PartitionSpec {
+    inner: NativePartitionSpec,
+}
+
+impl From<NativePartitionSpec> for PartitionSpec {
+    fn from(data: NativePartitionSpec) -> Self {
+        PartitionSpec {
+            inner: data,
+        }
+    }
+}
+
+#[pyclass]
+struct MetadataPartitionSpec {
+    inner: NativeMetadata<NativePartitionSpec>,
+}
+
+impl From<NativeMetadata<NativePartitionSpec>> for MetadataPartitionSpec {
+    fn from(data: NativeMetadata<NativePartitionSpec>) -> Self {
+        MetadataPartitionSpec {
+            inner: data,
+        }
     }
 }
