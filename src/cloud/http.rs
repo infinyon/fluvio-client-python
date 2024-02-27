@@ -30,7 +30,7 @@ pub async fn execute(req: Request) -> Result<Response, Error> {
     );
 
     let result = if is_https {
-        let tls_connector = fluvio_future::native_tls::TlsConnector::default();
+        let tls_connector = fluvio_future::rust_tls::TlsConnector::default();
         let tls_stream = tls_connector.connect(host, tcp_stream).await?;
         client::connect(tls_stream, req).await
     } else {
