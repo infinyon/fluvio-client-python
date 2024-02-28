@@ -14,7 +14,7 @@ log = "^0.4.17"
 
 [dependencies]
 anyhow = "1.0"
-cc = "=1.0.83"
+cc = "=1.0.88"
 pyo3 = { version = "0.20.2", features = ["extension-module"] }
 fluvio-future = { version = "0.6.0", features = ["task", "io", "native2_tls", "subscriber"] }
 thiserror = "1.0.21"
