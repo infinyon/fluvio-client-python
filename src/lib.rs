@@ -13,7 +13,11 @@ use fluvio::{
     Offset as NativeOffset, PartitionConsumer as NativePartitionConsumer,
     TopicProducer as NativeTopicProducer,
 };
+use fluvio_controlplane_metadata::message::{Message as NativeMessage, MsgType as NativeMsgType};
 use fluvio_controlplane_metadata::partition::PartitionSpec as NativePartitionSpec;
+use fluvio_controlplane_metadata::smartmodule::{
+    SmartModuleWasm as NativeSmartModuleWasm, SmartModuleWasmFormat as NativeSmartModuleWasmFormat,
+};
 use fluvio_controlplane_metadata::topic::{
     PartitionMap as NativePartitionMap, TopicSpec as NativeTopicSpec,
 };
@@ -21,9 +25,6 @@ use fluvio::{
     FluvioConfig as NativeFluvioConfig,
     PartitionSelectionStrategy as NativePartitionSelectionStrategy,
 };
-use fluvio_controlplane_metadata::message::{Message as NativeMessage, MsgType as NativeMsgType};
-use fluvio_controlplane_metadata::smartmodule::{SmartModuleWasm as NativeSmartModuleWasm,
-    SmartModuleWasmFormat as NativeSmartModuleWasmFormat};
 use fluvio_future::{
     io::{Stream, StreamExt},
     task::run_block_on,
@@ -34,7 +35,7 @@ use futures::pin_mut;
 use futures::TryFutureExt;
 use fluvio_sc_schema::objects::{
     CommonCreateRequest as NativeCommonCreateRequest, Metadata as NativeMetadata,
-    WatchResponse as NativeWatchResponse, MetadataUpdate as NativeMetadataUpdate,
+    MetadataUpdate as NativeMetadataUpdate, WatchResponse as NativeWatchResponse,
 };
 use fluvio_sc_schema::smartmodule::SmartModuleSpec as NativeSmartModuleSpec;
 use fluvio_sc_schema::topic::PartitionMaps as NativePartitionMaps;
@@ -1089,10 +1090,20 @@ impl MetaUpdateTopicSpec {
         self.inner.epoch
     }
     fn changes(&self) -> Vec<MessageMetadataTopicSpec> {
-        self.inner.changes.clone().into_iter().map(|s| s.into()).collect()
+        self.inner
+            .changes
+            .clone()
+            .into_iter()
+            .map(|s| s.into())
+            .collect()
     }
     fn all(&self) -> Vec<MetadataTopicSpec> {
-        self.inner.all.clone().into_iter().map(|s| s.into()).collect()
+        self.inner
+            .all
+            .clone()
+            .into_iter()
+            .map(|s| s.into())
+            .collect()
     }
 }
 
@@ -1136,7 +1147,9 @@ struct WatchResponseTopicSpec {
 #[pymethods]
 impl WatchResponseTopicSpec {
     fn inner(&self) -> MetaUpdateTopicSpec {
-       MetaUpdateTopicSpec{inner: self.inner.clone().inner()}
+        MetaUpdateTopicSpec {
+            inner: self.inner.clone().inner(),
+        }
     }
 }
 
@@ -1157,10 +1170,20 @@ impl MetaUpdateSmartModuleSpec {
         self.inner.epoch
     }
     fn changes(&self) -> Vec<MessageMetadataSmartModuleSpec> {
-        self.inner.changes.clone().into_iter().map(|s| s.into()).collect()
+        self.inner
+            .changes
+            .clone()
+            .into_iter()
+            .map(|s| s.into())
+            .collect()
     }
     fn all(&self) -> Vec<MetadataSmartModuleSpec> {
-        self.inner.all.clone().into_iter().map(|s| s.into()).collect()
+        self.inner
+            .all
+            .clone()
+            .into_iter()
+            .map(|s| s.into())
+            .collect()
     }
 }
 
@@ -1270,7 +1293,9 @@ struct WatchResponseSmartModuleSpec {
 #[pymethods]
 impl WatchResponseSmartModuleSpec {
     fn inner(&self) -> MetaUpdateSmartModuleSpec {
-         MetaUpdateSmartModuleSpec{inner: self.inner.clone().inner()}
+        MetaUpdateSmartModuleSpec {
+            inner: self.inner.clone().inner(),
+        }
     }
 }
 
