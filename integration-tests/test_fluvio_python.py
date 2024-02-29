@@ -655,7 +655,9 @@ class CommonFluvioAdminTestCase(unittest.TestCase):
     def common_setup(self):
         self.topic = str(uuid.uuid4())
         self.sm_name = str(uuid.uuid4())
-        self.sm_path = os.path.abspath("smartmodules-for-ci/smartmodule_filter_on_a.wasm")
+        self.sm_path = os.path.abspath(
+            "smartmodules-for-ci/smartmodule_filter_on_a.wasm"
+        )
 
     def setUp(self):
         self.common_setup()
