@@ -21,6 +21,9 @@ use fluvio::{
     FluvioConfig as NativeFluvioConfig,
     PartitionSelectionStrategy as NativePartitionSelectionStrategy,
 };
+use fluvio_controlplane_metadata::message::{Message as NativeMessage, MsgType as NativeMsgType};
+use fluvio_controlplane_metadata::smartmodule::{SmartModuleWasm as NativeSmartModuleWasm,
+    SmartModuleWasmFormat as NativeSmartModuleWasmFormat};
 use fluvio_future::{
     io::{Stream, StreamExt},
     task::run_block_on,
@@ -29,10 +32,12 @@ use fluvio_types::PartitionId;
 use futures::future::BoxFuture;
 use futures::pin_mut;
 use futures::TryFutureExt;
-use fluvio_sc_schema::topic::PartitionMaps as NativePartitionMaps;
-use fluvio_sc_schema::objects::{CommonCreateRequest as NativeCommonCreateRequest, Metadata as NativeMetadata,
-    WatchResponse as NativeWatchResponse};
+use fluvio_sc_schema::objects::{
+    CommonCreateRequest as NativeCommonCreateRequest, Metadata as NativeMetadata,
+    WatchResponse as NativeWatchResponse, MetadataUpdate as NativeMetadataUpdate,
+};
 use fluvio_sc_schema::smartmodule::SmartModuleSpec as NativeSmartModuleSpec;
+use fluvio_sc_schema::topic::PartitionMaps as NativePartitionMaps;
 use fluvio_types::{
     IgnoreRackAssignment as NativeIgnoreRackAssignment, PartitionCount as NativePartitionCount,
     PartitionId as NativePartitionId, ReplicationFactor as NativeReplicationFactor,
@@ -73,6 +78,17 @@ fn _fluvio_python(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<FluvioAdmin>()?;
     m.add_class::<TopicSpec>()?;
     m.add_class::<PartitionMap>()?;
+    m.add_class::<CommonCreateRequest>()?;
+    m.add_class::<MetadataTopicSpec>()?;
+    m.add_class::<WatchTopicStream>()?;
+    m.add_class::<MetaUpdateTopicSpec>()?;
+    m.add_class::<MessageMetadataTopicSpec>()?;
+    m.add_class::<SmartModuleSpec>()?;
+    m.add_class::<MetadataSmartModuleSpec>()?;
+    m.add_class::<WatchSmartModuleStream>()?;
+    m.add_class::<MessageMetadataSmartModuleSpec>()?;
+    m.add_class::<MetaUpdateSmartModuleSpec>()?;
+    m.add_class::<MetadataPartitionSpec>()?;
     m.add("Error", py.get_type::<PyFluvioError>())?;
     Ok(())
 }
@@ -916,7 +932,7 @@ impl FluvioAdmin {
         )
     }
 
-    pub fn delete_topic(&self, name: String, dry_run: bool) -> PyResult<()> {
+    pub fn delete_topic(&self, name: String) -> PyResult<()> {
         delete_impl!(self, name, NativeTopicSpec)
     }
 
@@ -940,10 +956,7 @@ impl FluvioAdmin {
     }
 
     pub fn watch_topic(&self) -> PyResult<WatchTopicStream> {
-        let stream = run_block_on(self.inner.watch()).map_err(error_to_py_err)?;
-        Ok(WatchTopicStream {
-            inner: Box::pin(stream),
-        })
+        watch_impl!(self, WatchTopicStream)
     }
 
     pub fn create_smart_module(
@@ -1052,9 +1065,66 @@ struct MetadataTopicSpec {
     inner: NativeMetadata<NativeTopicSpec>,
 }
 
+#[pymethods]
+impl MetadataTopicSpec {
+    fn name(&self) -> String {
+        self.inner.name.clone()
+    }
+}
+
 impl From<NativeMetadata<NativeTopicSpec>> for MetadataTopicSpec {
     fn from(data: NativeMetadata<NativeTopicSpec>) -> Self {
         MetadataTopicSpec { inner: data }
+    }
+}
+
+#[pyclass]
+struct MetaUpdateTopicSpec {
+    inner: NativeMetadataUpdate<NativeTopicSpec>,
+}
+
+#[pymethods]
+impl MetaUpdateTopicSpec {
+    fn epoch(&self) -> i64 {
+        self.inner.epoch
+    }
+    fn changes(&self) -> Vec<MessageMetadataTopicSpec> {
+        self.inner.changes.clone().into_iter().map(|s| s.into()).collect()
+    }
+    fn all(&self) -> Vec<MetadataTopicSpec> {
+        self.inner.all.clone().into_iter().map(|s| s.into()).collect()
+    }
+}
+
+#[pyclass]
+struct MessageMetadataTopicSpec {
+    inner: NativeMessage<NativeMetadata<NativeTopicSpec>>,
+}
+
+#[pymethods]
+impl MessageMetadataTopicSpec {
+    fn is_update(&self) -> bool {
+        match &self.inner.header {
+            NativeMsgType::UPDATE => true,
+            _ => false,
+        }
+    }
+
+    fn is_delete(&self) -> bool {
+        match &self.inner.header {
+            NativeMsgType::DELETE => true,
+            _ => false,
+        }
+    }
+
+    fn metadata_topic_spec(&self) -> MetadataTopicSpec {
+        self.inner.content.clone().into()
+    }
+}
+
+impl From<NativeMessage<NativeMetadata<NativeTopicSpec>>> for MessageMetadataTopicSpec {
+    fn from(data: NativeMessage<NativeMetadata<NativeTopicSpec>>) -> Self {
+        MessageMetadataTopicSpec { inner: data }
     }
 }
 
@@ -1063,9 +1133,66 @@ struct WatchResponseTopicSpec {
     inner: NativeWatchResponse<NativeTopicSpec>,
 }
 
+#[pymethods]
+impl WatchResponseTopicSpec {
+    fn inner(&self) -> MetaUpdateTopicSpec {
+       MetaUpdateTopicSpec{inner: self.inner.clone().inner()}
+    }
+}
+
 impl From<NativeWatchResponse<NativeTopicSpec>> for WatchResponseTopicSpec {
     fn from(data: NativeWatchResponse<NativeTopicSpec>) -> Self {
         WatchResponseTopicSpec { inner: data }
+    }
+}
+
+#[pyclass]
+struct MetaUpdateSmartModuleSpec {
+    inner: NativeMetadataUpdate<NativeSmartModuleSpec>,
+}
+
+#[pymethods]
+impl MetaUpdateSmartModuleSpec {
+    fn epoch(&self) -> i64 {
+        self.inner.epoch
+    }
+    fn changes(&self) -> Vec<MessageMetadataSmartModuleSpec> {
+        self.inner.changes.clone().into_iter().map(|s| s.into()).collect()
+    }
+    fn all(&self) -> Vec<MetadataSmartModuleSpec> {
+        self.inner.all.clone().into_iter().map(|s| s.into()).collect()
+    }
+}
+
+#[pyclass]
+struct MessageMetadataSmartModuleSpec {
+    inner: NativeMessage<NativeMetadata<NativeSmartModuleSpec>>,
+}
+
+#[pymethods]
+impl MessageMetadataSmartModuleSpec {
+    fn is_update(&self) -> bool {
+        match &self.inner.header {
+            NativeMsgType::UPDATE => true,
+            _ => false,
+        }
+    }
+
+    fn is_delete(&self) -> bool {
+        match &self.inner.header {
+            NativeMsgType::DELETE => true,
+            _ => false,
+        }
+    }
+
+    fn metadata_smart_module_spec(&self) -> MetadataSmartModuleSpec {
+        self.inner.content.clone().into()
+    }
+}
+
+impl From<NativeMessage<NativeMetadata<NativeSmartModuleSpec>>> for MessageMetadataSmartModuleSpec {
+    fn from(data: NativeMessage<NativeMetadata<NativeSmartModuleSpec>>) -> Self {
+        MessageMetadataSmartModuleSpec { inner: data }
     }
 }
 
@@ -1075,6 +1202,12 @@ type WatchTopicIteratorInner =
 #[pyclass]
 pub struct WatchTopicStream {
     pub inner: WatchTopicIteratorInner,
+}
+
+impl WatchTopicStream {
+    pub fn new(inner: WatchTopicIteratorInner) -> Self {
+        WatchTopicStream { inner }
+    }
 }
 
 #[pymethods]
@@ -1095,9 +1228,32 @@ struct SmartModuleSpec {
     inner: NativeSmartModuleSpec,
 }
 
+#[pymethods]
+impl SmartModuleSpec {
+    #[staticmethod]
+    fn with_binary(bytes: Vec<u8>) -> Self {
+        SmartModuleSpec {
+            inner: NativeSmartModuleSpec {
+                wasm: NativeSmartModuleWasm {
+                    format: NativeSmartModuleWasmFormat::Binary,
+                    payload: bytes.into(),
+                },
+                ..Default::default()
+            },
+        }
+    }
+}
+
 #[pyclass]
 struct MetadataSmartModuleSpec {
     inner: NativeMetadata<NativeSmartModuleSpec>,
+}
+
+#[pymethods]
+impl MetadataSmartModuleSpec {
+    fn name(&self) -> String {
+        self.inner.name.clone()
+    }
 }
 
 impl From<NativeMetadata<NativeSmartModuleSpec>> for MetadataSmartModuleSpec {
@@ -1109,6 +1265,13 @@ impl From<NativeMetadata<NativeSmartModuleSpec>> for MetadataSmartModuleSpec {
 #[pyclass]
 struct WatchResponseSmartModuleSpec {
     inner: NativeWatchResponse<NativeSmartModuleSpec>,
+}
+
+#[pymethods]
+impl WatchResponseSmartModuleSpec {
+    fn inner(&self) -> MetaUpdateSmartModuleSpec {
+         MetaUpdateSmartModuleSpec{inner: self.inner.clone().inner()}
+    }
 }
 
 impl From<NativeWatchResponse<NativeSmartModuleSpec>> for WatchResponseSmartModuleSpec {
@@ -1157,6 +1320,13 @@ impl From<NativePartitionSpec> for PartitionSpec {
 #[pyclass]
 struct MetadataPartitionSpec {
     inner: NativeMetadata<NativePartitionSpec>,
+}
+
+#[pymethods]
+impl MetadataPartitionSpec {
+    fn name(&self) -> String {
+        self.inner.name.clone()
+    }
 }
 
 impl From<NativeMetadata<NativePartitionSpec>> for MetadataPartitionSpec {
