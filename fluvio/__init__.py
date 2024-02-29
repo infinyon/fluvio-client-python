@@ -15,6 +15,17 @@ from ._fluvio_python import (
     FluvioAdmin as _FluvioAdmin,
     TopicSpec as _TopicSpec,
     PartitionMap as _PartitionMap,
+    CommonCreateRequest as _CommonCreateRequest,
+    MetadataTopicSpec as _MetadataTopicSpec,
+    WatchTopicStream as _WatchTopicStream,
+    MetaUpdateTopicSpec as _MetaUpdateTopicSpec,
+    MessageMetadataTopicSpec as _MessageMetadataTopicSpec,
+    SmartModuleSpec as _SmartModuleSpec,
+    MetadataSmartModuleSpec as _MetadataSmartModuleSpec,
+    WatchSmartModuleStream as _WatchSmartModuleStream,
+    MessageMetadataSmartModuleSpec as _MessageMetadataSmartModuleSpec,
+    MetaUpdateSmartModuleSpec as _MetaUpdateSmartModuleSpec,
+    MetadataPartitionSpec as _MetadataPartitionSpec,
 )
 from enum import Enum
 from ._fluvio_python import Error as FluviorError  # noqa: F401
@@ -659,6 +670,121 @@ class TopicSpec:
         return cls(_TopicSpec.new_computed(partitions, replication, ignore))
 
 
+class CommonCreateRequest:
+    _inner: _CommonCreateRequest
+
+    def __init__(self, inner: _CommonCreateRequest):
+        self._inner = inner
+
+    @classmethod
+    def new(cls, name: str, dry_run: bool, timeout: int):
+        return cls(_CommonCreateRequest.new(name, dry_run, timeout))
+
+
+class MetadataTopicSpec:
+    _inner: _MetadataTopicSpec
+
+    def __init__(self, inner: _MetadataTopicSpec):
+        self._inner = inner
+    
+    def name(self) -> str:
+        return self._inner.name()
+
+class MessageMetadataTopicSpec:
+    _inner: _MessageMetadataTopicSpec
+
+    def __init__(self, inner: _MessageMetadataTopicSpec):
+        self._inner = inner
+    
+    def is_update(self) -> bool:
+        return self._inner.is_update()
+
+    def is_delete(self) -> bool:
+        return self._inner.is_delete()
+    
+    def metadata_topic_spec(self) -> MetadataTopicSpec:
+        return MetadataTopicSpec(self._inner.metadata_topic_spec())
+
+class MetaUpdateTopicSpec:
+    _inner: _MetaUpdateTopicSpec
+
+    def __init__(self, inner: _MetaUpdateTopicSpec):
+        self._inner = inner
+    
+    def all(self) -> typing.List[MetadataTopicSpec]:
+        inners = self._inner.all()
+        return [MetadataTopicSpec(i) for i in inners]
+
+    def changes(self) -> typing.List[MessageMetadataTopicSpec]:
+        inners = self._inner.changes()
+        return [MessageMetadataTopicSpec(i) for i in inners]
+
+    def epoch(self) -> int:
+        return self._inner.epoch()
+
+class SmartModuleSpec:
+    _inner: _SmartModuleSpec
+
+    def __init__(self, inner: _SmartModuleSpec):
+        self._inner = inner
+
+    @classmethod
+    def new(cls, path: str):
+        f = open(path, mode="rb")
+        data = f.read()
+        f.close()
+        return cls(_SmartModuleSpec.with_binary(data))
+
+class MetadataSmartModuleSpec:
+    _inner: _MetadataSmartModuleSpec
+
+    def __init__(self, inner: _MetadataSmartModuleSpec):
+        self._inner = inner
+    
+    def name(self) -> str:
+        return self._inner.name()
+
+class MessageMetadataSmartModuleSpec:
+    _inner: _MessageMetadataSmartModuleSpec
+
+    def __init__(self, inner: _MessageMetadataSmartModuleSpec):
+        self._inner = inner
+    
+    def is_update(self) -> bool:
+        return self._inner.is_update()
+
+    def is_delete(self) -> bool:
+        return self._inner.is_delete()
+    
+    def metadata_smart_module_spec(self) -> MetadataSmartModuleSpec:
+        return MetadataSmartModuleSpec(self._inner.metadata_smart_module_spec())
+
+class MetaUpdateSmartModuleSpec:
+    _inner: _MetaUpdateSmartModuleSpec
+
+    def __init__(self, inner: _MetaUpdateSmartModuleSpec):
+        self._inner = inner
+    
+    def all(self) -> typing.List[MetadataSmartModuleSpec]:
+        inners = self._inner.all()
+        return [MetadataSmartModuleSpec(i) for i in inners]
+
+    def changes(self) -> typing.List[MessageMetadataSmartModuleSpec]:
+        inners = self._inner.changes()
+        return [MessageMetadataSmartModuleSpec(i) for i in inners]
+
+    def epoch(self) -> int:
+        return self._inner.epoch()
+
+class MetadataPartitionSpec:
+    _inner: _MetadataPartitionSpec
+
+    def __init__(self, inner: _MetadataPartitionSpec):
+        self._inner = inner
+    
+    def name(self) -> str:
+        return self._inner.name()
+    
 class FluvioAdmin:
     _inner: _FluvioAdmin
 
@@ -672,4 +798,50 @@ class FluvioAdmin:
         return FluvioAdmin(_FluvioAdmin.connect_with_config(config._inner))
 
     def create_topic(self, topic: str, dry_run: bool, spec: TopicSpec):
-        self._inner.create_topic(topic, dry_run, spec._inner)
+        return self._inner.create_topic(topic, dry_run, spec._inner)
+    
+    def create_topic_with_config(self, topic: str, req: CommonCreateRequest, spec: TopicSpec):
+        return self._inner.create_topic_with_config(topic, req._inner, spec._inner)
+
+    def delete_topic(self, topic: str):
+        return self._inner.delete_topic(topic)
+
+    def all_topics(self) -> typing.List[MetadataTopicSpec]:
+        return self._inner.all_topics()
+
+    def list_topics(self, filters: typing.List[str]) -> typing.List[MetadataTopicSpec]:
+        return self._inner.list_topics(filters)
+
+    def list_topics_with_params(self, filters: typing.List[str], summary: bool) -> typing.List[MetadataTopicSpec]:
+        return self._inner.list_topics_with_params(filters, summary)
+
+    def watch_topic(self) -> typing.Iterator[MetadataTopicSpec]:
+        return self._topic_spec_generator(self._inner.watch_topic())
+
+    def create_smart_module(self, name: str, path: str, dry_run: bool):
+        spec = SmartModuleSpec.new(path)
+        return self._inner.create_smart_module(name, dry_run, spec._inner)
+
+    def delete_smart_module(self, name: str):
+        return self._inner.delete_smart_module(name)
+
+    def list_smart_modules(self, filters: typing.List[str]) -> typing.List[MetadataSmartModuleSpec]:
+        return self._inner.list_smart_modules(filters)
+
+    def watch_smart_module(self) -> typing.Iterator[MetadataSmartModuleSpec]:
+        return self._smart_module_spec_generator(self._inner.watch_smart_module())
+
+    def list_partitions(self, filters: typing.List[str]) -> typing.List[MetadataPartitionSpec]:
+        return self._inner.list_partitions(filters)
+
+    def _topic_spec_generator(self, stream: _WatchTopicStream) -> typing.Iterator[MetaUpdateTopicSpec]:
+        item = stream.next().inner()
+        while item is not None:
+            yield MetaUpdateTopicSpec(item)
+            item = stream.next().inner()
+    
+    def _smart_module_spec_generator(self, stream: _WatchSmartModuleStream) -> typing.Iterator[MetaUpdateSmartModuleSpec]:
+        item = stream.next().inner()
+        while item is not None:
+            yield MetaUpdateSmartModuleSpec(item)
+            item = stream.next().inner()

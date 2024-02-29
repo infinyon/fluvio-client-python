@@ -652,10 +652,10 @@ class TestFluvioProduceFlush(CommonFluvioSmartModuleTestCase):
 
 
 class CommonFluvioAdminTestCase(unittest.TestCase):
-    def common_setup(self, sm_path=None):
+    def common_setup(self):
         self.topic = str(uuid.uuid4())
         self.sm_name = str(uuid.uuid4())
-        self.sm_path = sm_path
+        self.sm_path = os.path.abspath("smartmodules-for-ci/smartmodule_filter_on_a.wasm")
 
     def setUp(self):
         self.common_setup()
@@ -668,3 +668,65 @@ class TestFluvioAdminTopic(CommonFluvioAdminTestCase):
 
         # create topic
         fluvio_admin.create_topic(self.topic, False, topic_spec)
+
+        # watch topic
+        stream = fluvio_admin.watch_topic()
+
+        all_topics = next(stream).all()
+        all_topic_names = [topic.name() for topic in all_topics]
+        self.assertIn(self.topic, all_topic_names)
+
+        # list all topics
+        topic_specs = fluvio_admin.all_topics()
+        names = [i.name() for i in topic_specs]
+        self.assertIn(self.topic, names)
+
+        # list topics
+        topic_specs = fluvio_admin.list_topics([self.topic])
+        self.assertEqual(topic_specs[0].name(), self.topic)
+
+        # list topic summary
+        topic_specs = fluvio_admin.list_topics_with_params([self.topic], True)
+        self.assertEqual(topic_specs[0].name(), self.topic)
+
+        # delete topic
+        fluvio_admin.delete_topic(self.topic)
+
+        # list all topics
+        topic_specs = fluvio_admin.all_topics()
+        names = [i.name() for i in topic_specs]
+        self.assertNotIn(self.topic, names)
+
+        # list topics
+        topic_specs = fluvio_admin.list_topics([self.topic])
+        self.assertEqual(len(topic_specs), 0)
+
+    def test_admin_smart_module(self):
+        fluvio_admin = FluvioAdmin.connect()
+
+        # create smart module
+        fluvio_admin.create_smart_module(self.sm_name, self.sm_path, False)
+
+        # watch smart module
+        stream = fluvio_admin.watch_smart_module()
+        all_smart_modules = next(stream).all()
+        all_smart_module_names = [sm.name() for sm in all_smart_modules]
+        self.assertIn(self.sm_name, all_smart_module_names)
+
+        # list smart modules
+        smart_modules = fluvio_admin.list_smart_modules([self.sm_name])
+        self.assertEqual(smart_modules[0].name(), self.sm_name)
+
+        # delete smart module
+        fluvio_admin.delete_smart_module(self.sm_name)
+
+        # list smart modules
+        smart_modules = fluvio_admin.list_smart_modules([self.sm_name])
+        self.assertEqual(len(smart_modules), 0)
+
+    def test_admin_paritions(self):
+        fluvio_admin = FluvioAdmin.connect()
+
+        # list partitions
+        all_partitions = fluvio_admin.list_partitions([])
+        self.assertNotEqual(len(all_partitions), 0)
