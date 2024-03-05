@@ -3,7 +3,10 @@ from ._fluvio_python import (
     FluvioConfig as _FluvioConfig,
     ConsumerConfig as _ConsumerConfig,
     PartitionConsumer as _PartitionConsumer,
+    MultiplePartitionConsumer as _MultiplePartitionConsumer,
+    PartitionSelectionStrategy as _PartitionSelectionStrategy,
     PartitionConsumerStream as _PartitionConsumerStream,
+    AsyncPartitionConsumerStream as _AsyncPartitionConsumerStream,
     TopicProducer as _TopicProducer,
     ProducerBatchRecord as _ProducerBatchRecord,
     SmartModuleKind as _SmartModuleKind,
@@ -208,6 +211,20 @@ class PartitionConsumer:
         """
         return self._generator(self._inner.stream(offset._inner))
 
+    async def async_stream(self, offset: Offset) -> typing.AsyncIterator[Record]:
+        """
+        Continuously streams events from a particular offset in the consumer’s
+        partition. This returns a `AsyncIterator[Record]` which is an
+        iterator.
+
+        Streaming is one of the two ways to consume events in Fluvio. It is a
+        continuous request for new records arriving in a partition, beginning
+        at a particular offset. You specify the starting point of the stream
+        using an Offset and periodically receive events, either individually or
+        in batches.
+        """
+        return self._async_generator(await self._inner.async_stream(offset._inner))
+
     def stream_with_config(
         self, offset: Offset, config: ConsumerConfig
     ) -> typing.Iterator[Record]:
@@ -243,11 +260,184 @@ class PartitionConsumer:
             self._inner.stream_with_config(offset._inner, config._inner)
         )
 
+    async def async_stream_with_config(
+        self, offset: Offset, config: ConsumerConfig
+    ) -> typing.AsyncIterator[Record]:
+        """
+        Continuously streams events from a particular offset with a SmartModule
+        WASM module in the consumer’s partition. This returns a
+        `AsyncIterator[Record]` which is an async iterator.
+
+        Streaming is one of the two ways to consume events in Fluvio. It is a
+        continuous request for new records arriving in a partition, beginning
+        at a particular offset. You specify the starting point of the stream
+        using an Offset and periodically receive events, either individually or
+        in batches.
+
+        Args:
+            offset: Offset
+            wasm_module_path: str - The absolute path to the WASM file
+
+        Example:
+            import os
+
+            wmp = os.path.abspath("somefilter.wasm")
+            config = ConsumerConfig()
+            config.smartmodule(path=wmp)
+            async for i in await consumer.async_stream_with_config(Offset.beginning(), config):
+                # do something with i
+
+        Returns:
+            `AsyncIterator[Record]`
+
+        """
+        return self._async_generator(
+            await self._inner.async_stream_with_config(offset._inner, config._inner)
+        )
+
     def _generator(self, stream: _PartitionConsumerStream) -> typing.Iterator[Record]:
         item = stream.next()
         while item is not None:
             yield Record(item)
             item = stream.next()
+
+    async def _async_generator(
+        self, astream: _AsyncPartitionConsumerStream
+    ) -> typing.AsyncIterator[Record]:
+        item = await astream.async_next()
+        while item is not None:
+            yield Record(item)
+            item = await astream.async_next()
+
+
+class MultiplePartitionConsumer:
+    """
+    An interface for consuming events from multiple partitions
+
+    There are two ways to consume events: by "fetching" events and by
+    "streaming" events. Fetching involves specifying a range of events that you
+    want to consume via their Offset. A fetch is a sort of one-time batch
+    operation: you’ll receive all of the events in your range all at once. When
+    you consume events via Streaming, you specify a starting Offset and receive
+    an object that will continuously yield new events as they arrive.
+    """
+
+    _inner: _MultiplePartitionConsumer
+
+    def __init__(self, inner: _MultiplePartitionConsumer):
+        self._inner = inner
+
+    def stream(self, offset: Offset) -> typing.Iterator[Record]:
+        """
+        Continuously streams events from a particular offset in the consumer’s
+        partitions. This returns a `Iterator[Record]` which is an
+        iterator.
+
+        Streaming is one of the two ways to consume events in Fluvio. It is a
+        continuous request for new records arriving in a partition, beginning
+        at a particular offset. You specify the starting point of the stream
+        using an Offset and periodically receive events, either individually or
+        in batches.
+        """
+        return self._generator(self._inner.stream(offset._inner))
+
+    async def async_stream(self, offset: Offset) -> typing.AsyncIterator[Record]:
+        """
+        Continuously streams events from a particular offset in the consumer’s
+        partitions. This returns a `AsyncIterator[Record]` which is an
+        async iterator.
+
+        Streaming is one of the two ways to consume events in Fluvio. It is a
+        continuous request for new records arriving in a partition, beginning
+        at a particular offset. You specify the starting point of the stream
+        using an Offset and periodically receive events, either individually or
+        in batches.
+        """
+        return self._async_generator(await self._inner.async_stream(offset._inner))
+
+    def stream_with_config(
+        self, offset: Offset, config: ConsumerConfig
+    ) -> typing.Iterator[Record]:
+        """
+        Continuously streams events from a particular offset with a SmartModule
+        WASM module in the consumer’s partitions. This returns a
+        `Iterator[Record]` which is an iterator.
+
+        Streaming is one of the two ways to consume events in Fluvio. It is a
+        continuous request for new records arriving in a partition, beginning
+        at a particular offset. You specify the starting point of the stream
+        using an Offset and periodically receive events, either individually or
+        in batches.
+
+        Args:
+            offset: Offset
+            wasm_module_path: str - The absolute path to the WASM file
+
+        Example:
+            import os
+
+            wmp = os.path.abspath("somefilter.wasm")
+            config = ConsumerConfig()
+            config.smartmodule(path=wmp)
+            for i in consumer.stream_with_config(Offset.beginning(), config):
+                # do something with i
+
+        Returns:
+            `Iterator[Record]`
+
+        """
+        return self._generator(
+            self._inner.stream_with_config(offset._inner, config._inner)
+        )
+
+    async def async_stream_with_config(
+        self, offset: Offset, config: ConsumerConfig
+    ) -> typing.AsyncIterator[Record]:
+        """
+        Continuously streams events from a particular offset with a SmartModule
+        WASM module in the consumer’s partitions. This returns a
+        `AsyncIterator[Record]` which is an async iterator.
+
+        Streaming is one of the two ways to consume events in Fluvio. It is a
+        continuous request for new records arriving in a partition, beginning
+        at a particular offset. You specify the starting point of the stream
+        using an Offset and periodically receive events, either individually or
+        in batches.
+
+        Args:
+            offset: Offset
+            wasm_module_path: str - The absolute path to the WASM file
+
+        Example:
+            import os
+
+            wmp = os.path.abspath("somefilter.wasm")
+            config = ConsumerConfig()
+            config.smartmodule(path=wmp)
+            async for i in await consumer.async_stream_with_config(Offset.beginning(), config):
+                # do something with i
+
+        Returns:
+            `AsyncIterator[Record]`
+
+        """
+        return self._async_generator(
+            await self._inner.async_stream_with_config(offset._inner, config._inner)
+        )
+
+    def _generator(self, stream: _PartitionConsumerStream) -> typing.Iterator[Record]:
+        item = stream.next()
+        while item is not None:
+            yield Record(item)
+            item = stream.next()
+
+    async def _async_generator(
+        self, astream: _AsyncPartitionConsumerStream
+    ) -> typing.AsyncIterator[Record]:
+        item = await astream.async_next()
+        while item is not None:
+            yield Record(item)
+            item = await astream.async_next()
 
 
 class TopicProducer:
@@ -267,6 +457,10 @@ class TopicProducer:
         """Sends a string to this producer’s topic"""
         return self.send([], buf.encode("utf-8"))
 
+    async def async_send_string(self, buf: str) -> None:
+        """Sends a string to this producer’s topic"""
+        await self.async_send([], buf.encode("utf-8"))
+
     def send(self, key: typing.List[int], value: typing.List[int]) -> None:
         """
         Sends a key/value record to this producer's Topic.
@@ -275,11 +469,25 @@ class TopicProducer:
         """
         return self._inner.send(key, value)
 
+    async def async_send(self, key: typing.List[int], value: typing.List[int]) -> None:
+        """
+        Async sends a key/value record to this producer's Topic.
+
+        The partition that the record will be sent to is derived from the Key.
+        """
+        await self._inner.async_send(key, value)
+
     def flush(self) -> None:
         """
         Send all the queued records in the producer batches.
         """
         return self._inner.flush()
+
+    async def async_flush(self) -> None:
+        """
+        Async send all the queued records in the producer batches.
+        """
+        await self._inner.async_flush()
 
     def send_all(self, records: typing.List[typing.Tuple[bytes, bytes]]):
         """
@@ -288,6 +496,33 @@ class TopicProducer:
         """
         records_inner = [_ProducerBatchRecord(x, y) for (x, y) in records]
         return self._inner.send_all(records_inner)
+
+    async def async_send_all(self, records: typing.List[typing.Tuple[bytes, bytes]]):
+        """
+        Async sends a list of key/value records as a batch to this producer's Topic.
+        :param records: The list of records to send
+        """
+        records_inner = [_ProducerBatchRecord(x, y) for (x, y) in records]
+        await self._inner.async_send_all(records_inner)
+
+
+class PartitionSelectionStrategy:
+    """Stragegy to select partitions"""
+
+    _inner: _PartitionSelectionStrategy
+
+    def __init__(self, inner: _FluvioConfig):
+        self._inner = inner
+
+    @classmethod
+    def with_all(cls, topic: str):
+        """select all partitions of one topic"""
+        return cls(_PartitionSelectionStrategy.with_all(topic))
+
+    @classmethod
+    def with_multiple(cls, topic: typing.List[typing.Tuple[str, int]]):
+        """select multiple partitions of multiple topics"""
+        return cls(_PartitionSelectionStrategy.with_multiple(topic))
 
 
 class FluvioConfig:
@@ -373,6 +608,25 @@ class Fluvio:
         per partition.
         """
         return PartitionConsumer(self._inner.partition_consumer(topic, partition))
+
+    def multi_partition_consumer(self, topic: str) -> MultiplePartitionConsumer:
+        """Creates a new `MultiplePartitionConsumer` for the given topic and its all partitions
+
+        Currently, consumers are scoped to both a specific Fluvio topic and to
+        its all partitions within that topic.
+        """
+        strategy = PartitionSelectionStrategy.with_all(topic)
+        return PartitionConsumer(self._inner.multi_partition_consumer(strategy._inner))
+
+    def multi_topic_partition_consumer(
+        self, selections: typing.List[typing.Tuple[str, int]]
+    ) -> MultiplePartitionConsumer:
+        """Creates a new `MultiplePartitionConsumer` for the given topics and partitions
+
+        Currently, consumers are scoped to a list of Fluvio topic and partition tuple.
+        """
+        strategy = PartitionSelectionStrategy.with_multiple(selections)
+        return PartitionConsumer(self._inner.multi_partition_consumer(strategy._inner))
 
     def topic_producer(self, topic: str) -> TopicProducer:
         """

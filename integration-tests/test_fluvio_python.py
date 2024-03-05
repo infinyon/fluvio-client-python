@@ -61,6 +61,31 @@ class CommonFluvioSmartModuleTestCase(unittest.TestCase):
             delete_smartmodule(self.sm_name)
 
 
+class CommonAsyncFluvioSmartModuleTestCase(unittest.IsolatedAsyncioTestCase):
+    def common_setup(self, sm_path=None):
+        self.topic = str(uuid.uuid4())
+        self.sm_name = str(uuid.uuid4())
+        self.sm_path = sm_path
+
+        if sm_path is not None:
+            create_smartmodule(self.sm_name, sm_path)
+
+        create_topic(self.topic)
+
+        # FIXME: without this the tests fail. Some topics get created but with offset -1
+        import time
+
+        time.sleep(2)
+
+    def setUp(self):
+        self.common_setup()
+
+    def tearDown(self):
+        delete_topic(self.topic)
+        if self.sm_path is not None:
+            delete_smartmodule(self.sm_name)
+
+
 class TestFluvioFilterSmartModules(CommonFluvioSmartModuleTestCase):
     def setUp(self):
         # Smartmodule source:
@@ -367,6 +392,66 @@ class TestFluvioArrayMapSmartModules(CommonFluvioSmartModuleTestCase):
         self.assertEqual(records[0], '"Apple"')
         self.assertEqual(records[1], '"Banana"')
         self.assertEqual(records[2], '"Cranberry"')
+
+
+class TestAsyncFluvioMethods(CommonAsyncFluvioSmartModuleTestCase):
+    async def test_async_produce(self):
+        fluvio = Fluvio.connect()
+
+        producer = fluvio.topic_producer(self.topic)
+        for i in range(10):
+            await producer.async_send_string("FOOBAR %s " % i)
+
+    async def test_consumer_with_interator(self):
+        fluvio = Fluvio.connect()
+        producer = fluvio.topic_producer(self.topic)
+        for i in range(10):
+            await producer.async_send_string("record-%s" % i)
+
+        consumer = fluvio.partition_consumer(self.topic, 0)
+        astream = await consumer.async_stream(Offset.beginning())
+
+        count = 0
+        async for i in astream:
+            self.assertEqual(bytearray(i.value()).decode(), "record-%s" % count)
+            self.assertEqual(i.value_string(), "record-%s" % count)
+            count += 1
+            if count == 10:
+                break
+
+    async def test_multi_partition_consumer_with_interator(self):
+        fluvio = Fluvio.connect()
+        producer = fluvio.topic_producer(self.topic)
+        for i in range(10):
+            await producer.async_send_string("record-%s" % i)
+
+        consumer = fluvio.multi_partition_consumer(self.topic)
+        astream = await consumer.async_stream(Offset.beginning())
+
+        count = 0
+        async for i in astream:
+            self.assertEqual(bytearray(i.value()).decode(), "record-%s" % count)
+            self.assertEqual(i.value_string(), "record-%s" % count)
+            count += 1
+            if count == 10:
+                break
+
+    async def test_multi_partition_multi_topic_consumer_with_interator(self):
+        fluvio = Fluvio.connect()
+        producer = fluvio.topic_producer(self.topic)
+        for i in range(10):
+            await producer.async_send_string("record-%s" % i)
+
+        consumer = fluvio.multi_topic_partition_consumer([(self.topic, 0)])
+        astream = await consumer.async_stream(Offset.beginning())
+
+        count = 0
+        async for i in astream:
+            self.assertEqual(bytearray(i.value()).decode(), "record-%s" % count)
+            self.assertEqual(i.value_string(), "record-%s" % count)
+            count += 1
+            if count == 10:
+                break
 
 
 class TestFluvioMethods(CommonFluvioSmartModuleTestCase):
