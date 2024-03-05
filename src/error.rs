@@ -7,7 +7,7 @@ use crate::PyFluvioError;
 #[derive(Error, Debug)]
 pub enum FluvioError {
     #[error(transparent)]
-    FluvioError(#[from] FluvioClientError),
+    FluvioErr(#[from] FluvioClientError),
     #[error("{0}")]
     AnyhowError(#[from] anyhow::Error),
     #[error("IO Error: {0}")]
