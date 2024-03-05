@@ -68,7 +68,7 @@ impl CloudClient {
     ) -> Result<String, CloudLoginError> {
         let mut response = tokio::select!(
              response = get_auth0_token(
-                &auth0_config,
+                auth0_config,
                 device_code.interval,
                 device_code.device_code.clone(),
             ) => {response?},

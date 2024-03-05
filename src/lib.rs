@@ -182,6 +182,7 @@ impl ConsumerConfig {
         self.builder.max_bytes(max_bytes);
     }
 
+    #[allow(clippy::too_many_arguments)]
     #[pyo3(signature = (name, path, kind, param_keys, param_values, aggregate_accumulator, context=None, join_param=None, join_topic=None, join_derived_stream=None))]
     fn smartmodule(
         &mut self,
@@ -243,10 +244,7 @@ impl ConsumerConfig {
             }
         };
         use std::collections::BTreeMap;
-        let params: Vec<(String, String)> = param_keys
-            .into_iter()
-            .zip(param_values.into_iter())
-            .collect();
+        let params: Vec<(String, String)> = param_keys.into_iter().zip(param_values).collect();
         let params: BTreeMap<String, String> = BTreeMap::from_iter(params);
         let params: SmartModuleExtraParams = SmartModuleExtraParams::from(params);
 
