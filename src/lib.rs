@@ -632,9 +632,7 @@ impl TopicProducer {
     fn async_flush<'b>(&'b self, py: Python<'b>) -> PyResult<&PyAny> {
         let sl = self.clone();
         pyo3_asyncio::async_std::future_into_py(py, async move {
-            sl.0.flush()
-                .map_err(FluvioError::AnyhowError)
-                .await?;
+            sl.0.flush().map_err(FluvioError::AnyhowError).await?;
             Ok(Python::with_gil(|py| py.None()))
         })
     }
