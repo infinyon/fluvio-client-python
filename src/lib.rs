@@ -869,8 +869,7 @@ impl CloudAuth {
 
 macro_rules! create_impl {
     ($admin: ident, $name:ident, $dry_run: ident, $spec: ident) => {
-        run_block_on($admin.inner.create($name, $dry_run, $spec.inner))
-                .map_err(error_to_py_err)
+        run_block_on($admin.inner.create($name, $dry_run, $spec.inner)).map_err(error_to_py_err)
     };
 }
 
@@ -925,8 +924,7 @@ impl FluvioAdmin {
         rq: CommonCreateRequest,
         spec: TopicSpec,
     ) -> PyResult<()> {
-        run_block_on(self.inner.create_with_config(rq.inner, spec.inner))
-                .map_err(error_to_py_err)
+        run_block_on(self.inner.create_with_config(rq.inner, spec.inner)).map_err(error_to_py_err)
     }
 
     pub fn delete_topic(&self, name: String) -> PyResult<()> {
