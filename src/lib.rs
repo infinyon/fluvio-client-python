@@ -869,16 +869,14 @@ impl CloudAuth {
 
 macro_rules! create_impl {
     ($admin: ident, $name:ident, $dry_run: ident, $spec: ident) => {
-        Ok(
-            run_block_on($admin.inner.create($name, $dry_run, $spec.inner))
-                .map_err(error_to_py_err)?,
-        )
+        run_block_on($admin.inner.create($name, $dry_run, $spec.inner))
+                .map_err(error_to_py_err)
     };
 }
 
 macro_rules! delete_impl {
     ($admin: ident, $name:ident, $t: ty) => {
-        Ok(run_block_on($admin.inner.delete::<$t>($name)).map_err(error_to_py_err)?)
+        run_block_on($admin.inner.delete::<$t>($name)).map_err(error_to_py_err)
     };
 }
 
@@ -927,10 +925,8 @@ impl FluvioAdmin {
         rq: CommonCreateRequest,
         spec: TopicSpec,
     ) -> PyResult<()> {
-        Ok(
-            run_block_on(self.inner.create_with_config(rq.inner, spec.inner))
-                .map_err(error_to_py_err)?,
-        )
+        run_block_on(self.inner.create_with_config(rq.inner, spec.inner))
+                .map_err(error_to_py_err)
     }
 
     pub fn delete_topic(&self, name: String) -> PyResult<()> {
@@ -1035,9 +1031,9 @@ impl PartitionMap {
     }
 }
 
-impl Into<NativePartitionMap> for PartitionMap {
-    fn into(self) -> NativePartitionMap {
-        self.inner
+impl From<PartitionMap> for NativePartitionMap {
+    fn from(val: PartitionMap) -> Self {
+        val.inner
     }
 }
 
@@ -1115,17 +1111,11 @@ struct MessageMetadataTopicSpec {
 #[pymethods]
 impl MessageMetadataTopicSpec {
     fn is_update(&self) -> bool {
-        match &self.inner.header {
-            NativeMsgType::UPDATE => true,
-            _ => false,
-        }
+        matches!(&self.inner.header, NativeMsgType::UPDATE)
     }
 
     fn is_delete(&self) -> bool {
-        match &self.inner.header {
-            NativeMsgType::DELETE => true,
-            _ => false,
-        }
+        matches!(&self.inner.header, NativeMsgType::DELETE)
     }
 
     fn metadata_topic_spec(&self) -> MetadataTopicSpec {
@@ -1195,17 +1185,11 @@ struct MessageMetadataSmartModuleSpec {
 #[pymethods]
 impl MessageMetadataSmartModuleSpec {
     fn is_update(&self) -> bool {
-        match &self.inner.header {
-            NativeMsgType::UPDATE => true,
-            _ => false,
-        }
+        matches!(&self.inner.header, NativeMsgType::UPDATE)
     }
 
     fn is_delete(&self) -> bool {
-        match &self.inner.header {
-            NativeMsgType::DELETE => true,
-            _ => false,
-        }
+        matches!(&self.inner.header, NativeMsgType::DELETE)
     }
 
     fn metadata_smart_module_spec(&self) -> MetadataSmartModuleSpec {
@@ -1239,8 +1223,7 @@ impl WatchTopicStream {
         Ok(Some(WatchResponseTopicSpec {
             inner: run_block_on(self.inner.next())
                 .unwrap()
-                .map_err(|err| PyException::new_err(err.to_string()))?
-                .into(),
+                .map_err(|err| PyException::new_err(err.to_string()))?,
         }))
     }
 }
@@ -1325,8 +1308,7 @@ impl WatchSmartModuleStream {
         Ok(Some(WatchResponseSmartModuleSpec {
             inner: run_block_on(self.inner.next())
                 .unwrap()
-                .map_err(|err| PyException::new_err(err.to_string()))?
-                .into(),
+                .map_err(|err| PyException::new_err(err.to_string()))?,
         }))
     }
 }
