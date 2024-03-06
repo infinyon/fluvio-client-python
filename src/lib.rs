@@ -1,5 +1,5 @@
 #![allow(non_snake_case, unused)]
-use async_lock;
+
 use fluvio::config::{ConfigFile, Profile, TlsCerts, TlsConfig, TlsPaths, TlsPolicy};
 use fluvio::consumer::{
     ConsumerConfig as NativeConsumerConfig, ConsumerConfigBuilder,
@@ -402,7 +402,7 @@ impl PartitionConsumer {
             let stream =
                 sl.0.stream(offset)
                     .await
-                    .map_err(|err| FluvioError::AnyhowError(err))?;
+                    .map_err(FluvioError::AnyhowError)?;
             Ok(Python::with_gil(|py| {
                 Py::new(py, AsyncPartitionConsumerStream::new(Box::new(stream))).unwrap()
             }))
@@ -437,7 +437,7 @@ impl PartitionConsumer {
             let stream =
                 sl.0.stream_with_config(offset, config)
                     .await
-                    .map_err(|err| FluvioError::AnyhowError(err))?;
+                    .map_err(FluvioError::AnyhowError)?;
             Ok(Python::with_gil(|py| {
                 Py::new(py, AsyncPartitionConsumerStream::new(stream)).unwrap()
             }))
@@ -468,7 +468,7 @@ impl MultiplePartitionConsumer {
             let stream =
                 sl.0.stream(offset)
                     .await
-                    .map_err(|err| FluvioError::AnyhowError(err))?;
+                    .map_err(FluvioError::AnyhowError)?;
             Ok(Python::with_gil(|py| {
                 Py::new(py, AsyncPartitionConsumerStream::new(stream)).unwrap()
             }))
@@ -503,7 +503,7 @@ impl MultiplePartitionConsumer {
             let stream =
                 sl.0.stream_with_config(offset, config)
                     .await
-                    .map_err(|err| FluvioError::AnyhowError(err))?;
+                    .map_err(FluvioError::AnyhowError)?;
             Ok(Python::with_gil(|py| {
                 Py::new(py, AsyncPartitionConsumerStream::new(stream)).unwrap()
             }))
@@ -595,7 +595,7 @@ impl TopicProducer {
             sl.0.send(key, value)
                 .await
                 .map(|_| ())
-                .map_err(|err| FluvioError::AnyhowError(err))?;
+                .map_err(FluvioError::AnyhowError)?;
             Ok(Python::with_gil(|py| py.None()))
         })
     }
@@ -622,7 +622,7 @@ impl TopicProducer {
             )
             .await
             .map(|_| ())
-            .map_err(|err| FluvioError::AnyhowError(err))?;
+            .map_err(FluvioError::AnyhowError)?;
             Ok(Python::with_gil(|py| py.None()))
         })
     }
@@ -633,7 +633,7 @@ impl TopicProducer {
         let sl = self.clone();
         pyo3_asyncio::async_std::future_into_py(py, async move {
             sl.0.flush()
-                .map_err(|err| FluvioError::AnyhowError(err))
+                .map_err(FluvioError::AnyhowError)
                 .await?;
             Ok(Python::with_gil(|py| py.None()))
         })
