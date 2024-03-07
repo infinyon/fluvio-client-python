@@ -12,6 +12,8 @@ use fluvio::{
     MultiplePartitionConsumer as NativeMultiplePartitionConsumer,
     Offset as NativeOffset, PartitionConsumer as NativePartitionConsumer,
     TopicProducer as NativeTopicProducer,
+    PartitionSelectionStrategy as NativePartitionSelectionStrategy,
+    FluvioConfig as NativeFluvioConfig
 };
 use fluvio_controlplane_metadata::message::{Message as NativeMessage, MsgType as NativeMsgType};
 use fluvio_controlplane_metadata::partition::PartitionSpec as NativePartitionSpec;
@@ -20,10 +22,6 @@ use fluvio_controlplane_metadata::smartmodule::{
 };
 use fluvio_controlplane_metadata::topic::{
     PartitionMap as NativePartitionMap, TopicSpec as NativeTopicSpec,
-};
-use fluvio::{
-    FluvioConfig as NativeFluvioConfig,
-    PartitionSelectionStrategy as NativePartitionSelectionStrategy,
 };
 use fluvio_future::{
     io::{Stream, StreamExt},
