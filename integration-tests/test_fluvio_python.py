@@ -402,6 +402,39 @@ class TestAsyncFluvioMethods(CommonAsyncFluvioSmartModuleTestCase):
         for i in range(10):
             await producer.async_send_string("FOOBAR %s " % i)
 
+    async def test_async_produce_record_metadata(self):
+        fluvio = Fluvio.connect()
+
+        producer = fluvio.topic_producer(self.topic)
+
+        msg_strings = ["Foobar %s" % i for i in range(10)]
+        produce_outputs = [await producer.async_send_string(msg) for msg in msg_strings]
+
+        records = [
+            (("%s" % i).encode(), msg_string.encode())
+            for i, msg_string in enumerate(msg_strings)
+        ]
+        produce_outputs.extend(await producer.async_send_all(records))
+
+        record_metadata = [
+            await produce_output.async_wait() for produce_output in produce_outputs
+        ]
+
+        partition_id = 0
+        consumer = fluvio.partition_consumer(self.topic, partition_id)
+        messages = list(
+            itertools.islice(consumer.stream(Offset.beginning()), len(produce_outputs))
+        )
+
+        for metadata, msg in zip(record_metadata, messages):
+            self.assertNotEqual(metadata, None)
+            self.assertEqual(metadata.partition_id(), partition_id)
+            self.assertEqual(metadata.offset(), msg.offset())
+
+        for produce_output in produce_outputs:
+            # subsequent calls to po.wait shall return None
+            self.assertEqual(produce_output.wait(), None)
+
     async def test_consumer_with_interator(self):
         fluvio = Fluvio.connect()
         producer = fluvio.topic_producer(self.topic)
@@ -469,6 +502,37 @@ class TestFluvioMethods(CommonFluvioSmartModuleTestCase):
         producer = fluvio.topic_producer(self.topic)
         for i in range(10):
             producer.send_string("FOOBAR %s " % i)
+
+    def test_produce_record_metadata(self):
+        fluvio = Fluvio.connect()
+
+        producer = fluvio.topic_producer(self.topic)
+
+        msg_strings = ["Foobar %s" % i for i in range(10)]
+        produce_outputs = [producer.send_string(msg) for msg in msg_strings]
+
+        records = [
+            (("%s" % i).encode(), msg_string.encode())
+            for i, msg_string in enumerate(msg_strings)
+        ]
+        produce_outputs.extend(producer.send_all(records))
+
+        record_metadata = [produce_output.wait() for produce_output in produce_outputs]
+
+        partition_id = 0
+        consumer = fluvio.partition_consumer(self.topic, partition_id)
+        messages = list(
+            itertools.islice(consumer.stream(Offset.beginning()), len(produce_outputs))
+        )
+
+        for metadata, msg in zip(record_metadata, messages):
+            self.assertNotEqual(metadata, None)
+            self.assertEqual(metadata.partition_id(), partition_id)
+            self.assertEqual(metadata.offset(), msg.offset())
+
+        for produce_output in produce_outputs:
+            # subsequent calls to po.wait shall return None
+            self.assertEqual(produce_output.wait(), None)
 
     def test_consume_with_smart_module_by_file_path(self):
         """
@@ -585,7 +649,8 @@ class TestFluvioErrors(CommonFluvioSmartModuleTestCase):
             fluvio.topic_producer(topic_name)
 
         self.assertIn(
-            "Topic not found: %s" % topic_name, ctx.exception.args[0]  # noqa: E501
+            "Topic not found: %s" % topic_name,
+            ctx.exception.args[0],  # noqa: E501
         )
 
     def test_consumer_config_no_sm_name_or_path(self):

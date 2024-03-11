@@ -9,6 +9,9 @@ use fluvio::consumer::{
 use fluvio::dataplane::link::ErrorCode;
 use fluvio::{
     consumer::Record as NativeRecord, Fluvio as NativeFluvio, FluvioAdmin as NativeFluvioAdmin,
+    ProduceOutput as NativeProduceOutput, RecordMetadata as NativeRecordMetadata,
+};
+use fluvio::{
     FluvioConfig as NativeFluvioConfig,
     MultiplePartitionConsumer as NativeMultiplePartitionConsumer, Offset as NativeOffset,
     PartitionConsumer as NativePartitionConsumer,
@@ -55,6 +58,7 @@ use cloud::{CloudClient, CloudLoginError};
 use error::FluvioError;
 use pyo3::exceptions::{PyException, PyValueError};
 use pyo3::prelude::*;
+use pyo3::types::PyList;
 
 pyo3::create_exception!(mymodule, PyFluvioError, PyException);
 
@@ -67,6 +71,8 @@ fn _fluvio_python(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<PartitionConsumerStream>()?;
     m.add_class::<AsyncPartitionConsumerStream>()?;
     m.add_class::<TopicProducer>()?;
+    m.add_class::<ProduceOutput>()?;
+    m.add_class::<RecordMetadata>()?;
     m.add_class::<ProducerBatchRecord>()?;
     m.add_class::<SmartModuleKind>()?;
     m.add_class::<Record>()?;
@@ -621,26 +627,102 @@ impl ProducerBatchRecord {
     }
 }
 
+#[pyclass]
+pub struct ProduceOutput {
+    // inner is placed into an Option because the native ProduceOutput
+    // is consumed by the `wait` method, which is not possible on the python interface
+    // (only `&self` or `&mut self` is allowed)
+    pub inner: Option<NativeProduceOutput>,
+}
+
+#[pymethods]
+impl ProduceOutput {
+    fn wait(&mut self, py: Python) -> Result<Option<RecordMetadata>, FluvioError> {
+        // wait on `inner` consumes `self`, but we only have a `&mut self` reference
+        // so we take it out of the `Option` and consume it that way
+        // a subsequent call to `wait` will return `None`
+        let inner = self.inner.take();
+        Ok(inner
+            .map(|produce_output| {
+                run_block_on(produce_output.wait())
+                    .map(|metadata| RecordMetadata { inner: metadata })
+            })
+            .transpose()?)
+    }
+
+    fn async_wait<'b>(&'b mut self, py: Python<'b>) -> PyResult<&'b PyAny> {
+        let inner = self.inner.take();
+        pyo3_asyncio::async_std::future_into_py(py, async move {
+            let record_metadata = match inner {
+                Some(produce_output) => Some(
+                    produce_output
+                        .wait()
+                        .await
+                        .map(|metadata| RecordMetadata { inner: metadata })
+                        .map_err(FluvioError::FluvioErr)?,
+                ),
+                None => None,
+            };
+            Ok(match record_metadata {
+                Some(record_metadata) => Python::with_gil(|py| record_metadata.into_py(py)),
+                None => Python::with_gil(|py| py.None()),
+            })
+        })
+    }
+}
+
+#[pyclass]
+pub struct RecordMetadata {
+    pub inner: NativeRecordMetadata,
+}
+
+#[pymethods]
+impl RecordMetadata {
+    fn offset(&self) -> i64 {
+        self.inner.offset()
+    }
+
+    fn partition_id(&self) -> PartitionId {
+        self.inner.partition_id()
+    }
+}
+
 #[derive(Clone)]
 #[pyclass]
 struct TopicProducer(NativeTopicProducer);
 
 #[pymethods]
 impl TopicProducer {
-    fn send(&self, key: Vec<u8>, value: Vec<u8>, py: Python) -> Result<(), FluvioError> {
-        Ok(py.allow_threads(move || run_block_on(self.0.send(key, value)).map(|_| ()))?)
+    fn send(&self, key: Vec<u8>, value: Vec<u8>, py: Python) -> Result<ProduceOutput, FluvioError> {
+        Ok(py.allow_threads(move || {
+            run_block_on(self.0.send(key, value)).map(|output| ProduceOutput {
+                inner: Some(output),
+            })
+        })?)
     }
-    fn async_send<'b>(&'b self, key: Vec<u8>, value: Vec<u8>, py: Python<'b>) -> PyResult<&PyAny> {
+    fn async_send<'b>(
+        &'b self,
+        key: Vec<u8>,
+        value: Vec<u8>,
+        py: Python<'b>,
+    ) -> PyResult<&'b PyAny> {
         let sl = self.clone();
         pyo3_asyncio::async_std::future_into_py(py, async move {
-            sl.0.send(key, value)
-                .await
-                .map(|_| ())
-                .map_err(FluvioError::AnyhowError)?;
-            Ok(Python::with_gil(|py| py.None()))
+            let produce_output =
+                sl.0.send(key, value)
+                    .await
+                    .map(|output| ProduceOutput {
+                        inner: Some(output),
+                    })
+                    .map_err(FluvioError::AnyhowError)?;
+            Ok(Python::with_gil(|py| produce_output.into_py(py)))
         })
     }
-    fn send_all(&self, records: Vec<ProducerBatchRecord>, py: Python) -> Result<(), FluvioError> {
+    fn send_all(
+        &self,
+        records: Vec<ProducerBatchRecord>,
+        py: Python,
+    ) -> Result<Vec<ProduceOutput>, FluvioError> {
         Ok(py.allow_threads(move || {
             run_block_on(
                 self.0
@@ -648,25 +730,42 @@ impl TopicProducer {
                         (record.key.clone(), record.value.clone())
                     })),
             )
-            .map(|_| ())
+            .map(|outputs| {
+                outputs
+                    .into_iter()
+                    .map(|output| ProduceOutput {
+                        inner: Some(output),
+                    })
+                    .collect()
+            })
         })?)
     }
     fn async_send_all<'b>(
         &'b self,
         records: Vec<ProducerBatchRecord>,
         py: Python<'b>,
-    ) -> PyResult<&PyAny> {
+    ) -> PyResult<&'b PyAny> {
         let sl = self.clone();
         pyo3_asyncio::async_std::future_into_py(py, async move {
-            sl.0.send_all(
-                records
-                    .into_iter()
-                    .map(|record| -> (Vec<u8>, Vec<u8>) { (record.key, record.value) }),
-            )
-            .await
-            .map(|_| ())
-            .map_err(FluvioError::AnyhowError)?;
-            Ok(Python::with_gil(|py| py.None()))
+            let produce_outputs =
+                sl.0.send_all(
+                    records
+                        .into_iter()
+                        .map(|record| -> (Vec<u8>, Vec<u8>) { (record.key, record.value) }),
+                )
+                .await
+                .map_err(FluvioError::AnyhowError)?;
+
+            Ok(Python::with_gil(|py| {
+                let lst: Py<PyList> = PyList::new(
+                    py,
+                    produce_outputs
+                        .into_iter()
+                        .map(|po| ProduceOutput { inner: Some(po) }.into_py(py)),
+                )
+                .into();
+                lst
+            }))
         })
     }
     fn flush(&self, py: Python) -> Result<(), FluvioError> {

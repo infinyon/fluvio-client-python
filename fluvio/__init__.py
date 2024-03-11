@@ -7,6 +7,8 @@ from ._fluvio_python import (
     PartitionSelectionStrategy as _PartitionSelectionStrategy,
     PartitionConsumerStream as _PartitionConsumerStream,
     AsyncPartitionConsumerStream as _AsyncPartitionConsumerStream,
+    ProduceOutput as _ProduceOutput,
+    RecordMetadata as _RecordMetadata,
     TopicProducer as _TopicProducer,
     ProducerBatchRecord as _ProducerBatchRecord,
     SmartModuleKind as _SmartModuleKind,
@@ -63,6 +65,54 @@ class Record:
     def timestamp(self) -> int:
         """Timestamp of this record."""
         return self._inner.timestamp()
+
+
+class RecordMetadata:
+    """Metadata of a record send to a topic."""
+
+    _inner: _RecordMetadata
+
+    def __init__(self, inner: _RecordMetadata):
+        self._inner = inner
+
+    def offset(self) -> int:
+        """Return the offset of the sent record in the topic/partition."""
+        return self._inner.offset()
+
+    def partition_id(self) -> int:
+        """Return the partition index the record was sent to."""
+        return self._inner.partition_id()
+
+
+class ProduceOutput:
+    """Returned by of `TopicProducer.send` call allowing access to sent record metadata."""
+
+    _inner: _ProduceOutput
+
+    def __init__(self, inner: _ProduceOutput) -> None:
+        self._inner = inner
+
+    def wait(self) -> typing.Optional[RecordMetadata]:
+        """Wait for the record metadata.
+
+        This is a blocking call and may only return a `RecordMetadata` once.
+        Any subsequent call to `wait` will return a `None` value.
+        """
+        res = self._inner.wait()
+        if res is None:
+            return None
+        return RecordMetadata(res)
+
+    async def async_wait(self) -> typing.Optional[RecordMetadata]:
+        """Asynchronously wait for the record metadata.
+
+        This may only return a `RecordMetadata` once.
+        Any subsequent call to `wait` will return a `None` value.
+        """
+        res = await self._inner.async_wait()
+        if res is None:
+            return None
+        return RecordMetadata(res)
 
 
 class Offset:
@@ -453,29 +503,32 @@ class TopicProducer:
     def __init__(self, inner: _TopicProducer):
         self._inner = inner
 
-    def send_string(self, buf: str) -> None:
+    def send_string(self, buf: str) -> ProduceOutput:
         """Sends a string to this producer’s topic"""
         return self.send([], buf.encode("utf-8"))
 
-    async def async_send_string(self, buf: str) -> None:
+    async def async_send_string(self, buf: str) -> ProduceOutput:
         """Sends a string to this producer’s topic"""
-        await self.async_send([], buf.encode("utf-8"))
+        return await self.async_send([], buf.encode("utf-8"))
 
-    def send(self, key: typing.List[int], value: typing.List[int]) -> None:
+    def send(self, key: typing.List[int], value: typing.List[int]) -> ProduceOutput:
         """
         Sends a key/value record to this producer's Topic.
 
         The partition that the record will be sent to is derived from the Key.
         """
-        return self._inner.send(key, value)
+        return ProduceOutput(self._inner.send(key, value))
 
-    async def async_send(self, key: typing.List[int], value: typing.List[int]) -> None:
+    async def async_send(
+        self, key: typing.List[int], value: typing.List[int]
+    ) -> ProduceOutput:
         """
         Async sends a key/value record to this producer's Topic.
 
         The partition that the record will be sent to is derived from the Key.
         """
-        await self._inner.async_send(key, value)
+        produce_output = await self._inner.async_send(key, value)
+        return ProduceOutput(produce_output)
 
     def flush(self) -> None:
         """
@@ -489,21 +542,31 @@ class TopicProducer:
         """
         await self._inner.async_flush()
 
-    def send_all(self, records: typing.List[typing.Tuple[bytes, bytes]]):
+    def send_all(
+        self, records: typing.List[typing.Tuple[bytes, bytes]]
+    ) -> typing.List[ProduceOutput]:
         """
         Sends a list of key/value records as a batch to this producer's Topic.
         :param records: The list of records to send
         """
         records_inner = [_ProducerBatchRecord(x, y) for (x, y) in records]
-        return self._inner.send_all(records_inner)
+        return [
+            ProduceOutput(output_inner)
+            for output_inner in self._inner.send_all(records_inner)
+        ]
 
-    async def async_send_all(self, records: typing.List[typing.Tuple[bytes, bytes]]):
+    async def async_send_all(
+        self, records: typing.List[typing.Tuple[bytes, bytes]]
+    ) -> typing.List[ProduceOutput]:
         """
         Async sends a list of key/value records as a batch to this producer's Topic.
         :param records: The list of records to send
         """
         records_inner = [_ProducerBatchRecord(x, y) for (x, y) in records]
-        await self._inner.async_send_all(records_inner)
+        return [
+            ProduceOutput(output_inner)
+            for output_inner in await self._inner.async_send_all(records_inner)
+        ]
 
 
 class PartitionSelectionStrategy:
