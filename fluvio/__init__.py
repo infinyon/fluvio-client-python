@@ -602,7 +602,9 @@ class Fluvio:
         its all partitions within that topic.
         """
         strategy = PartitionSelectionStrategy.with_all(topic)
-        return PartitionConsumer(self._inner.multi_partition_consumer(strategy._inner))
+        return MultiplePartitionConsumer(
+            self._inner.multi_partition_consumer(strategy._inner)
+        )
 
     def multi_topic_partition_consumer(
         self, selections: typing.List[typing.Tuple[str, int]]
@@ -612,7 +614,9 @@ class Fluvio:
         Currently, consumers are scoped to a list of Fluvio topic and partition tuple.
         """
         strategy = PartitionSelectionStrategy.with_multiple(selections)
-        return PartitionConsumer(self._inner.multi_partition_consumer(strategy._inner))
+        return MultiplePartitionConsumer(
+            self._inner.multi_partition_consumer(strategy._inner)
+        )
 
     def topic_producer(self, topic: str) -> TopicProducer:
         """
