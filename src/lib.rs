@@ -9,11 +9,11 @@ use fluvio::consumer::{
 use fluvio::dataplane::link::ErrorCode;
 use fluvio::{
     consumer::Record as NativeRecord, Fluvio as NativeFluvio, FluvioAdmin as NativeFluvioAdmin,
-    MultiplePartitionConsumer as NativeMultiplePartitionConsumer,
-    Offset as NativeOffset, PartitionConsumer as NativePartitionConsumer,
-    TopicProducer as NativeTopicProducer,
+    FluvioConfig as NativeFluvioConfig,
+    MultiplePartitionConsumer as NativeMultiplePartitionConsumer, Offset as NativeOffset,
+    PartitionConsumer as NativePartitionConsumer,
     PartitionSelectionStrategy as NativePartitionSelectionStrategy,
-    FluvioConfig as NativeFluvioConfig
+    TopicProducer as NativeTopicProducer,
 };
 use fluvio_controlplane_metadata::message::{Message as NativeMessage, MsgType as NativeMsgType};
 use fluvio_controlplane_metadata::partition::PartitionSpec as NativePartitionSpec;
@@ -27,21 +27,21 @@ use fluvio_future::{
     io::{Stream, StreamExt},
     task::run_block_on,
 };
-use fluvio_types::PartitionId;
-use futures::future::BoxFuture;
-use futures::pin_mut;
-use futures::TryFutureExt;
 use fluvio_sc_schema::objects::{
     CommonCreateRequest as NativeCommonCreateRequest, Metadata as NativeMetadata,
     MetadataUpdate as NativeMetadataUpdate, WatchResponse as NativeWatchResponse,
 };
 use fluvio_sc_schema::smartmodule::SmartModuleSpec as NativeSmartModuleSpec;
 use fluvio_sc_schema::topic::PartitionMaps as NativePartitionMaps;
+use fluvio_types::PartitionId;
 use fluvio_types::{
     IgnoreRackAssignment as NativeIgnoreRackAssignment, PartitionCount as NativePartitionCount,
     PartitionId as NativePartitionId, ReplicationFactor as NativeReplicationFactor,
     SpuId as NativeSpuId,
 };
+use futures::future::BoxFuture;
+use futures::pin_mut;
+use futures::TryFutureExt;
 use std::io::{self, Error as IoError, Write};
 use std::pin::Pin;
 use std::string::FromUtf8Error;
