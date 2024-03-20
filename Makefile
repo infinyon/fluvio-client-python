@@ -29,7 +29,7 @@ install-wheel: build-wheel
 	$(PIP) install --upgrade --force-reinstall --no-index --pre --find-links=dist/ fluvio
 
 build-dev: venv-pip
-	$(PIP) install -e .
+	$(PYTHON) setup.py develop
 
 integration-tests: build-dev
 	cd integration-tests/ && $(PYTHON) -m unittest
