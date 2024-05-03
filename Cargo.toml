@@ -37,7 +37,7 @@ futures = "0.3.30"
 async-lock = "3.3.0"
 
 fluvio-future = { version = "0.6.2", features = ["task", "io", "native2_tls", "subscriber"] }
-fluvio = { features = ["admin", "rustls"], git = "https://github.com/infinyon/fluvio.git", tag = "v0.11.5" }
+fluvio = { features = ["admin", "rustls"], git = "https://github.com/infinyon/fluvio.git", tag = "v0.11.7" }
 fluvio-types = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.11.6" }
 fluvio-sc-schema = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.11.5" }
 fluvio-controlplane-metadata = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.11.5" }
