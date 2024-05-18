@@ -130,6 +130,7 @@ impl Fluvio {
         partition: u32,
         py: Python,
     ) -> PyResult<PartitionConsumer> {
+        #[allow(deprecated)]
         Ok(PartitionConsumer(py.allow_threads(move || {
             run_block_on(self.0.partition_consumer(topic, partition)).map_err(error_to_py_err)
         })?))
@@ -140,6 +141,7 @@ impl Fluvio {
         strategy: PartitionSelectionStrategy,
         py: Python,
     ) -> PyResult<MultiplePartitionConsumer> {
+        #[allow(deprecated)]
         Ok(MultiplePartitionConsumer(py.allow_threads(move || {
             run_block_on(self.0.consumer(strategy.into_inner())).map_err(error_to_py_err)
         })?))
@@ -434,6 +436,7 @@ impl Clone for PartitionConsumer {
 #[pymethods]
 impl PartitionConsumer {
     fn stream(&self, offset: &Offset) -> Result<PartitionConsumerStream, FluvioError> {
+        #[allow(deprecated)]
         Ok(PartitionConsumerStream {
             inner: Box::pin(run_block_on(self.0.stream(offset.0.clone()))?),
         })
@@ -442,6 +445,7 @@ impl PartitionConsumer {
         let sl = self.clone();
         let offset = offset.0.clone();
         pyo3_asyncio::async_std::future_into_py(py, async move {
+            #[allow(deprecated)]
             let stream =
                 sl.0.stream(offset)
                     .await
@@ -461,6 +465,7 @@ impl PartitionConsumer {
         let config: NativeConsumerConfig = config.build()?.0;
 
         Ok(py.allow_threads(move || {
+            #[allow(deprecated)]
             run_block_on(self.0.stream_with_config(offset.0.clone(), config)).map(|stream| {
                 PartitionConsumerStream {
                     inner: Box::pin(stream),
@@ -478,6 +483,7 @@ impl PartitionConsumer {
         let offset = offset.0.clone();
         let config: NativeConsumerConfig = config.build()?.0;
         pyo3_asyncio::async_std::future_into_py(py, async move {
+            #[allow(deprecated)]
             let stream =
                 sl.0.stream_with_config(offset, config)
                     .await
@@ -501,6 +507,7 @@ impl Clone for MultiplePartitionConsumer {
 #[pymethods]
 impl MultiplePartitionConsumer {
     fn stream(&self, offset: &Offset, py: Python) -> Result<PartitionConsumerStream, FluvioError> {
+        #[allow(deprecated)]
         Ok(PartitionConsumerStream {
             inner: Box::pin(
                 py.allow_threads(move || run_block_on(self.0.stream(offset.0.clone())))?,
@@ -510,6 +517,7 @@ impl MultiplePartitionConsumer {
     fn async_stream<'b>(&'b self, offset: &Offset, py: Python<'b>) -> PyResult<&PyAny> {
         let sl = self.clone();
         let offset = offset.0.clone();
+        #[allow(deprecated)]
         pyo3_asyncio::async_std::future_into_py(py, async move {
             let stream =
                 sl.0.stream(offset)
@@ -530,6 +538,7 @@ impl MultiplePartitionConsumer {
         let config: NativeConsumerConfig = config.build()?.0;
 
         Ok(py.allow_threads(move || {
+            #[allow(deprecated)]
             run_block_on(self.0.stream_with_config(offset.0.clone(), config)).map(|stream| {
                 PartitionConsumerStream {
                     inner: Box::pin(stream),
@@ -547,6 +556,7 @@ impl MultiplePartitionConsumer {
         let offset = offset.0.clone();
         let config: NativeConsumerConfig = config.build()?.0;
         pyo3_asyncio::async_std::future_into_py(py, async move {
+            #[allow(deprecated)]
             let stream =
                 sl.0.stream_with_config(offset, config)
                     .await
@@ -1121,6 +1131,7 @@ impl PartitionMap {
             inner: NativePartitionMap {
                 id: partition,
                 replicas,
+                ..Default::default()
             },
         }
     }
