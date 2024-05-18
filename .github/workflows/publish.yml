@@ -43,7 +43,7 @@ jobs:
         name: Install rust toolchain
         uses: dtolnay/rust-toolchain@master
         with:
-          target: aarch64-apple-darwin
+          targets: aarch64-apple-darwin, x86_64-apple-darwin
           toolchain: stable
 
       - if: runner.os != 'Linux'
