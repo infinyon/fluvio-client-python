@@ -30,8 +30,7 @@ jobs:
         run: |
           # work around cargo bug
           #cargo add fluvio --git https://github.com/infinyon/fluvio --branch master
-          sed -i "s/fluvio = { features = .*/fluvio = { features = \[\"admin\"\], git = \"https:\/\/github.com\/infinyon\/fluvio.git\" }/g" Cargo.toml
-
+          sed -i.bak "s/tag = "\(.*\)"/branch = "master"/g" Cargo.toml
           git diff Cargo.toml
 
       - name: check
