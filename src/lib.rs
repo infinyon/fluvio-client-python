@@ -211,7 +211,7 @@ impl FluvioConfig {
     }
 
     pub fn set_endpoint(&mut self, endpoint: &str) {
-        self.inner.endpoint = endpoint.to_owned();
+        endpoint.clone_into(&mut self.inner.endpoint)
     }
 
     pub fn set_use_spu_local_address(&mut self, val: bool) {
