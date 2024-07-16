@@ -14,7 +14,7 @@ log = "^0.4.17"
 
 [dependencies]
 anyhow = "1.0"
-cc = "=1.1.0"
+cc = "=1.1.5"
 pyo3 = { version = "0.20.2", features = ["extension-module"] }
 pyo3-asyncio = { version = "0.20.0", features = ["testing", "attributes", "async-std-runtime"] }
 thiserror = "1.0.21"
