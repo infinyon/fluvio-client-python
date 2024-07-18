@@ -3,14 +3,15 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="generator" content="pdoc 12.3.1"/>
+    <meta name="generator" content="pdoc 14.4.0"/>
     <title>fluvio._fluvio_python API documentation</title>
+            <link rel="icon" href="https://www.fluvio.io/images/favicon.ico"/>
 
     <style>/*! * Bootstrap Reboot v5.0.0 (https://getbootstrap.com/) * Copyright 2011-2021 The Bootstrap Authors * Copyright 2011-2021 Twitter, Inc. * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE) * Forked from Normalize.css, licensed MIT (https://github.com/necolas/normalize.css/blob/master/LICENSE.md) */*,::after,::before{box-sizing:border-box}@media (prefers-reduced-motion:no-preference){:root{scroll-behavior:smooth}}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";font-size:1rem;font-weight:400;line-height:1.5;color:#212529;background-color:#fff;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}hr{margin:1rem 0;color:inherit;background-color:currentColor;border:0;opacity:.25}hr:not([size]){height:1px}h1,h2,h3,h4,h5,h6{margin-top:0;margin-bottom:.5rem;font-weight:500;line-height:1.2}h1{font-size:calc(1.375rem + 1.5vw)}@media (min-width:1200px){h1{font-size:2.5rem}}h2{font-size:calc(1.325rem + .9vw)}@media (min-width:1200px){h2{font-size:2rem}}h3{font-size:calc(1.3rem + .6vw)}@media (min-width:1200px){h3{font-size:1.75rem}}h4{font-size:calc(1.275rem + .3vw)}@media (min-width:1200px){h4{font-size:1.5rem}}h5{font-size:1.25rem}h6{font-size:1rem}p{margin-top:0;margin-bottom:1rem}abbr[data-bs-original-title],abbr[title]{-webkit-text-decoration:underline dotted;text-decoration:underline dotted;cursor:help;-webkit-text-decoration-skip-ink:none;text-decoration-skip-ink:none}address{margin-bottom:1rem;font-style:normal;line-height:inherit}ol,ul{padding-left:2rem}dl,ol,ul{margin-top:0;margin-bottom:1rem}ol ol,ol ul,ul ol,ul ul{margin-bottom:0}dt{font-weight:700}dd{margin-bottom:.5rem;margin-left:0}blockquote{margin:0 0 1rem}b,strong{font-weight:bolder}small{font-size:.875em}mark{padding:.2em;background-color:#fcf8e3}sub,sup{position:relative;font-size:.75em;line-height:0;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}a{color:#0d6efd;text-decoration:underline}a:hover{color:#0a58ca}a:not([href]):not([class]),a:not([href]):not([class]):hover{color:inherit;text-decoration:none}code,kbd,pre,samp{font-family:SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;font-size:1em;direction:ltr;unicode-bidi:bidi-override}pre{display:block;margin-top:0;margin-bottom:1rem;overflow:auto;font-size:.875em}pre code{font-size:inherit;color:inherit;word-break:normal}code{font-size:.875em;color:#d63384;word-wrap:break-word}a>code{color:inherit}kbd{padding:.2rem .4rem;font-size:.875em;color:#fff;background-color:#212529;border-radius:.2rem}kbd kbd{padding:0;font-size:1em;font-weight:700}figure{margin:0 0 1rem}img,svg{vertical-align:middle}table{caption-side:bottom;border-collapse:collapse}caption{padding-top:.5rem;padding-bottom:.5rem;color:#6c757d;text-align:left}th{text-align:inherit;text-align:-webkit-match-parent}tbody,td,tfoot,th,thead,tr{border-color:inherit;border-style:solid;border-width:0}label{display:inline-block}button{border-radius:0}button:focus:not(:focus-visible){outline:0}button,input,optgroup,select,textarea{margin:0;font-family:inherit;font-size:inherit;line-height:inherit}button,select{text-transform:none}[role=button]{cursor:pointer}select{word-wrap:normal}select:disabled{opacity:1}[list]::-webkit-calendar-picker-indicator{display:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button}[type=button]:not(:disabled),[type=reset]:not(:disabled),[type=submit]:not(:disabled),button:not(:disabled){cursor:pointer}::-moz-focus-inner{padding:0;border-style:none}textarea{resize:vertical}fieldset{min-width:0;padding:0;margin:0;border:0}legend{float:left;width:100%;padding:0;margin-bottom:.5rem;font-size:calc(1.275rem + .3vw);line-height:inherit}@media (min-width:1200px){legend{font-size:1.5rem}}legend+*{clear:left}::-webkit-datetime-edit-day-field,::-webkit-datetime-edit-fields-wrapper,::-webkit-datetime-edit-hour-field,::-webkit-datetime-edit-minute,::-webkit-datetime-edit-month-field,::-webkit-datetime-edit-text,::-webkit-datetime-edit-year-field{padding:0}::-webkit-inner-spin-button{height:auto}[type=search]{outline-offset:-2px;-webkit-appearance:textfield}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-color-swatch-wrapper{padding:0}::file-selector-button{font:inherit}::-webkit-file-upload-button{font:inherit;-webkit-appearance:button}output{display:inline-block}iframe{border:0}summary{display:list-item;cursor:pointer}progress{vertical-align:baseline}[hidden]{display:none!important}</style>
     <style>/*! syntax-highlighting.css */pre{line-height:125%;}span.linenos{color:inherit; background-color:transparent; padding-left:5px; padding-right:20px;}.pdoc-code .hll{background-color:#ffffcc}.pdoc-code{background:#f8f8f8;}.pdoc-code .c{color:#3D7B7B; font-style:italic}.pdoc-code .err{border:1px solid #FF0000}.pdoc-code .k{color:#008000; font-weight:bold}.pdoc-code .o{color:#666666}.pdoc-code .ch{color:#3D7B7B; font-style:italic}.pdoc-code .cm{color:#3D7B7B; font-style:italic}.pdoc-code .cp{color:#9C6500}.pdoc-code .cpf{color:#3D7B7B; font-style:italic}.pdoc-code .c1{color:#3D7B7B; font-style:italic}.pdoc-code .cs{color:#3D7B7B; font-style:italic}.pdoc-code .gd{color:#A00000}.pdoc-code .ge{font-style:italic}.pdoc-code .gr{color:#E40000}.pdoc-code .gh{color:#000080; font-weight:bold}.pdoc-code .gi{color:#008400}.pdoc-code .go{color:#717171}.pdoc-code .gp{color:#000080; font-weight:bold}.pdoc-code .gs{font-weight:bold}.pdoc-code .gu{color:#800080; font-weight:bold}.pdoc-code .gt{color:#0044DD}.pdoc-code .kc{color:#008000; font-weight:bold}.pdoc-code .kd{color:#008000; font-weight:bold}.pdoc-code .kn{color:#008000; font-weight:bold}.pdoc-code .kp{color:#008000}.pdoc-code .kr{color:#008000; font-weight:bold}.pdoc-code .kt{color:#B00040}.pdoc-code .m{color:#666666}.pdoc-code .s{color:#BA2121}.pdoc-code .na{color:#687822}.pdoc-code .nb{color:#008000}.pdoc-code .nc{color:#0000FF; font-weight:bold}.pdoc-code .no{color:#880000}.pdoc-code .nd{color:#AA22FF}.pdoc-code .ni{color:#717171; font-weight:bold}.pdoc-code .ne{color:#CB3F38; font-weight:bold}.pdoc-code .nf{color:#0000FF}.pdoc-code .nl{color:#767600}.pdoc-code .nn{color:#0000FF; font-weight:bold}.pdoc-code .nt{color:#008000; font-weight:bold}.pdoc-code .nv{color:#19177C}.pdoc-code .ow{color:#AA22FF; font-weight:bold}.pdoc-code .w{color:#bbbbbb}.pdoc-code .mb{color:#666666}.pdoc-code .mf{color:#666666}.pdoc-code .mh{color:#666666}.pdoc-code .mi{color:#666666}.pdoc-code .mo{color:#666666}.pdoc-code .sa{color:#BA2121}.pdoc-code .sb{color:#BA2121}.pdoc-code .sc{color:#BA2121}.pdoc-code .dl{color:#BA2121}.pdoc-code .sd{color:#BA2121; font-style:italic}.pdoc-code .s2{color:#BA2121}.pdoc-code .se{color:#AA5D1F; font-weight:bold}.pdoc-code .sh{color:#BA2121}.pdoc-code .si{color:#A45A77; font-weight:bold}.pdoc-code .sx{color:#008000}.pdoc-code .sr{color:#A45A77}.pdoc-code .s1{color:#BA2121}.pdoc-code .ss{color:#19177C}.pdoc-code .bp{color:#008000}.pdoc-code .fm{color:#0000FF}.pdoc-code .vc{color:#19177C}.pdoc-code .vg{color:#19177C}.pdoc-code .vi{color:#19177C}.pdoc-code .vm{color:#19177C}.pdoc-code .il{color:#666666}</style>
     <style>/*! theme.css */:root{--pdoc-background:#fff;}.pdoc{--text:#212529;--muted:#6c757d;--link:#3660a5;--link-hover:#1659c5;--code:#f8f8f8;--active:#fff598;--accent:#eee;--accent2:#c1c1c1;--nav-hover:rgba(255, 255, 255, 0.5);--name:#0066BB;--def:#008800;--annotation:#007020;}</style>
-    <style>/*! layout.css */html, body{width:100%;height:100%;}html, main{scroll-behavior:smooth;}body{background-color:var(--pdoc-background);}@media (max-width:769px){#navtoggle{cursor:pointer;position:absolute;width:50px;height:40px;top:1rem;right:1rem;border-color:var(--text);color:var(--text);display:flex;opacity:0.8;}#navtoggle:hover{opacity:1;}#togglestate + div{display:none;}#togglestate:checked + div{display:inherit;}main, header{padding:2rem 3vw;}header + main{margin-top:-3rem;}.git-button{display:none !important;}nav input[type="search"]{max-width:77%;}nav input[type="search"]:first-child{margin-top:-6px;}nav input[type="search"]:valid ~ *{display:none !important;}}@media (min-width:770px){:root{--sidebar-width:clamp(12.5rem, 28vw, 22rem);}nav{position:fixed;overflow:auto;height:100vh;width:var(--sidebar-width);}main, header{padding:3rem 2rem 3rem calc(var(--sidebar-width) + 3rem);width:calc(54rem + var(--sidebar-width));max-width:100%;}header + main{margin-top:-4rem;}#navtoggle{display:none;}}#togglestate{position:absolute;height:0;opacity:0;}nav.pdoc{--pad:clamp(0.5rem, 2vw, 1.75rem);--indent:1.5rem;background-color:var(--accent);border-right:1px solid var(--accent2);box-shadow:0 0 20px rgba(50, 50, 50, .2) inset;padding:0 0 0 var(--pad);overflow-wrap:anywhere;scrollbar-width:thin; scrollbar-color:var(--accent2) transparent }nav.pdoc::-webkit-scrollbar{width:.4rem; }nav.pdoc::-webkit-scrollbar-thumb{background-color:var(--accent2); }nav.pdoc > div{padding:var(--pad) 0;}nav.pdoc .module-list-button{display:inline-flex;align-items:center;color:var(--text);border-color:var(--muted);margin-bottom:1rem;}nav.pdoc .module-list-button:hover{border-color:var(--text);}nav.pdoc input[type=search]{display:block;outline-offset:0;width:calc(100% - var(--pad));}nav.pdoc .logo{max-width:calc(100% - var(--pad));max-height:35vh;display:block;margin:0 auto 1rem;transform:translate(calc(-.5 * var(--pad)), 0);}nav.pdoc ul{list-style:none;padding-left:0;}nav.pdoc > div > ul{margin-left:calc(0px - var(--pad));}nav.pdoc li a{padding:.2rem 0 .2rem calc(var(--pad) + var(--indent));}nav.pdoc > div > ul > li > a{padding-left:var(--pad);}nav.pdoc li{transition:all 100ms;}nav.pdoc li:hover{background-color:var(--nav-hover);}nav.pdoc a, nav.pdoc a:hover{color:var(--text);}nav.pdoc a{display:block;}nav.pdoc > h2:first-of-type{margin-top:1.5rem;}nav.pdoc .class:before{content:"class ";color:var(--muted);}nav.pdoc .function:after{content:"()";color:var(--muted);}nav.pdoc footer:before{content:"";display:block;width:calc(100% - var(--pad));border-top:solid var(--accent2) 1px;margin-top:1.5rem;padding-top:.5rem;}nav.pdoc footer{font-size:small;}</style>
-    <style>/*! content.css */.pdoc{color:var(--text);box-sizing:border-box;line-height:1.5;background:none;}.pdoc .pdoc-button{display:inline-block;border:solid black 1px;border-radius:2px;font-size:.75rem;padding:calc(0.5em - 1px) 1em;transition:100ms all;}.pdoc .pdoc-alert{padding:1rem 1rem 1rem calc(1.5rem + 24px);border:1px solid transparent;border-radius:.25rem;background-repeat:no-repeat;background-position:1rem center;margin-bottom:1rem;}.pdoc .pdoc-alert > *:last-child{margin-bottom:0;}.pdoc .pdoc-alert-note {color:#084298;background-color:#cfe2ff;border-color:#b6d4fe;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22%23084298%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M8%2016A8%208%200%201%200%208%200a8%208%200%200%200%200%2016zm.93-9.412-1%204.705c-.07.34.029.533.304.533.194%200%20.487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703%200-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381%202.29-.287zM8%205.5a1%201%200%201%201%200-2%201%201%200%200%201%200%202z%22/%3E%3C/svg%3E");}.pdoc .pdoc-alert-warning{color:#664d03;background-color:#fff3cd;border-color:#ffecb5;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22%23664d03%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M8.982%201.566a1.13%201.13%200%200%200-1.96%200L.165%2013.233c-.457.778.091%201.767.98%201.767h13.713c.889%200%201.438-.99.98-1.767L8.982%201.566zM8%205c.535%200%20.954.462.9.995l-.35%203.507a.552.552%200%200%201-1.1%200L7.1%205.995A.905.905%200%200%201%208%205zm.002%206a1%201%200%201%201%200%202%201%201%200%200%201%200-2z%22/%3E%3C/svg%3E");}.pdoc .pdoc-alert-danger{color:#842029;background-color:#f8d7da;border-color:#f5c2c7;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22%23842029%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M5.52.359A.5.5%200%200%201%206%200h4a.5.5%200%200%201%20.474.658L8.694%206H12.5a.5.5%200%200%201%20.395.807l-7%209a.5.5%200%200%201-.873-.454L6.823%209.5H3.5a.5.5%200%200%201-.48-.641l2.5-8.5z%22/%3E%3C/svg%3E");}.pdoc .visually-hidden{position:absolute !important;width:1px !important;height:1px !important;padding:0 !important;margin:-1px !important;overflow:hidden !important;clip:rect(0, 0, 0, 0) !important;white-space:nowrap !important;border:0 !important;}.pdoc h1, .pdoc h2, .pdoc h3{font-weight:300;margin:.3em 0;padding:.2em 0;}.pdoc > section:not(.module-info) h1{font-size:1.5rem;font-weight:500;}.pdoc > section:not(.module-info) h2{font-size:1.4rem;font-weight:500;}.pdoc > section:not(.module-info) h3{font-size:1.3rem;font-weight:500;}.pdoc > section:not(.module-info) h4{font-size:1.2rem;}.pdoc > section:not(.module-info) h5{font-size:1.1rem;}.pdoc a{text-decoration:none;color:var(--link);}.pdoc a:hover{color:var(--link-hover);}.pdoc blockquote{margin-left:2rem;}.pdoc pre{border-top:1px solid var(--accent2);border-bottom:1px solid var(--accent2);margin-top:0;margin-bottom:1em;padding:.5rem 0 .5rem .5rem;overflow-x:auto;background-color:var(--code);}.pdoc code{color:var(--text);padding:.2em .4em;margin:0;font-size:85%;background-color:var(--code);border-radius:6px;}.pdoc a > code{color:inherit;}.pdoc pre > code{display:inline-block;font-size:inherit;background:none;border:none;padding:0;}.pdoc > section:not(.module-info){margin-bottom:1.5rem;}.pdoc .modulename{margin-top:0;font-weight:bold;}.pdoc .modulename a{color:var(--link);transition:100ms all;}.pdoc .git-button{float:right;border:solid var(--link) 1px;}.pdoc .git-button:hover{background-color:var(--link);color:var(--pdoc-background);}.view-source-toggle-state,.view-source-toggle-state ~ .pdoc-code{display:none;}.view-source-toggle-state:checked ~ .pdoc-code{display:block;}.view-source-button{display:inline-block;float:right;font-size:.75rem;line-height:1.5rem;color:var(--muted);padding:0 .4rem 0 1.3rem;cursor:pointer;text-indent:-2px;}.view-source-button > span{visibility:hidden;}.module-info .view-source-button{float:none;display:flex;justify-content:flex-end;margin:-1.2rem .4rem -.2rem 0;}.view-source-button::before{position:absolute;content:"View Source";display:list-item;list-style-type:disclosure-closed;}.view-source-toggle-state:checked ~ .attr .view-source-button::before,.view-source-toggle-state:checked ~ .view-source-button::before{list-style-type:disclosure-open;}.pdoc .docstring{margin-bottom:1.5rem;}.pdoc section:not(.module-info) .docstring{margin-left:clamp(0rem, 5vw - 2rem, 1rem);}.pdoc .docstring .pdoc-code{margin-left:1em;margin-right:1em;}.pdoc h1:target,.pdoc h2:target,.pdoc h3:target,.pdoc h4:target,.pdoc h5:target,.pdoc h6:target,.pdoc .pdoc-code > pre > span:target{background-color:var(--active);box-shadow:-1rem 0 0 0 var(--active);}.pdoc .pdoc-code > pre > span:target{display:block;}.pdoc div:target > .attr,.pdoc section:target > .attr,.pdoc dd:target > a{background-color:var(--active);}.pdoc *{scroll-margin:2rem;}.pdoc .pdoc-code .linenos{user-select:none;}.pdoc .attr:hover{filter:contrast(0.95);}.pdoc section, .pdoc .classattr{position:relative;}.pdoc .headerlink{--width:clamp(1rem, 3vw, 2rem);position:absolute;top:0;left:calc(0rem - var(--width));transition:all 100ms ease-in-out;opacity:0;}.pdoc .headerlink::before{content:"#";display:block;text-align:center;width:var(--width);height:2.3rem;line-height:2.3rem;font-size:1.5rem;}.pdoc .attr:hover ~ .headerlink,.pdoc *:target > .headerlink,.pdoc .headerlink:hover{opacity:1;}.pdoc .attr{display:block;margin:.5rem 0 .5rem;padding:.4rem .4rem .4rem 1rem;background-color:var(--accent);overflow-x:auto;}.pdoc .classattr{margin-left:2rem;}.pdoc .name{color:var(--name);font-weight:bold;}.pdoc .def{color:var(--def);font-weight:bold;}.pdoc .signature{background-color:transparent;}.pdoc .param, .pdoc .return-annotation{white-space:pre;}.pdoc .signature.multiline .param{display:block;}.pdoc .signature.condensed .param{display:inline-block;}.pdoc .annotation{color:var(--annotation);}.pdoc .inherited{margin-left:2rem;}.pdoc .inherited dt{font-weight:700;}.pdoc .inherited dt, .pdoc .inherited dd{display:inline;margin-left:0;margin-bottom:.5rem;}.pdoc .inherited dd:not(:last-child):after{content:", ";}.pdoc .inherited .class:before{content:"class ";}.pdoc .inherited .function a:after{content:"()";}.pdoc .search-result .docstring{overflow:auto;max-height:25vh;}.pdoc .search-result.focused > .attr{background-color:var(--active);}.pdoc .attribution{margin-top:2rem;display:block;opacity:0.5;transition:all 200ms;filter:grayscale(100%);}.pdoc .attribution:hover{opacity:1;filter:grayscale(0%);}.pdoc .attribution img{margin-left:5px;height:35px;vertical-align:middle;width:70px;transition:all 200ms;}.pdoc table{display:block;width:max-content;max-width:100%;overflow:auto;margin-bottom:1rem;}.pdoc table th{font-weight:600;}.pdoc table th, .pdoc table td{padding:6px 13px;border:1px solid var(--accent2);}</style>
+    <style>/*! layout.css */html, body{width:100%;height:100%;}html, main{scroll-behavior:smooth;}body{background-color:var(--pdoc-background);}@media (max-width:769px){#navtoggle{cursor:pointer;position:absolute;width:50px;height:40px;top:1rem;right:1rem;border-color:var(--text);color:var(--text);display:flex;opacity:0.8;z-index:999;}#navtoggle:hover{opacity:1;}#togglestate + div{display:none;}#togglestate:checked + div{display:inherit;}main, header{padding:2rem 3vw;}header + main{margin-top:-3rem;}.git-button{display:none !important;}nav input[type="search"]{max-width:77%;}nav input[type="search"]:first-child{margin-top:-6px;}nav input[type="search"]:valid ~ *{display:none !important;}}@media (min-width:770px){:root{--sidebar-width:clamp(12.5rem, 28vw, 22rem);}nav{position:fixed;overflow:auto;height:100vh;width:var(--sidebar-width);}main, header{padding:3rem 2rem 3rem calc(var(--sidebar-width) + 3rem);width:calc(54rem + var(--sidebar-width));max-width:100%;}header + main{margin-top:-4rem;}#navtoggle{display:none;}}#togglestate{position:absolute;height:0;opacity:0;}nav.pdoc{--pad:clamp(0.5rem, 2vw, 1.75rem);--indent:1.5rem;background-color:var(--accent);border-right:1px solid var(--accent2);box-shadow:0 0 20px rgba(50, 50, 50, .2) inset;padding:0 0 0 var(--pad);overflow-wrap:anywhere;scrollbar-width:thin; scrollbar-color:var(--accent2) transparent; z-index:1}nav.pdoc::-webkit-scrollbar{width:.4rem; }nav.pdoc::-webkit-scrollbar-thumb{background-color:var(--accent2); }nav.pdoc > div{padding:var(--pad) 0;}nav.pdoc .module-list-button{display:inline-flex;align-items:center;color:var(--text);border-color:var(--muted);margin-bottom:1rem;}nav.pdoc .module-list-button:hover{border-color:var(--text);}nav.pdoc input[type=search]{display:block;outline-offset:0;width:calc(100% - var(--pad));}nav.pdoc .logo{max-width:calc(100% - var(--pad));max-height:35vh;display:block;margin:0 auto 1rem;transform:translate(calc(-.5 * var(--pad)), 0);}nav.pdoc ul{list-style:none;padding-left:0;}nav.pdoc > div > ul{margin-left:calc(0px - var(--pad));}nav.pdoc li a{padding:.2rem 0 .2rem calc(var(--pad) + var(--indent));}nav.pdoc > div > ul > li > a{padding-left:var(--pad);}nav.pdoc li{transition:all 100ms;}nav.pdoc li:hover{background-color:var(--nav-hover);}nav.pdoc a, nav.pdoc a:hover{color:var(--text);}nav.pdoc a{display:block;}nav.pdoc > h2:first-of-type{margin-top:1.5rem;}nav.pdoc .class:before{content:"class ";color:var(--muted);}nav.pdoc .function:after{content:"()";color:var(--muted);}nav.pdoc footer:before{content:"";display:block;width:calc(100% - var(--pad));border-top:solid var(--accent2) 1px;margin-top:1.5rem;padding-top:.5rem;}nav.pdoc footer{font-size:small;}</style>
+    <style>/*! content.css */.pdoc{color:var(--text);box-sizing:border-box;line-height:1.5;background:none;}.pdoc .pdoc-button{cursor:pointer;display:inline-block;border:solid black 1px;border-radius:2px;font-size:.75rem;padding:calc(0.5em - 1px) 1em;transition:100ms all;}.pdoc .pdoc-alert{padding:1rem 1rem 1rem calc(1.5rem + 24px);border:1px solid transparent;border-radius:.25rem;background-repeat:no-repeat;background-position:1rem center;margin-bottom:1rem;}.pdoc .pdoc-alert > *:last-child{margin-bottom:0;}.pdoc .pdoc-alert-note {color:#084298;background-color:#cfe2ff;border-color:#b6d4fe;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22%23084298%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M8%2016A8%208%200%201%200%208%200a8%208%200%200%200%200%2016zm.93-9.412-1%204.705c-.07.34.029.533.304.533.194%200%20.487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703%200-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381%202.29-.287zM8%205.5a1%201%200%201%201%200-2%201%201%200%200%201%200%202z%22/%3E%3C/svg%3E");}.pdoc .pdoc-alert-warning{color:#664d03;background-color:#fff3cd;border-color:#ffecb5;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22%23664d03%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M8.982%201.566a1.13%201.13%200%200%200-1.96%200L.165%2013.233c-.457.778.091%201.767.98%201.767h13.713c.889%200%201.438-.99.98-1.767L8.982%201.566zM8%205c.535%200%20.954.462.9.995l-.35%203.507a.552.552%200%200%201-1.1%200L7.1%205.995A.905.905%200%200%201%208%205zm.002%206a1%201%200%201%201%200%202%201%201%200%200%201%200-2z%22/%3E%3C/svg%3E");}.pdoc .pdoc-alert-danger{color:#842029;background-color:#f8d7da;border-color:#f5c2c7;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22%23842029%22%20viewBox%3D%220%200%2016%2016%22%3E%3Cpath%20d%3D%22M5.52.359A.5.5%200%200%201%206%200h4a.5.5%200%200%201%20.474.658L8.694%206H12.5a.5.5%200%200%201%20.395.807l-7%209a.5.5%200%200%201-.873-.454L6.823%209.5H3.5a.5.5%200%200%201-.48-.641l2.5-8.5z%22/%3E%3C/svg%3E");}.pdoc .visually-hidden{position:absolute !important;width:1px !important;height:1px !important;padding:0 !important;margin:-1px !important;overflow:hidden !important;clip:rect(0, 0, 0, 0) !important;white-space:nowrap !important;border:0 !important;}.pdoc h1, .pdoc h2, .pdoc h3{font-weight:300;margin:.3em 0;padding:.2em 0;}.pdoc > section:not(.module-info) h1{font-size:1.5rem;font-weight:500;}.pdoc > section:not(.module-info) h2{font-size:1.4rem;font-weight:500;}.pdoc > section:not(.module-info) h3{font-size:1.3rem;font-weight:500;}.pdoc > section:not(.module-info) h4{font-size:1.2rem;}.pdoc > section:not(.module-info) h5{font-size:1.1rem;}.pdoc a{text-decoration:none;color:var(--link);}.pdoc a:hover{color:var(--link-hover);}.pdoc blockquote{margin-left:2rem;}.pdoc pre{border-top:1px solid var(--accent2);border-bottom:1px solid var(--accent2);margin-top:0;margin-bottom:1em;padding:.5rem 0 .5rem .5rem;overflow-x:auto;background-color:var(--code);}.pdoc code{color:var(--text);padding:.2em .4em;margin:0;font-size:85%;background-color:var(--accent);border-radius:6px;}.pdoc a > code{color:inherit;}.pdoc pre > code{display:inline-block;font-size:inherit;background:none;border:none;padding:0;}.pdoc > section:not(.module-info){margin-bottom:1.5rem;}.pdoc .modulename{margin-top:0;font-weight:bold;}.pdoc .modulename a{color:var(--link);transition:100ms all;}.pdoc .git-button{float:right;border:solid var(--link) 1px;}.pdoc .git-button:hover{background-color:var(--link);color:var(--pdoc-background);}.view-source-toggle-state,.view-source-toggle-state ~ .pdoc-code{display:none;}.view-source-toggle-state:checked ~ .pdoc-code{display:block;}.view-source-button{display:inline-block;float:right;font-size:.75rem;line-height:1.5rem;color:var(--muted);padding:0 .4rem 0 1.3rem;cursor:pointer;text-indent:-2px;}.view-source-button > span{visibility:hidden;}.module-info .view-source-button{float:none;display:flex;justify-content:flex-end;margin:-1.2rem .4rem -.2rem 0;}.view-source-button::before{position:absolute;content:"View Source";display:list-item;list-style-type:disclosure-closed;}.view-source-toggle-state:checked ~ .attr .view-source-button::before,.view-source-toggle-state:checked ~ .view-source-button::before{list-style-type:disclosure-open;}.pdoc .docstring{margin-bottom:1.5rem;}.pdoc section:not(.module-info) .docstring{margin-left:clamp(0rem, 5vw - 2rem, 1rem);}.pdoc .docstring .pdoc-code{margin-left:1em;margin-right:1em;}.pdoc h1:target,.pdoc h2:target,.pdoc h3:target,.pdoc h4:target,.pdoc h5:target,.pdoc h6:target,.pdoc .pdoc-code > pre > span:target{background-color:var(--active);box-shadow:-1rem 0 0 0 var(--active);}.pdoc .pdoc-code > pre > span:target{display:block;}.pdoc div:target > .attr,.pdoc section:target > .attr,.pdoc dd:target > a{background-color:var(--active);}.pdoc *{scroll-margin:2rem;}.pdoc .pdoc-code .linenos{user-select:none;}.pdoc .attr:hover{filter:contrast(0.95);}.pdoc section, .pdoc .classattr{position:relative;}.pdoc .headerlink{--width:clamp(1rem, 3vw, 2rem);position:absolute;top:0;left:calc(0rem - var(--width));transition:all 100ms ease-in-out;opacity:0;}.pdoc .headerlink::before{content:"#";display:block;text-align:center;width:var(--width);height:2.3rem;line-height:2.3rem;font-size:1.5rem;}.pdoc .attr:hover ~ .headerlink,.pdoc *:target > .headerlink,.pdoc .headerlink:hover{opacity:1;}.pdoc .attr{display:block;margin:.5rem 0 .5rem;padding:.4rem .4rem .4rem 1rem;background-color:var(--accent);overflow-x:auto;}.pdoc .classattr{margin-left:2rem;}.pdoc .name{color:var(--name);font-weight:bold;}.pdoc .def{color:var(--def);font-weight:bold;}.pdoc .signature{background-color:transparent;}.pdoc .param, .pdoc .return-annotation{white-space:pre;}.pdoc .signature.multiline .param{display:block;}.pdoc .signature.condensed .param{display:inline-block;}.pdoc .annotation{color:var(--annotation);}.pdoc .view-value-toggle-state,.pdoc .view-value-toggle-state ~ .default_value{display:none;}.pdoc .view-value-toggle-state:checked ~ .default_value{display:inherit;}.pdoc .view-value-button{font-size:.5rem;vertical-align:middle;border-style:dashed;margin-top:-0.1rem;}.pdoc .view-value-button:hover{background:white;}.pdoc .view-value-button::before{content:"show";text-align:center;width:2.2em;display:inline-block;}.pdoc .view-value-toggle-state:checked ~ .view-value-button::before{content:"hide";}.pdoc .inherited{margin-left:2rem;}.pdoc .inherited dt{font-weight:700;}.pdoc .inherited dt, .pdoc .inherited dd{display:inline;margin-left:0;margin-bottom:.5rem;}.pdoc .inherited dd:not(:last-child):after{content:", ";}.pdoc .inherited .class:before{content:"class ";}.pdoc .inherited .function a:after{content:"()";}.pdoc .search-result .docstring{overflow:auto;max-height:25vh;}.pdoc .search-result.focused > .attr{background-color:var(--active);}.pdoc .attribution{margin-top:2rem;display:block;opacity:0.5;transition:all 200ms;filter:grayscale(100%);}.pdoc .attribution:hover{opacity:1;filter:grayscale(0%);}.pdoc .attribution img{margin-left:5px;height:35px;vertical-align:middle;width:70px;transition:all 200ms;}.pdoc table{display:block;width:max-content;max-width:100%;overflow:auto;margin-bottom:1rem;}.pdoc table th{font-weight:600;}.pdoc table th, .pdoc table td{padding:6px 13px;border:1px solid var(--accent2);}</style>
     <style>/*! custom.css */</style></head>
 <body>
     <nav class="pdoc">
@@ -22,25 +23,29 @@
   <path fill-rule="evenodd" d="M4.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H14.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3z"/>
 </svg>                &nbsp;fluvio</a>
 
+            <img src="https://www.fluvio.io/images/assets/fluvio-with-text.svg" class="logo" alt="project logo"/>
 
             <input type="search" placeholder="Search..." role="searchbox" aria-label="search"
                    pattern=".+" required>
 
 
 
-        <h2>API Documentation</h2>
-            <ul class="memberlist">
+            <h2>API Documentation</h2>
+                <ul class="memberlist">
             <li>
                     <a class="class" href="#Fluvio">Fluvio</a>
                             <ul class="memberlist">
                         <li>
-                                <a class="function" href="#Fluvio.__init__">Fluvio</a>
-                        </li>
-                        <li>
                                 <a class="function" href="#Fluvio.connect">connect</a>
                         </li>
                         <li>
+                                <a class="function" href="#Fluvio.connect_with_config">connect_with_config</a>
+                        </li>
+                        <li>
                                 <a class="function" href="#Fluvio.partition_consumer">partition_consumer</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#Fluvio.multi_partition_consumer">multi_partition_consumer</a>
                         </li>
                         <li>
                                 <a class="function" href="#Fluvio.topic_producer">topic_producer</a>
@@ -49,13 +54,88 @@
 
             </li>
             <li>
-                    <a class="class" href="#ProducerBatchRecord">ProducerBatchRecord</a>
+                    <a class="class" href="#FluvioConfig">FluvioConfig</a>
                             <ul class="memberlist">
                         <li>
-                                <a class="function" href="#ProducerBatchRecord.__init__">ProducerBatchRecord</a>
+                                <a class="function" href="#FluvioConfig.load">load</a>
                         </li>
                         <li>
-                                <a class="function" href="#ProducerBatchRecord.clone">clone</a>
+                                <a class="function" href="#FluvioConfig.new">new</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#FluvioConfig.set_endpoint">set_endpoint</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#FluvioConfig.set_use_spu_local_address">set_use_spu_local_address</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#FluvioConfig.disable_tls">disable_tls</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#FluvioConfig.set_anonymous_tls">set_anonymous_tls</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#FluvioConfig.set_inline_tls">set_inline_tls</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#FluvioConfig.set_tls_file_paths">set_tls_file_paths</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#FluvioConfig.set_client_id">set_client_id</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#FluvioConfig.unset_client_id">unset_client_id</a>
+                        </li>
+                </ul>
+
+            </li>
+            <li>
+                    <a class="class" href="#ConsumerConfig">ConsumerConfig</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#ConsumerConfig.max_bytes">max_bytes</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#ConsumerConfig.smartmodule">smartmodule</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#ConsumerConfig.build">build</a>
+                        </li>
+                </ul>
+
+            </li>
+            <li>
+                    <a class="class" href="#PartitionConsumer">PartitionConsumer</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#PartitionConsumer.stream">stream</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#PartitionConsumer.async_stream">async_stream</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#PartitionConsumer.stream_with_config">stream_with_config</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#PartitionConsumer.async_stream_with_config">async_stream_with_config</a>
+                        </li>
+                </ul>
+
+            </li>
+            <li>
+                    <a class="class" href="#PartitionConsumerStream">PartitionConsumerStream</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#PartitionConsumerStream.next">next</a>
+                        </li>
+                </ul>
+
+            </li>
+            <li>
+                    <a class="class" href="#AsyncPartitionConsumerStream">AsyncPartitionConsumerStream</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#AsyncPartitionConsumerStream.async_next">async_next</a>
                         </li>
                 </ul>
 
@@ -64,16 +144,82 @@
                     <a class="class" href="#TopicProducer">TopicProducer</a>
                             <ul class="memberlist">
                         <li>
-                                <a class="function" href="#TopicProducer.__init__">TopicProducer</a>
+                                <a class="function" href="#TopicProducer.send">send</a>
                         </li>
                         <li>
-                                <a class="function" href="#TopicProducer.send">send</a>
+                                <a class="function" href="#TopicProducer.async_send">async_send</a>
                         </li>
                         <li>
                                 <a class="function" href="#TopicProducer.send_all">send_all</a>
                         </li>
                         <li>
+                                <a class="function" href="#TopicProducer.async_send_all">async_send_all</a>
+                        </li>
+                        <li>
                                 <a class="function" href="#TopicProducer.flush">flush</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#TopicProducer.async_flush">async_flush</a>
+                        </li>
+                </ul>
+
+            </li>
+            <li>
+                    <a class="class" href="#ProduceOutput">ProduceOutput</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#ProduceOutput.wait">wait</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#ProduceOutput.async_wait">async_wait</a>
+                        </li>
+                </ul>
+
+            </li>
+            <li>
+                    <a class="class" href="#RecordMetadata">RecordMetadata</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#RecordMetadata.offset">offset</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#RecordMetadata.partition_id">partition_id</a>
+                        </li>
+                </ul>
+
+            </li>
+            <li>
+                    <a class="class" href="#ProducerBatchRecord">ProducerBatchRecord</a>
+                            <ul class="memberlist">
+                </ul>
+
+            </li>
+            <li>
+                    <a class="class" href="#SmartModuleKind">SmartModuleKind</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="variable" href="#SmartModuleKind.Filter">Filter</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#SmartModuleKind.Map">Map</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#SmartModuleKind.ArrayMap">ArrayMap</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#SmartModuleKind.FilterMap">FilterMap</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#SmartModuleKind.Join">Join</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#SmartModuleKind.JoinStream">JoinStream</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#SmartModuleKind.Aggregate">Aggregate</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#SmartModuleKind.Generic">Generic</a>
                         </li>
                 </ul>
 
@@ -82,7 +228,10 @@
                     <a class="class" href="#Record">Record</a>
                             <ul class="memberlist">
                         <li>
-                                <a class="function" href="#Record.__init__">Record</a>
+                                <a class="function" href="#Record.value_string">value_string</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#Record.key_string">key_string</a>
                         </li>
                         <li>
                                 <a class="function" href="#Record.offset">offset</a>
@@ -94,10 +243,7 @@
                                 <a class="function" href="#Record.key">key</a>
                         </li>
                         <li>
-                                <a class="function" href="#Record.value_string">value_string</a>
-                        </li>
-                        <li>
-                                <a class="function" href="#Record.key_string">key_string</a>
+                                <a class="function" href="#Record.timestamp">timestamp</a>
                         </li>
                 </ul>
 
@@ -105,9 +251,6 @@
             <li>
                     <a class="class" href="#Offset">Offset</a>
                             <ul class="memberlist">
-                        <li>
-                                <a class="function" href="#Offset.__init__">Offset</a>
-                        </li>
                         <li>
                                 <a class="function" href="#Offset.absolute">absolute</a>
                         </li>
@@ -130,79 +273,235 @@
                     <a class="class" href="#Cloud">Cloud</a>
                             <ul class="memberlist">
                         <li>
-                                <a class="function" href="#Cloud.__init__">Cloud</a>
-                        </li>
-                        <li>
-                                <a class="function" href="#Cloud.new">new</a>
-                        </li>
-                        <li>
-                                <a class="function" href="#Cloud.get_auth0_url">get_auth0_url</a>
-                        </li>
-                        <li>
-                                <a class="function" href="#Cloud.authenticate_with_auth0">authenticate_with_auth0</a>
-                        </li>
-                        <li>
                                 <a class="function" href="#Cloud.login_with_username">login_with_username</a>
                         </li>
                 </ul>
 
             </li>
             <li>
-                    <a class="class" href="#PartitionConsumer">PartitionConsumer</a>
+                    <a class="class" href="#MultiplePartitionConsumer">MultiplePartitionConsumer</a>
                             <ul class="memberlist">
                         <li>
-                                <a class="function" href="#PartitionConsumer.__init__">PartitionConsumer</a>
+                                <a class="function" href="#MultiplePartitionConsumer.stream">stream</a>
                         </li>
                         <li>
-                                <a class="function" href="#PartitionConsumer.stream">stream</a>
+                                <a class="function" href="#MultiplePartitionConsumer.async_stream">async_stream</a>
                         </li>
                         <li>
-                                <a class="function" href="#PartitionConsumer.stream_with_config">stream_with_config</a>
+                                <a class="function" href="#MultiplePartitionConsumer.stream_with_config">stream_with_config</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#MultiplePartitionConsumer.async_stream_with_config">async_stream_with_config</a>
                         </li>
                 </ul>
 
             </li>
             <li>
-                    <a class="class" href="#PartitionConsumerStream">PartitionConsumerStream</a>
+                    <a class="class" href="#PartitionSelectionStrategy">PartitionSelectionStrategy</a>
                             <ul class="memberlist">
                         <li>
-                                <a class="function" href="#PartitionConsumerStream.__init__">PartitionConsumerStream</a>
+                                <a class="function" href="#PartitionSelectionStrategy.with_all">with_all</a>
                         </li>
                         <li>
-                                <a class="function" href="#PartitionConsumerStream.next">next</a>
+                                <a class="function" href="#PartitionSelectionStrategy.with_multiple">with_multiple</a>
                         </li>
                 </ul>
 
             </li>
             <li>
-                    <a class="class" href="#SmartModuleKind">SmartModuleKind</a>
+                    <a class="class" href="#FluvioAdmin">FluvioAdmin</a>
                             <ul class="memberlist">
                         <li>
-                                <a class="function" href="#SmartModuleKind.__init__">SmartModuleKind</a>
+                                <a class="function" href="#FluvioAdmin.connect">connect</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#FluvioAdmin.connect_with_config">connect_with_config</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#FluvioAdmin.create_topic">create_topic</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#FluvioAdmin.create_topic_with_config">create_topic_with_config</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#FluvioAdmin.delete_topic">delete_topic</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#FluvioAdmin.all_topics">all_topics</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#FluvioAdmin.list_topics">list_topics</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#FluvioAdmin.list_topics_with_params">list_topics_with_params</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#FluvioAdmin.watch_topic">watch_topic</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#FluvioAdmin.create_smart_module">create_smart_module</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#FluvioAdmin.delete_smart_module">delete_smart_module</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#FluvioAdmin.list_smart_modules">list_smart_modules</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#FluvioAdmin.watch_smart_module">watch_smart_module</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#FluvioAdmin.list_partitions">list_partitions</a>
                         </li>
                 </ul>
 
             </li>
             <li>
-                    <a class="class" href="#SmartModuleContextData">SmartModuleContextData</a>
+                    <a class="class" href="#TopicSpec">TopicSpec</a>
                             <ul class="memberlist">
                         <li>
-                                <a class="function" href="#SmartModuleContextData.__init__">SmartModuleContextData</a>
+                                <a class="function" href="#TopicSpec.new_assigned">new_assigned</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#TopicSpec.new_computed">new_computed</a>
                         </li>
                 </ul>
 
             </li>
             <li>
-                    <a class="class" href="#ConsumerConfig">ConsumerConfig</a>
+                    <a class="class" href="#PartitionMap">PartitionMap</a>
                             <ul class="memberlist">
                         <li>
-                                <a class="function" href="#ConsumerConfig.__init__">ConsumerConfig</a>
-                        </li>
-                        <li>
-                                <a class="function" href="#ConsumerConfig.smartmodule">smartmodule</a>
+                                <a class="function" href="#PartitionMap.new">new</a>
                         </li>
                 </ul>
 
+            </li>
+            <li>
+                    <a class="class" href="#CommonCreateRequest">CommonCreateRequest</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#CommonCreateRequest.new">new</a>
+                        </li>
+                </ul>
+
+            </li>
+            <li>
+                    <a class="class" href="#MetadataTopicSpec">MetadataTopicSpec</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#MetadataTopicSpec.name">name</a>
+                        </li>
+                </ul>
+
+            </li>
+            <li>
+                    <a class="class" href="#WatchTopicStream">WatchTopicStream</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#WatchTopicStream.next">next</a>
+                        </li>
+                </ul>
+
+            </li>
+            <li>
+                    <a class="class" href="#MetaUpdateTopicSpec">MetaUpdateTopicSpec</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#MetaUpdateTopicSpec.epoch">epoch</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#MetaUpdateTopicSpec.changes">changes</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#MetaUpdateTopicSpec.all">all</a>
+                        </li>
+                </ul>
+
+            </li>
+            <li>
+                    <a class="class" href="#MessageMetadataTopicSpec">MessageMetadataTopicSpec</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#MessageMetadataTopicSpec.is_update">is_update</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#MessageMetadataTopicSpec.is_delete">is_delete</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#MessageMetadataTopicSpec.metadata_topic_spec">metadata_topic_spec</a>
+                        </li>
+                </ul>
+
+            </li>
+            <li>
+                    <a class="class" href="#SmartModuleSpec">SmartModuleSpec</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#SmartModuleSpec.with_binary">with_binary</a>
+                        </li>
+                </ul>
+
+            </li>
+            <li>
+                    <a class="class" href="#MetadataSmartModuleSpec">MetadataSmartModuleSpec</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#MetadataSmartModuleSpec.name">name</a>
+                        </li>
+                </ul>
+
+            </li>
+            <li>
+                    <a class="class" href="#WatchSmartModuleStream">WatchSmartModuleStream</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#WatchSmartModuleStream.next">next</a>
+                        </li>
+                </ul>
+
+            </li>
+            <li>
+                    <a class="class" href="#MessageMetadataSmartModuleSpec">MessageMetadataSmartModuleSpec</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#MessageMetadataSmartModuleSpec.is_update">is_update</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#MessageMetadataSmartModuleSpec.is_delete">is_delete</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#MessageMetadataSmartModuleSpec.metadata_smart_module_spec">metadata_smart_module_spec</a>
+                        </li>
+                </ul>
+
+            </li>
+            <li>
+                    <a class="class" href="#MetaUpdateSmartModuleSpec">MetaUpdateSmartModuleSpec</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#MetaUpdateSmartModuleSpec.epoch">epoch</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#MetaUpdateSmartModuleSpec.changes">changes</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#MetaUpdateSmartModuleSpec.all">all</a>
+                        </li>
+                </ul>
+
+            </li>
+            <li>
+                    <a class="class" href="#MetadataPartitionSpec">MetadataPartitionSpec</a>
+                            <ul class="memberlist">
+                        <li>
+                                <a class="function" href="#MetadataPartitionSpec.name">name</a>
+                        </li>
+                </ul>
+
+            </li>
+            <li>
+                    <a class="variable" href="#Error">Error</a>
             </li>
     </ul>
 
@@ -237,23 +536,11 @@
     
     
 
-                            <div id="Fluvio.__init__" class="classattr">
-                                <div class="attr function">
-            
-        <span class="name">Fluvio</span><span class="signature pdoc-code condensed">()</span>
-
-        
-    </div>
-    <a class="headerlink" href="#Fluvio.__init__"></a>
-    
-    
-
-                            </div>
                             <div id="Fluvio.connect" class="classattr">
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">connect</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
+        <span class="name">connect</span><span class="signature pdoc-code condensed">(<span class="return-annotation">):</span></span>
 
         
     </div>
@@ -262,11 +549,24 @@
     
 
                             </div>
+                            <div id="Fluvio.connect_with_config" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">connect_with_config</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">config</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#Fluvio.connect_with_config"></a>
+    
+    
+
+                            </div>
                             <div id="Fluvio.partition_consumer" class="classattr">
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">partition_consumer</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
+        <span class="name">partition_consumer</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">topic</span>, </span><span class="param"><span class="n">partition</span></span><span class="return-annotation">):</span></span>
 
         
     </div>
@@ -275,11 +575,24 @@
     
 
                             </div>
+                            <div id="Fluvio.multi_partition_consumer" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">multi_partition_consumer</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">strategy</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#Fluvio.multi_partition_consumer"></a>
+    
+    
+
+                            </div>
                             <div id="Fluvio.topic_producer" class="classattr">
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">topic_producer</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
+        <span class="name">topic_producer</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">topic</span></span><span class="return-annotation">):</span></span>
 
         
     </div>
@@ -289,39 +602,317 @@
 
                             </div>
                 </section>
-                <section id="ProducerBatchRecord">
+                <section id="FluvioConfig">
                     <div class="attr class">
             
     <span class="def">class</span>
-    <span class="name">ProducerBatchRecord</span>:
+    <span class="name">FluvioConfig</span>:
 
         
     </div>
-    <a class="headerlink" href="#ProducerBatchRecord"></a>
+    <a class="headerlink" href="#FluvioConfig"></a>
     
     
 
-                            <div id="ProducerBatchRecord.__init__" class="classattr">
+                            <div id="FluvioConfig.load" class="classattr">
                                 <div class="attr function">
             
-        <span class="name">ProducerBatchRecord</span><span class="signature pdoc-code condensed">()</span>
+        <span class="def">def</span>
+        <span class="name">load</span><span class="signature pdoc-code condensed">(<span class="return-annotation">):</span></span>
 
         
     </div>
-    <a class="headerlink" href="#ProducerBatchRecord.__init__"></a>
+    <a class="headerlink" href="#FluvioConfig.load"></a>
+    
+            <div class="docstring"><p>Load config file from default config dir</p>
+</div>
+
+
+                            </div>
+                            <div id="FluvioConfig.new" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">new</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">addr</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#FluvioConfig.new"></a>
+    
+            <div class="docstring"><p>Create without tls</p>
+</div>
+
+
+                            </div>
+                            <div id="FluvioConfig.set_endpoint" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">set_endpoint</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">endpoint</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#FluvioConfig.set_endpoint"></a>
     
     
 
                             </div>
-                            <div id="ProducerBatchRecord.clone" class="classattr">
+                            <div id="FluvioConfig.set_use_spu_local_address" class="classattr">
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">clone</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
+        <span class="name">set_use_spu_local_address</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">val</span></span><span class="return-annotation">):</span></span>
 
         
     </div>
-    <a class="headerlink" href="#ProducerBatchRecord.clone"></a>
+    <a class="headerlink" href="#FluvioConfig.set_use_spu_local_address"></a>
+    
+    
+
+                            </div>
+                            <div id="FluvioConfig.disable_tls" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">disable_tls</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#FluvioConfig.disable_tls"></a>
+    
+    
+
+                            </div>
+                            <div id="FluvioConfig.set_anonymous_tls" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">set_anonymous_tls</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#FluvioConfig.set_anonymous_tls"></a>
+    
+    
+
+                            </div>
+                            <div id="FluvioConfig.set_inline_tls" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">set_inline_tls</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">domain</span>, </span><span class="param"><span class="n">key</span>, </span><span class="param"><span class="n">cert</span>, </span><span class="param"><span class="n">ca_cert</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#FluvioConfig.set_inline_tls"></a>
+    
+    
+
+                            </div>
+                            <div id="FluvioConfig.set_tls_file_paths" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">set_tls_file_paths</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">domain</span>, </span><span class="param"><span class="n">key_path</span>, </span><span class="param"><span class="n">cert_path</span>, </span><span class="param"><span class="n">ca_cert_path</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#FluvioConfig.set_tls_file_paths"></a>
+    
+    
+
+                            </div>
+                            <div id="FluvioConfig.set_client_id" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">set_client_id</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="nb">id</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#FluvioConfig.set_client_id"></a>
+    
+    
+
+                            </div>
+                            <div id="FluvioConfig.unset_client_id" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">unset_client_id</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#FluvioConfig.unset_client_id"></a>
+    
+    
+
+                            </div>
+                </section>
+                <section id="ConsumerConfig">
+                    <div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">ConsumerConfig</span>:
+
+        
+    </div>
+    <a class="headerlink" href="#ConsumerConfig"></a>
+    
+    
+
+                            <div id="ConsumerConfig.max_bytes" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">max_bytes</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">max_bytes</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#ConsumerConfig.max_bytes"></a>
+    
+    
+
+                            </div>
+                            <div id="ConsumerConfig.smartmodule" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">smartmodule</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="o">/</span>,</span><span class="param">	<span class="n">name</span>,</span><span class="param">	<span class="n">path</span>,</span><span class="param">	<span class="n">kind</span>,</span><span class="param">	<span class="n">param_keys</span>,</span><span class="param">	<span class="n">param_values</span>,</span><span class="param">	<span class="n">aggregate_accumulator</span>,</span><span class="param">	<span class="n">context</span><span class="o">=</span><span class="kc">None</span>,</span><span class="param">	<span class="n">join_param</span><span class="o">=</span><span class="kc">None</span>,</span><span class="param">	<span class="n">join_topic</span><span class="o">=</span><span class="kc">None</span>,</span><span class="param">	<span class="n">join_derived_stream</span><span class="o">=</span><span class="kc">None</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#ConsumerConfig.smartmodule"></a>
+    
+    
+
+                            </div>
+                            <div id="ConsumerConfig.build" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">build</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#ConsumerConfig.build"></a>
+    
+    
+
+                            </div>
+                </section>
+                <section id="PartitionConsumer">
+                    <div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">PartitionConsumer</span>:
+
+        
+    </div>
+    <a class="headerlink" href="#PartitionConsumer"></a>
+    
+    
+
+                            <div id="PartitionConsumer.stream" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">stream</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">offset</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#PartitionConsumer.stream"></a>
+    
+    
+
+                            </div>
+                            <div id="PartitionConsumer.async_stream" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">async_stream</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">offset</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#PartitionConsumer.async_stream"></a>
+    
+    
+
+                            </div>
+                            <div id="PartitionConsumer.stream_with_config" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">stream_with_config</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">offset</span>, </span><span class="param"><span class="n">config</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#PartitionConsumer.stream_with_config"></a>
+    
+    
+
+                            </div>
+                            <div id="PartitionConsumer.async_stream_with_config" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">async_stream_with_config</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">offset</span>, </span><span class="param"><span class="n">config</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#PartitionConsumer.async_stream_with_config"></a>
+    
+    
+
+                            </div>
+                </section>
+                <section id="PartitionConsumerStream">
+                    <div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">PartitionConsumerStream</span>:
+
+        
+    </div>
+    <a class="headerlink" href="#PartitionConsumerStream"></a>
+    
+    
+
+                            <div id="PartitionConsumerStream.next" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">next</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#PartitionConsumerStream.next"></a>
+    
+    
+
+                            </div>
+                </section>
+                <section id="AsyncPartitionConsumerStream">
+                    <div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">AsyncPartitionConsumerStream</span>:
+
+        
+    </div>
+    <a class="headerlink" href="#AsyncPartitionConsumerStream"></a>
+    
+    
+
+                            <div id="AsyncPartitionConsumerStream.async_next" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">async_next</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#AsyncPartitionConsumerStream.async_next"></a>
     
     
 
@@ -339,23 +930,11 @@
     
     
 
-                            <div id="TopicProducer.__init__" class="classattr">
-                                <div class="attr function">
-            
-        <span class="name">TopicProducer</span><span class="signature pdoc-code condensed">()</span>
-
-        
-    </div>
-    <a class="headerlink" href="#TopicProducer.__init__"></a>
-    
-    
-
-                            </div>
                             <div id="TopicProducer.send" class="classattr">
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">send</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
+        <span class="name">send</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">key</span>, </span><span class="param"><span class="n">value</span></span><span class="return-annotation">):</span></span>
 
         
     </div>
@@ -364,11 +943,24 @@
     
 
                             </div>
+                            <div id="TopicProducer.async_send" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">async_send</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">key</span>, </span><span class="param"><span class="n">value</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#TopicProducer.async_send"></a>
+    
+    
+
+                            </div>
                             <div id="TopicProducer.send_all" class="classattr">
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">send_all</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
+        <span class="name">send_all</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">records</span></span><span class="return-annotation">):</span></span>
 
         
     </div>
@@ -377,15 +969,241 @@
     
 
                             </div>
+                            <div id="TopicProducer.async_send_all" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">async_send_all</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">records</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#TopicProducer.async_send_all"></a>
+    
+    
+
+                            </div>
                             <div id="TopicProducer.flush" class="classattr">
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">flush</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
+        <span class="name">flush</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
 
         
     </div>
     <a class="headerlink" href="#TopicProducer.flush"></a>
+    
+    
+
+                            </div>
+                            <div id="TopicProducer.async_flush" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">async_flush</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#TopicProducer.async_flush"></a>
+    
+    
+
+                            </div>
+                </section>
+                <section id="ProduceOutput">
+                    <div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">ProduceOutput</span>:
+
+        
+    </div>
+    <a class="headerlink" href="#ProduceOutput"></a>
+    
+    
+
+                            <div id="ProduceOutput.wait" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">wait</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#ProduceOutput.wait"></a>
+    
+    
+
+                            </div>
+                            <div id="ProduceOutput.async_wait" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">async_wait</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#ProduceOutput.async_wait"></a>
+    
+    
+
+                            </div>
+                </section>
+                <section id="RecordMetadata">
+                    <div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">RecordMetadata</span>:
+
+        
+    </div>
+    <a class="headerlink" href="#RecordMetadata"></a>
+    
+    
+
+                            <div id="RecordMetadata.offset" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">offset</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#RecordMetadata.offset"></a>
+    
+    
+
+                            </div>
+                            <div id="RecordMetadata.partition_id" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">partition_id</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#RecordMetadata.partition_id"></a>
+    
+    
+
+                            </div>
+                </section>
+                <section id="ProducerBatchRecord">
+                    <div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">ProducerBatchRecord</span>:
+
+        
+    </div>
+    <a class="headerlink" href="#ProducerBatchRecord"></a>
+    
+    
+
+                </section>
+                <section id="SmartModuleKind">
+                    <div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">SmartModuleKind</span>:
+
+        
+    </div>
+    <a class="headerlink" href="#SmartModuleKind"></a>
+    
+    
+
+                            <div id="SmartModuleKind.Filter" class="classattr">
+                                <div class="attr variable">
+            <span class="name">Filter</span>        =
+<span class="default_value"><a href="#SmartModuleKind.Filter">SmartModuleKind.Filter</a></span>
+
+        
+    </div>
+    <a class="headerlink" href="#SmartModuleKind.Filter"></a>
+    
+    
+
+                            </div>
+                            <div id="SmartModuleKind.Map" class="classattr">
+                                <div class="attr variable">
+            <span class="name">Map</span>        =
+<span class="default_value"><a href="#SmartModuleKind.Map">SmartModuleKind.Map</a></span>
+
+        
+    </div>
+    <a class="headerlink" href="#SmartModuleKind.Map"></a>
+    
+    
+
+                            </div>
+                            <div id="SmartModuleKind.ArrayMap" class="classattr">
+                                <div class="attr variable">
+            <span class="name">ArrayMap</span>        =
+<span class="default_value"><a href="#SmartModuleKind.ArrayMap">SmartModuleKind.ArrayMap</a></span>
+
+        
+    </div>
+    <a class="headerlink" href="#SmartModuleKind.ArrayMap"></a>
+    
+    
+
+                            </div>
+                            <div id="SmartModuleKind.FilterMap" class="classattr">
+                                <div class="attr variable">
+            <span class="name">FilterMap</span>        =
+<span class="default_value"><a href="#SmartModuleKind.FilterMap">SmartModuleKind.FilterMap</a></span>
+
+        
+    </div>
+    <a class="headerlink" href="#SmartModuleKind.FilterMap"></a>
+    
+    
+
+                            </div>
+                            <div id="SmartModuleKind.Join" class="classattr">
+                                <div class="attr variable">
+            <span class="name">Join</span>        =
+<span class="default_value"><a href="#SmartModuleKind.Join">SmartModuleKind.Join</a></span>
+
+        
+    </div>
+    <a class="headerlink" href="#SmartModuleKind.Join"></a>
+    
+    
+
+                            </div>
+                            <div id="SmartModuleKind.JoinStream" class="classattr">
+                                <div class="attr variable">
+            <span class="name">JoinStream</span>        =
+<span class="default_value"><a href="#SmartModuleKind.JoinStream">SmartModuleKind.JoinStream</a></span>
+
+        
+    </div>
+    <a class="headerlink" href="#SmartModuleKind.JoinStream"></a>
+    
+    
+
+                            </div>
+                            <div id="SmartModuleKind.Aggregate" class="classattr">
+                                <div class="attr variable">
+            <span class="name">Aggregate</span>        =
+<span class="default_value"><a href="#SmartModuleKind.Aggregate">SmartModuleKind.Aggregate</a></span>
+
+        
+    </div>
+    <a class="headerlink" href="#SmartModuleKind.Aggregate"></a>
+    
+    
+
+                            </div>
+                            <div id="SmartModuleKind.Generic" class="classattr">
+                                <div class="attr variable">
+            <span class="name">Generic</span>        =
+<span class="default_value"><a href="#SmartModuleKind.Generic">SmartModuleKind.Generic</a></span>
+
+        
+    </div>
+    <a class="headerlink" href="#SmartModuleKind.Generic"></a>
     
     
 
@@ -403,62 +1221,11 @@
     
     
 
-                            <div id="Record.__init__" class="classattr">
-                                <div class="attr function">
-            
-        <span class="name">Record</span><span class="signature pdoc-code condensed">()</span>
-
-        
-    </div>
-    <a class="headerlink" href="#Record.__init__"></a>
-    
-    
-
-                            </div>
-                            <div id="Record.offset" class="classattr">
-                                <div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">offset</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
-
-        
-    </div>
-    <a class="headerlink" href="#Record.offset"></a>
-    
-    
-
-                            </div>
-                            <div id="Record.value" class="classattr">
-                                <div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">value</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
-
-        
-    </div>
-    <a class="headerlink" href="#Record.value"></a>
-    
-    
-
-                            </div>
-                            <div id="Record.key" class="classattr">
-                                <div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">key</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
-
-        
-    </div>
-    <a class="headerlink" href="#Record.key"></a>
-    
-    
-
-                            </div>
                             <div id="Record.value_string" class="classattr">
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">value_string</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
+        <span class="name">value_string</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
 
         
     </div>
@@ -471,11 +1238,63 @@
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">key_string</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
+        <span class="name">key_string</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
 
         
     </div>
     <a class="headerlink" href="#Record.key_string"></a>
+    
+    
+
+                            </div>
+                            <div id="Record.offset" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">offset</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#Record.offset"></a>
+    
+    
+
+                            </div>
+                            <div id="Record.value" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">value</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#Record.value"></a>
+    
+    
+
+                            </div>
+                            <div id="Record.key" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">key</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#Record.key"></a>
+    
+    
+
+                            </div>
+                            <div id="Record.timestamp" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">timestamp</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#Record.timestamp"></a>
     
     
 
@@ -493,23 +1312,11 @@
     
     
 
-                            <div id="Offset.__init__" class="classattr">
-                                <div class="attr function">
-            
-        <span class="name">Offset</span><span class="signature pdoc-code condensed">()</span>
-
-        
-    </div>
-    <a class="headerlink" href="#Offset.__init__"></a>
-    
-    
-
-                            </div>
                             <div id="Offset.absolute" class="classattr">
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">absolute</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
+        <span class="name">absolute</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">index</span></span><span class="return-annotation">):</span></span>
 
         
     </div>
@@ -522,7 +1329,7 @@
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">beginning</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
+        <span class="name">beginning</span><span class="signature pdoc-code condensed">(<span class="return-annotation">):</span></span>
 
         
     </div>
@@ -535,7 +1342,7 @@
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">from_beginning</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
+        <span class="name">from_beginning</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">offset</span></span><span class="return-annotation">):</span></span>
 
         
     </div>
@@ -548,7 +1355,7 @@
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">end</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
+        <span class="name">end</span><span class="signature pdoc-code condensed">(<span class="return-annotation">):</span></span>
 
         
     </div>
@@ -561,7 +1368,7 @@
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">from_end</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
+        <span class="name">from_end</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">offset</span></span><span class="return-annotation">):</span></span>
 
         
     </div>
@@ -583,62 +1390,11 @@
     
     
 
-                            <div id="Cloud.__init__" class="classattr">
-                                <div class="attr function">
-            
-        <span class="name">Cloud</span><span class="signature pdoc-code condensed">()</span>
-
-        
-    </div>
-    <a class="headerlink" href="#Cloud.__init__"></a>
-    
-    
-
-                            </div>
-                            <div id="Cloud.new" class="classattr">
-                                <div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">new</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
-
-        
-    </div>
-    <a class="headerlink" href="#Cloud.new"></a>
-    
-    
-
-                            </div>
-                            <div id="Cloud.get_auth0_url" class="classattr">
-                                <div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">get_auth0_url</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
-
-        
-    </div>
-    <a class="headerlink" href="#Cloud.get_auth0_url"></a>
-    
-    
-
-                            </div>
-                            <div id="Cloud.authenticate_with_auth0" class="classattr">
-                                <div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">authenticate_with_auth0</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
-
-        
-    </div>
-    <a class="headerlink" href="#Cloud.authenticate_with_auth0"></a>
-    
-    
-
-                            </div>
                             <div id="Cloud.login_with_username" class="classattr">
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">login_with_username</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
+        <span class="name">login_with_username</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">remote</span>, </span><span class="param"><span class="n">profile</span><span class="o">=</span><span class="kc">None</span>, </span><span class="param"><span class="n">email</span><span class="o">=</span><span class="kc">None</span>, </span><span class="param"><span class="n">password</span><span class="o">=</span><span class="kc">None</span></span><span class="return-annotation">):</span></span>
 
         
     </div>
@@ -648,182 +1404,771 @@
 
                             </div>
                 </section>
-                <section id="PartitionConsumer">
+                <section id="MultiplePartitionConsumer">
                     <div class="attr class">
             
     <span class="def">class</span>
-    <span class="name">PartitionConsumer</span>:
+    <span class="name">MultiplePartitionConsumer</span>:
 
         
     </div>
-    <a class="headerlink" href="#PartitionConsumer"></a>
+    <a class="headerlink" href="#MultiplePartitionConsumer"></a>
     
     
 
-                            <div id="PartitionConsumer.__init__" class="classattr">
+                            <div id="MultiplePartitionConsumer.stream" class="classattr">
                                 <div class="attr function">
             
-        <span class="name">PartitionConsumer</span><span class="signature pdoc-code condensed">()</span>
+        <span class="def">def</span>
+        <span class="name">stream</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">offset</span></span><span class="return-annotation">):</span></span>
 
         
     </div>
-    <a class="headerlink" href="#PartitionConsumer.__init__"></a>
+    <a class="headerlink" href="#MultiplePartitionConsumer.stream"></a>
     
     
 
                             </div>
-                            <div id="PartitionConsumer.stream" class="classattr">
+                            <div id="MultiplePartitionConsumer.async_stream" class="classattr">
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">stream</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
+        <span class="name">async_stream</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">offset</span></span><span class="return-annotation">):</span></span>
 
         
     </div>
-    <a class="headerlink" href="#PartitionConsumer.stream"></a>
+    <a class="headerlink" href="#MultiplePartitionConsumer.async_stream"></a>
     
     
 
                             </div>
-                            <div id="PartitionConsumer.stream_with_config" class="classattr">
+                            <div id="MultiplePartitionConsumer.stream_with_config" class="classattr">
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">stream_with_config</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
+        <span class="name">stream_with_config</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">offset</span>, </span><span class="param"><span class="n">config</span></span><span class="return-annotation">):</span></span>
 
         
     </div>
-    <a class="headerlink" href="#PartitionConsumer.stream_with_config"></a>
+    <a class="headerlink" href="#MultiplePartitionConsumer.stream_with_config"></a>
+    
+    
+
+                            </div>
+                            <div id="MultiplePartitionConsumer.async_stream_with_config" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">async_stream_with_config</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">offset</span>, </span><span class="param"><span class="n">config</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#MultiplePartitionConsumer.async_stream_with_config"></a>
     
     
 
                             </div>
                 </section>
-                <section id="PartitionConsumerStream">
+                <section id="PartitionSelectionStrategy">
                     <div class="attr class">
             
     <span class="def">class</span>
-    <span class="name">PartitionConsumerStream</span>:
+    <span class="name">PartitionSelectionStrategy</span>:
 
         
     </div>
-    <a class="headerlink" href="#PartitionConsumerStream"></a>
+    <a class="headerlink" href="#PartitionSelectionStrategy"></a>
     
     
 
-                            <div id="PartitionConsumerStream.__init__" class="classattr">
-                                <div class="attr function">
-            
-        <span class="name">PartitionConsumerStream</span><span class="signature pdoc-code condensed">()</span>
-
-        
-    </div>
-    <a class="headerlink" href="#PartitionConsumerStream.__init__"></a>
-    
-    
-
-                            </div>
-                            <div id="PartitionConsumerStream.next" class="classattr">
+                            <div id="PartitionSelectionStrategy.with_all" class="classattr">
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">next</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
+        <span class="name">with_all</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">topic</span></span><span class="return-annotation">):</span></span>
 
         
     </div>
-    <a class="headerlink" href="#PartitionConsumerStream.next"></a>
+    <a class="headerlink" href="#PartitionSelectionStrategy.with_all"></a>
     
     
 
                             </div>
-                </section>
-                <section id="SmartModuleKind">
-                    <div class="attr class">
-            
-    <span class="def">class</span>
-    <span class="name">SmartModuleKind</span>:
-
-        
-    </div>
-    <a class="headerlink" href="#SmartModuleKind"></a>
-    
-    
-
-                            <div id="SmartModuleKind.__init__" class="classattr">
-                                <div class="attr function">
-            
-        <span class="name">SmartModuleKind</span><span class="signature pdoc-code condensed">()</span>
-
-        
-    </div>
-    <a class="headerlink" href="#SmartModuleKind.__init__"></a>
-    
-    
-
-                            </div>
-                </section>
-                <section id="SmartModuleContextData">
-                    <div class="attr class">
-            
-    <span class="def">class</span>
-    <span class="name">SmartModuleContextData</span>:
-
-        
-    </div>
-    <a class="headerlink" href="#SmartModuleContextData"></a>
-    
-    
-
-                            <div id="SmartModuleContextData.__init__" class="classattr">
-                                <div class="attr function">
-            
-        <span class="name">SmartModuleContextData</span><span class="signature pdoc-code condensed">()</span>
-
-        
-    </div>
-    <a class="headerlink" href="#SmartModuleContextData.__init__"></a>
-    
-    
-
-                            </div>
-                </section>
-                <section id="ConsumerConfig">
-                    <div class="attr class">
-            
-    <span class="def">class</span>
-    <span class="name">ConsumerConfig</span>:
-
-        
-    </div>
-    <a class="headerlink" href="#ConsumerConfig"></a>
-    
-    
-
-                            <div id="ConsumerConfig.__init__" class="classattr">
-                                <div class="attr function">
-            
-        <span class="name">ConsumerConfig</span><span class="signature pdoc-code condensed">()</span>
-
-        
-    </div>
-    <a class="headerlink" href="#ConsumerConfig.__init__"></a>
-    
-    
-
-                            </div>
-                            <div id="ConsumerConfig.smartmodule" class="classattr">
+                            <div id="PartitionSelectionStrategy.with_multiple" class="classattr">
                                 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">smartmodule</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">unknown</span></span><span class="return-annotation">):</span></span>
+        <span class="name">with_multiple</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">selections</span></span><span class="return-annotation">):</span></span>
 
         
     </div>
-    <a class="headerlink" href="#ConsumerConfig.smartmodule"></a>
+    <a class="headerlink" href="#PartitionSelectionStrategy.with_multiple"></a>
     
     
 
                             </div>
+                </section>
+                <section id="FluvioAdmin">
+                    <div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">FluvioAdmin</span>:
+
+        
+    </div>
+    <a class="headerlink" href="#FluvioAdmin"></a>
+    
+    
+
+                            <div id="FluvioAdmin.connect" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">connect</span><span class="signature pdoc-code condensed">(<span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#FluvioAdmin.connect"></a>
+    
+    
+
+                            </div>
+                            <div id="FluvioAdmin.connect_with_config" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">connect_with_config</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">config</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#FluvioAdmin.connect_with_config"></a>
+    
+    
+
+                            </div>
+                            <div id="FluvioAdmin.create_topic" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">create_topic</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">name</span>, </span><span class="param"><span class="n">dry_run</span>, </span><span class="param"><span class="n">spec</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#FluvioAdmin.create_topic"></a>
+    
+    
+
+                            </div>
+                            <div id="FluvioAdmin.create_topic_with_config" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">create_topic_with_config</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">rq</span>, </span><span class="param"><span class="n">spec</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#FluvioAdmin.create_topic_with_config"></a>
+    
+    
+
+                            </div>
+                            <div id="FluvioAdmin.delete_topic" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">delete_topic</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">name</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#FluvioAdmin.delete_topic"></a>
+    
+    
+
+                            </div>
+                            <div id="FluvioAdmin.all_topics" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">all_topics</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#FluvioAdmin.all_topics"></a>
+    
+    
+
+                            </div>
+                            <div id="FluvioAdmin.list_topics" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">list_topics</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">filters</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#FluvioAdmin.list_topics"></a>
+    
+    
+
+                            </div>
+                            <div id="FluvioAdmin.list_topics_with_params" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">list_topics_with_params</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">filters</span>, </span><span class="param"><span class="n">summary</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#FluvioAdmin.list_topics_with_params"></a>
+    
+    
+
+                            </div>
+                            <div id="FluvioAdmin.watch_topic" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">watch_topic</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#FluvioAdmin.watch_topic"></a>
+    
+    
+
+                            </div>
+                            <div id="FluvioAdmin.create_smart_module" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">create_smart_module</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">name</span>, </span><span class="param"><span class="n">dry_run</span>, </span><span class="param"><span class="n">spec</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#FluvioAdmin.create_smart_module"></a>
+    
+    
+
+                            </div>
+                            <div id="FluvioAdmin.delete_smart_module" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">delete_smart_module</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">name</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#FluvioAdmin.delete_smart_module"></a>
+    
+    
+
+                            </div>
+                            <div id="FluvioAdmin.list_smart_modules" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">list_smart_modules</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">filters</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#FluvioAdmin.list_smart_modules"></a>
+    
+    
+
+                            </div>
+                            <div id="FluvioAdmin.watch_smart_module" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">watch_smart_module</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#FluvioAdmin.watch_smart_module"></a>
+    
+    
+
+                            </div>
+                            <div id="FluvioAdmin.list_partitions" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">list_partitions</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span>, </span><span class="param"><span class="n">filters</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#FluvioAdmin.list_partitions"></a>
+    
+    
+
+                            </div>
+                </section>
+                <section id="TopicSpec">
+                    <div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">TopicSpec</span>:
+
+        
+    </div>
+    <a class="headerlink" href="#TopicSpec"></a>
+    
+    
+
+                            <div id="TopicSpec.new_assigned" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">new_assigned</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">maps</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#TopicSpec.new_assigned"></a>
+    
+    
+
+                            </div>
+                            <div id="TopicSpec.new_computed" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">new_computed</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">partitions</span>, </span><span class="param"><span class="n">replications</span>, </span><span class="param"><span class="n">ignore</span><span class="o">=</span><span class="kc">None</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#TopicSpec.new_computed"></a>
+    
+    
+
+                            </div>
+                </section>
+                <section id="PartitionMap">
+                    <div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">PartitionMap</span>:
+
+        
+    </div>
+    <a class="headerlink" href="#PartitionMap"></a>
+    
+    
+
+                            <div id="PartitionMap.new" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">new</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">partition</span>, </span><span class="param"><span class="n">replicas</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#PartitionMap.new"></a>
+    
+    
+
+                            </div>
+                </section>
+                <section id="CommonCreateRequest">
+                    <div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">CommonCreateRequest</span>:
+
+        
+    </div>
+    <a class="headerlink" href="#CommonCreateRequest"></a>
+    
+    
+
+                            <div id="CommonCreateRequest.new" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">new</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">name</span>, </span><span class="param"><span class="n">dry_run</span>, </span><span class="param"><span class="n">timeout</span><span class="o">=</span><span class="kc">None</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#CommonCreateRequest.new"></a>
+    
+    
+
+                            </div>
+                </section>
+                <section id="MetadataTopicSpec">
+                    <div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">MetadataTopicSpec</span>:
+
+        
+    </div>
+    <a class="headerlink" href="#MetadataTopicSpec"></a>
+    
+    
+
+                            <div id="MetadataTopicSpec.name" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">name</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#MetadataTopicSpec.name"></a>
+    
+    
+
+                            </div>
+                </section>
+                <section id="WatchTopicStream">
+                    <div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">WatchTopicStream</span>:
+
+        
+    </div>
+    <a class="headerlink" href="#WatchTopicStream"></a>
+    
+    
+
+                            <div id="WatchTopicStream.next" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">next</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#WatchTopicStream.next"></a>
+    
+    
+
+                            </div>
+                </section>
+                <section id="MetaUpdateTopicSpec">
+                    <div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">MetaUpdateTopicSpec</span>:
+
+        
+    </div>
+    <a class="headerlink" href="#MetaUpdateTopicSpec"></a>
+    
+    
+
+                            <div id="MetaUpdateTopicSpec.epoch" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">epoch</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#MetaUpdateTopicSpec.epoch"></a>
+    
+    
+
+                            </div>
+                            <div id="MetaUpdateTopicSpec.changes" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">changes</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#MetaUpdateTopicSpec.changes"></a>
+    
+    
+
+                            </div>
+                            <div id="MetaUpdateTopicSpec.all" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">all</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#MetaUpdateTopicSpec.all"></a>
+    
+    
+
+                            </div>
+                </section>
+                <section id="MessageMetadataTopicSpec">
+                    <div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">MessageMetadataTopicSpec</span>:
+
+        
+    </div>
+    <a class="headerlink" href="#MessageMetadataTopicSpec"></a>
+    
+    
+
+                            <div id="MessageMetadataTopicSpec.is_update" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">is_update</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#MessageMetadataTopicSpec.is_update"></a>
+    
+    
+
+                            </div>
+                            <div id="MessageMetadataTopicSpec.is_delete" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">is_delete</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#MessageMetadataTopicSpec.is_delete"></a>
+    
+    
+
+                            </div>
+                            <div id="MessageMetadataTopicSpec.metadata_topic_spec" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">metadata_topic_spec</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#MessageMetadataTopicSpec.metadata_topic_spec"></a>
+    
+    
+
+                            </div>
+                </section>
+                <section id="SmartModuleSpec">
+                    <div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">SmartModuleSpec</span>:
+
+        
+    </div>
+    <a class="headerlink" href="#SmartModuleSpec"></a>
+    
+    
+
+                            <div id="SmartModuleSpec.with_binary" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">with_binary</span><span class="signature pdoc-code condensed">(<span class="param"><span class="nb">bytes</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#SmartModuleSpec.with_binary"></a>
+    
+    
+
+                            </div>
+                </section>
+                <section id="MetadataSmartModuleSpec">
+                    <div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">MetadataSmartModuleSpec</span>:
+
+        
+    </div>
+    <a class="headerlink" href="#MetadataSmartModuleSpec"></a>
+    
+    
+
+                            <div id="MetadataSmartModuleSpec.name" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">name</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#MetadataSmartModuleSpec.name"></a>
+    
+    
+
+                            </div>
+                </section>
+                <section id="WatchSmartModuleStream">
+                    <div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">WatchSmartModuleStream</span>:
+
+        
+    </div>
+    <a class="headerlink" href="#WatchSmartModuleStream"></a>
+    
+    
+
+                            <div id="WatchSmartModuleStream.next" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">next</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#WatchSmartModuleStream.next"></a>
+    
+    
+
+                            </div>
+                </section>
+                <section id="MessageMetadataSmartModuleSpec">
+                    <div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">MessageMetadataSmartModuleSpec</span>:
+
+        
+    </div>
+    <a class="headerlink" href="#MessageMetadataSmartModuleSpec"></a>
+    
+    
+
+                            <div id="MessageMetadataSmartModuleSpec.is_update" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">is_update</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#MessageMetadataSmartModuleSpec.is_update"></a>
+    
+    
+
+                            </div>
+                            <div id="MessageMetadataSmartModuleSpec.is_delete" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">is_delete</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#MessageMetadataSmartModuleSpec.is_delete"></a>
+    
+    
+
+                            </div>
+                            <div id="MessageMetadataSmartModuleSpec.metadata_smart_module_spec" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">metadata_smart_module_spec</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#MessageMetadataSmartModuleSpec.metadata_smart_module_spec"></a>
+    
+    
+
+                            </div>
+                </section>
+                <section id="MetaUpdateSmartModuleSpec">
+                    <div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">MetaUpdateSmartModuleSpec</span>:
+
+        
+    </div>
+    <a class="headerlink" href="#MetaUpdateSmartModuleSpec"></a>
+    
+    
+
+                            <div id="MetaUpdateSmartModuleSpec.epoch" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">epoch</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#MetaUpdateSmartModuleSpec.epoch"></a>
+    
+    
+
+                            </div>
+                            <div id="MetaUpdateSmartModuleSpec.changes" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">changes</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#MetaUpdateSmartModuleSpec.changes"></a>
+    
+    
+
+                            </div>
+                            <div id="MetaUpdateSmartModuleSpec.all" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">all</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#MetaUpdateSmartModuleSpec.all"></a>
+    
+    
+
+                            </div>
+                </section>
+                <section id="MetadataPartitionSpec">
+                    <div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">MetadataPartitionSpec</span>:
+
+        
+    </div>
+    <a class="headerlink" href="#MetadataPartitionSpec"></a>
+    
+    
+
+                            <div id="MetadataPartitionSpec.name" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">name</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="o">/</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#MetadataPartitionSpec.name"></a>
+    
+    
+
+                            </div>
+                </section>
+                <section id="Error">
+                    <div class="attr variable">
+            <span class="name">Error</span>        =
+<span class="default_value">&lt;class &#39;mymodule.PyFluvioError&#39;&gt;</span>
+
+        
+    </div>
+    <a class="headerlink" href="#Error"></a>
+    
+    
+
                 </section>
     </main>
 <script>
@@ -945,7 +2290,7 @@
                         if (doc.annotation)
                             heading += `<span class="annotation">${doc.annotation}</span>`;
                         if (doc.default_value)
-                            heading += `<span class="default_value">${doc.default_value}</span>`;
+                            heading += `<span class="default_value"> = ${doc.default_value}</span>`;
                         break;
                     default:
                         heading = `<span class="name">${doc.fullname}</span>`;
