@@ -1,6 +1,6 @@
 [package]
 name = "_fluvio_python"
-version = "0.16.2"
+version = "0.16.3"
 edition = "2021"
 authors = ["Fluvio Contributors <team@fluvio.io>"]
 
@@ -36,8 +36,8 @@ rpassword = "7.3.1"
 futures = "0.3.30"
 async-lock = "3.3.0"
 
-fluvio-future = { version = "0.6.2", features = ["task", "io", "native2_tls", "subscriber"] }
-fluvio = { features = ["admin", "rustls"], git = "https://github.com/infinyon/fluvio.git", tag = "v0.11.9" }
-fluvio-types = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.11.9" }
-fluvio-sc-schema = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.11.9" }
-fluvio-controlplane-metadata = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.11.9" }
+fluvio-future = { version = "0.7.0", features = ["task", "io", "native_tls", "subscriber"] }
+fluvio = { features = ["admin", "rustls"], git = "https://github.com/infinyon/fluvio.git", tag = "dev" }
+fluvio-types = { git = "https://github.com/infinyon/fluvio.git", tag = "dev" }
+fluvio-sc-schema = { git = "https://github.com/infinyon/fluvio.git", tag = "dev" }
+fluvio-controlplane-metadata = { git = "https://github.com/infinyon/fluvio.git", tag = "dev" }

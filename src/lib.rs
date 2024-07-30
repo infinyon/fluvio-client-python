@@ -148,9 +148,9 @@ impl Fluvio {
     }
 
     fn topic_producer(&self, topic: String, py: Python) -> PyResult<TopicProducer> {
-        Ok(TopicProducer(py.allow_threads(move || {
+        Ok(TopicProducer(Arc::new(py.allow_threads(move || {
             run_block_on(self.0.topic_producer(topic)).map_err(error_to_py_err)
-        })?))
+        })?)))
     }
 }
 
@@ -699,7 +699,7 @@ impl RecordMetadata {
 
 #[derive(Clone)]
 #[pyclass]
-struct TopicProducer(NativeTopicProducer);
+struct TopicProducer(Arc<NativeTopicProducer<fluvio::spu::SpuSocketPool>>);
 
 #[pymethods]
 impl TopicProducer {
