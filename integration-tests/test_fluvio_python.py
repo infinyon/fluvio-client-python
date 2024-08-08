@@ -783,12 +783,16 @@ class TestFluvioAdminTopic(CommonFluvioAdminTestCase):
         smart_modules = fluvio_admin.list_smartmodules([self.sm_name])
         self.assertEqual(len(smart_modules), 0)
 
-    # this test can fail because other failures from other runs can
-    # leave partitions dangling
     def test_admin_paritions(self):
         fluvio_admin = FluvioAdmin.connect()
+
+        topic = str(uuid.uuid4())
+        fluvio_admin.create_topic(topic)
 
         # list partitions
         all_partitions = fluvio_admin.list_partitions([])
         print(all_partitions)
-        self.assertNotEqual(len(all_partitions), self.num_partitions_start)
+        self.assertNotEqual(len(all_partitions), 0)
+
+        fluvio_admin.delete_topic(topic)
+
