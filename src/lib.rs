@@ -16,7 +16,7 @@ use fluvio::{
     MultiplePartitionConsumer as NativeMultiplePartitionConsumer, Offset as NativeOffset,
     PartitionConsumer as NativePartitionConsumer,
     PartitionSelectionStrategy as NativePartitionSelectionStrategy,
-    TopicProducer as NativeTopicProducer,
+    TopicProducerPool as NativeTopicProducer,
 };
 use fluvio_controlplane_metadata::message::{Message as NativeMessage, MsgType as NativeMsgType};
 use fluvio_controlplane_metadata::partition::PartitionSpec as NativePartitionSpec;
@@ -148,9 +148,10 @@ impl Fluvio {
     }
 
     fn topic_producer(&self, topic: String, py: Python) -> PyResult<TopicProducer> {
-        Ok(TopicProducer(py.allow_threads(move || {
+        let native_prod = py.allow_threads(move || {
             run_block_on(self.0.topic_producer(topic)).map_err(error_to_py_err)
-        })?))
+        })?;
+        Ok(TopicProducer(Arc::new(native_prod)))
     }
 }
 
@@ -699,7 +700,7 @@ impl RecordMetadata {
 
 #[derive(Clone)]
 #[pyclass]
-struct TopicProducer(NativeTopicProducer);
+struct TopicProducer(Arc<NativeTopicProducer>);
 
 #[pymethods]
 impl TopicProducer {
