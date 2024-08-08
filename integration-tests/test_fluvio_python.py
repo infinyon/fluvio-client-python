@@ -5,24 +5,15 @@ import unittest
 import uuid
 import os
 import itertools
-
-
-def create_topic(topic):
-    import subprocess
-
-    subprocess.run(f"fluvio topic create {topic}", shell=True).check_returncode()
-
-
-def delete_topic(topic):
-    import time
-    import subprocess
-
-    time.sleep(1)
-
-    subprocess.run(f"fluvio topic delete {topic}", shell=True).check_returncode()
+import time
 
 
 def create_smartmodule(sm_name, sm_path):
+    # Normally it would be this code, but bare wasm smartmodules
+    # are used in the python client testing, & only the cli supports it so far
+    # dry_run = False
+    # fluvio_admin = FluvioAdmin.connect()
+    # fluvio_admin.create_smartmodule(sm_name, sm_path, dry_run)
     import subprocess
 
     subprocess.run(
@@ -30,14 +21,9 @@ def create_smartmodule(sm_name, sm_path):
     ).check_returncode()
 
 
-def delete_smartmodule(sm_name):
-    import subprocess
-
-    subprocess.run("fluvio smartmodule delete %s" % sm_name, shell=True)
-
-
 class CommonFluvioSmartModuleTestCase(unittest.TestCase):
     def common_setup(self, sm_path=None):
+        self.admin = FluvioAdmin.connect()
         self.topic = str(uuid.uuid4())
         self.sm_name = str(uuid.uuid4())
         self.sm_path = sm_path
@@ -45,24 +31,24 @@ class CommonFluvioSmartModuleTestCase(unittest.TestCase):
         if sm_path is not None:
             create_smartmodule(self.sm_name, sm_path)
 
-        create_topic(self.topic)
+            # FIXME: without this the tests fail. Some topics get created but with offset -1
+            time.sleep(2)
 
-        # FIXME: without this the tests fail. Some topics get created but with offset -1
-        import time
-
-        time.sleep(2)
+        self.admin.create_topic(self.topic)
 
     def setUp(self):
         self.common_setup()
 
     def tearDown(self):
-        delete_topic(self.topic)
+        self.admin.delete_topic(self.topic)
+        time.sleep(1)
         if self.sm_path is not None:
-            delete_smartmodule(self.sm_name)
+            self.admin.delete_smartmodule(self.sm_name)
 
 
 class CommonAsyncFluvioSmartModuleTestCase(unittest.IsolatedAsyncioTestCase):
     def common_setup(self, sm_path=None):
+        self.admin = FluvioAdmin.connect()
         self.topic = str(uuid.uuid4())
         self.sm_name = str(uuid.uuid4())
         self.sm_path = sm_path
@@ -70,7 +56,7 @@ class CommonAsyncFluvioSmartModuleTestCase(unittest.IsolatedAsyncioTestCase):
         if sm_path is not None:
             create_smartmodule(self.sm_name, sm_path)
 
-        create_topic(self.topic)
+        self.admin.create_topic(self.topic)
 
         # FIXME: without this the tests fail. Some topics get created but with offset -1
         import time
@@ -81,9 +67,9 @@ class CommonAsyncFluvioSmartModuleTestCase(unittest.IsolatedAsyncioTestCase):
         self.common_setup()
 
     def tearDown(self):
-        delete_topic(self.topic)
+        self.admin.delete_topic(self.topic)
         if self.sm_path is not None:
-            delete_smartmodule(self.sm_name)
+            self.admin.delete_smartmodule(self.sm_name)
 
 
 class TestFluvioFilterSmartModules(CommonFluvioSmartModuleTestCase):
@@ -92,7 +78,7 @@ class TestFluvioFilterSmartModules(CommonFluvioSmartModuleTestCase):
         sm_path = os.path.abspath("smartmodules-for-ci/smartmodule_filter_on_a.wasm")
         self.common_setup(sm_path)
 
-    def test_consume_with_smart_module_by_name(self):
+    def test_consume_with_smartmodule_by_name(self):
         """
         Test adds a the alphabet into a topic in the format of record-[letter]
 
@@ -729,12 +715,18 @@ class CommonFluvioAdminTestCase(unittest.TestCase):
 
 
 class TestFluvioAdminTopic(CommonFluvioAdminTestCase):
+    def setUp(self):
+        self.common_setup()
+        fluvio_admin = FluvioAdmin.connect()
+        all_partitions = fluvio_admin.list_partitions([])
+        self.num_partitions_start = len(all_partitions)
+
     def test_admin_topic(self):
         fluvio_admin = FluvioAdmin.connect()
         topic_spec = TopicSpec.new_computed(3, 1, False)
 
         # create topic
-        fluvio_admin.create_topic(self.topic, False, topic_spec)
+        fluvio_admin.create_topic_spec(self.topic, False, topic_spec)
 
         # watch topic
         stream = fluvio_admin.watch_topic()
@@ -772,29 +764,31 @@ class TestFluvioAdminTopic(CommonFluvioAdminTestCase):
         fluvio_admin = FluvioAdmin.connect()
 
         # create smart module
-        fluvio_admin.create_smart_module(self.sm_name, self.sm_path, False)
+        fluvio_admin.create_smartmodule(self.sm_name, self.sm_path, False)
 
         # watch smart module
-        stream = fluvio_admin.watch_smart_module()
+        stream = fluvio_admin.watch_smartmodule()
         all_smart_modules = next(stream).all()
         all_smart_module_names = [sm.name() for sm in all_smart_modules]
         self.assertIn(self.sm_name, all_smart_module_names)
 
         # list smart modules
-        smart_modules = fluvio_admin.list_smart_modules([self.sm_name])
+        smart_modules = fluvio_admin.list_smartmodules([self.sm_name])
         self.assertEqual(smart_modules[0].name(), self.sm_name)
 
         # delete smart module
-        fluvio_admin.delete_smart_module(self.sm_name)
+        fluvio_admin.delete_smartmodule(self.sm_name)
 
         # list smart modules
-        smart_modules = fluvio_admin.list_smart_modules([self.sm_name])
+        smart_modules = fluvio_admin.list_smartmodules([self.sm_name])
         self.assertEqual(len(smart_modules), 0)
 
+    # this test can fail because other failures from other runs can
+    # leave partitions dangling
     def test_admin_paritions(self):
         fluvio_admin = FluvioAdmin.connect()
 
         # list partitions
         all_partitions = fluvio_admin.list_partitions([])
         print(all_partitions)
-        self.assertNotEqual(len(all_partitions), 0)
+        self.assertNotEqual(len(all_partitions), self.num_partitions_start)
