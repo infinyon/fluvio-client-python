@@ -796,4 +796,5 @@ class TestFluvioAdminTopic(CommonFluvioAdminTestCase):
 
         # list partitions
         all_partitions = fluvio_admin.list_partitions([])
+        print(all_partitions)
         self.assertNotEqual(len(all_partitions), 0)
