@@ -868,7 +868,16 @@ class FluvioAdmin:
     def connect_with_config(config: FluvioConfig):
         return FluvioAdmin(_FluvioAdmin.connect_with_config(config._inner))
 
-    def create_topic(self, topic: str, dry_run: bool, spec: TopicSpec):
+    def create_topic(self, topic: str):
+
+        partitions = 1
+        replication = 1
+        ignore_rack = True
+        spec = _TopicSpec.new_computed(partitions, replication, ignore_rack)
+        dry_run = False
+        return self._inner.create_topic(topic, dry_run, spec)
+
+    def create_topic_spec(self, topic: str, dry_run: bool, spec: TopicSpec):
         return self._inner.create_topic(topic, dry_run, spec._inner)
 
     def create_topic_with_config(
@@ -893,19 +902,19 @@ class FluvioAdmin:
     def watch_topic(self) -> typing.Iterator[MetadataTopicSpec]:
         return self._topic_spec_generator(self._inner.watch_topic())
 
-    def create_smart_module(self, name: str, path: str, dry_run: bool):
+    def create_smartmodule(self, name: str, path: str, dry_run: bool):
         spec = SmartModuleSpec.new(path)
         return self._inner.create_smart_module(name, dry_run, spec._inner)
 
-    def delete_smart_module(self, name: str):
+    def delete_smartmodule(self, name: str):
         return self._inner.delete_smart_module(name)
 
-    def list_smart_modules(
+    def list_smartmodules(
         self, filters: typing.List[str]
     ) -> typing.List[MetadataSmartModuleSpec]:
         return self._inner.list_smart_modules(filters)
 
-    def watch_smart_module(self) -> typing.Iterator[MetadataSmartModuleSpec]:
+    def watch_smartmodule(self) -> typing.Iterator[MetadataSmartModuleSpec]:
         return self._smart_module_spec_generator(self._inner.watch_smart_module())
 
     def list_partitions(
