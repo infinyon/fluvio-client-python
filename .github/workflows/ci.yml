@@ -1,20 +1,17 @@
 name: CI
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [staging, trying]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
-  cancel_previous_runs:
-    name: Cancel Previous Runs
-    runs-on: ubuntu-latest
-    steps:
-      - uses: styfle/cancel-workflow-action@0.11.0
-        with:
-          access_token: ${{ secrets.GITHUB_TOKEN }}
   check_fmt:
     name: check formatting
     runs-on: ${{ matrix.os }}
@@ -24,8 +21,8 @@ jobs:
         rust: [stable]
         python-version: ["3.11"]
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/cache@v3
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/bin/
@@ -37,14 +34,13 @@ jobs:
             target/
           key: ${{ matrix.os }}-cargo-${{matrix.python-version}}-${{ hashFiles('**/Cargo.lock') }}
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install ${{ matrix.rust }}
-        uses: actions-rs/toolchain@v1
+      - name: Install rust ${{ matrix.rust }}
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
-          override: true
       - name: check fmt, flake8 and black
         run: make lint
       - name: Verify Docs generate
@@ -57,10 +53,10 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         rust: [stable]
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/cache@v3
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/bin/
@@ -71,26 +67,30 @@ jobs:
             ~/.cargo/.crates2.json
             target/
           key: ${{ matrix.os }}-cargo-${{matrix.python-version}}-${{ hashFiles('**/Cargo.lock') }}
-      - name: Install ${{ matrix.rust }}
-        uses: actions-rs/toolchain@v1
+      - name: Install rust ${{ matrix.rust }}
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
-          override: true
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: AbsaOSS/k3d-action@v2
-        name: "Create fluvio k3d Cluster"
-        with:
-          cluster-name: "fluvio"
-      - name: Sleep 20 to ensure k3d cluster is ready
-        run: sleep 20
-      - name: Install Fluvio Local Cluster
+      # - uses: AbsaOSS/k3d-action@v2
+      #   name: "Create fluvio k3d Cluster"
+      #   with:
+      #     cluster-name: "fluvio"
+      # - name: Sleep 20 to ensure k3d cluster is ready
+      #   run: sleep 20
+      # - name: Install Fluvio Cluster on k3d
+      #   uses: infinyon/fluvio@master
+      #   with:
+      #     cluster-type: k3d
+      #     version: stable
+      - name: Install local Fluvio Cluster
         uses: infinyon/fluvio@master
         with:
           cluster-type: local
-          version: latest
+          version: stable
       - name: Check Fluvio Installation
         run: |
           fluvio version
@@ -103,8 +103,13 @@ jobs:
         run: |
           make build-dev
       - name: Test
-        run: |
-          make integration-tests
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 15
+          max_attempts: 3
+          command: make integration-tests
+        env:
+          FLV_SOCKET_WAIT: 300
 
   macos_simple_tests:
     name: MacOS Simple test
@@ -113,16 +118,15 @@ jobs:
       matrix:
         os: [macos-latest]
         rust: [stable]
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
     steps:
-      - uses: actions/checkout@v3
-      - name: Install ${{ matrix.rust }}
-        uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v4
+      - name: Install rust ${{ matrix.rust }}
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
-          override: true
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Build
@@ -132,3 +136,14 @@ jobs:
       - name: Test macOS failing to connect
         run: |
           make macos-ci-tests
+
+  done:
+    name: Done
+    needs:
+      - macos_simple_tests
+      - smoke_test
+      - check_fmt
+    runs-on: ubuntu-latest
+    steps:
+      - name: Done
+        run: echo "Done!"

@@ -2,11 +2,9 @@ name: Publish
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches: [ main ]
   push:
     tags:
-      - 'v*'
+      - "v*"
 jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }} for Python ${{matrix.python-version}}.
@@ -14,7 +12,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest] # TODO: add windows-2019,
-        python-version: ["38", "39", "310", "311"]
+        python-version: ["38", "39", "310", "311", "312"]
     env:
       CIBW_SKIP: "cp36-* pp* *-win32"
       CIBW_ARCHS_MACOS: x86_64 universal2
@@ -23,8 +21,8 @@ jobs:
       CIBW_BUILD_VERBOSITY: 1
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/cache@v3
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/bin/
@@ -37,17 +35,16 @@ jobs:
           key: ${{ matrix.os }}-cargo-${{matrix.python-version}}-${{ hashFiles('**/Cargo.lock') }}
 
       # Used to host cibuildwheel
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
       - if: runner.os == 'macOS'
-        name: Install Rust Stable
-        uses: actions-rs/toolchain@v1
+        name: Install rust toolchain
+        uses: dtolnay/rust-toolchain@master
         with:
-          target: aarch64-apple-darwin
+          targets: aarch64-apple-darwin, x86_64-apple-darwin
           toolchain: stable
-          override: true
 
       - if: runner.os != 'Linux'
         name: Setup env when not using docker
@@ -57,32 +54,32 @@ jobs:
       - if: runner.os == 'Linux'
         name: Set up QEMU
         id: qemu
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
         with:
           image: tonistiigi/binfmt:latest
           platforms: arm64
 
       - name: Build wheels for ${{matrix.python-version}} on ${{matrix.os}}
-        uses: pypa/cibuildwheel@v2.12.0
+        uses: pypa/cibuildwheel@v2.20.0
         env:
           CIBW_BUILD: "cp${{matrix.python-version}}-manylinux_x86_64 cp${{matrix.python-version}}-macosx_x86_64 cp${{matrix.python-version}}-macosx_universal2 cp${{matrix.python-version}}-macosx_arm64"
 
-
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
-          name: wheel
+          name: wheel-${{matrix.python-version}}-${{matrix.os}}
           path: ./wheelhouse/*.whl
+          overwrite: true
 
   build_sdist:
     name: Build source distribution
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         name: Install Python
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
       - name: Install setuptools and setuptools-rust
         run: |
@@ -90,7 +87,7 @@ jobs:
       - name: Build sdist
         run: python setup.py bdist_wheel sdist
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: wheel
           path: dist/*.tar.gz
@@ -99,17 +96,21 @@ jobs:
     name: Cross Build wheels for ${{ matrix.platform.name }}
     runs-on: ubuntu-latest
     env:
-        CARGO: cross
+      CARGO: cross
     strategy:
       matrix:
-          platform: [
-              { name: "linux_armv7l", target: "armv7-unknown-linux-gnueabihf" },
-              { name: "linux_armv6l", target: "arm-unknown-linux-gnueabihf" },
-              { name: "manylinux2014_aarch64", target: "aarch64-unknown-linux-gnu" },
+        platform:
+          [
+            { name: "linux_armv7l", target: "armv7-unknown-linux-gnueabihf" },
+            { name: "linux_armv6l", target: "arm-unknown-linux-gnueabihf" },
+            {
+              name: "manylinux2014_aarch64",
+              target: "aarch64-unknown-linux-gnu",
+            },
           ]
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/cache@v3
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/bin/
@@ -120,22 +121,20 @@ jobs:
             ~/.cargo/.crates2.json
             target/
           key: ${{ matrix.platform.target }}-cargo-${{ matrix.platform.name }}-${{ hashFiles('**/Cargo.lock') }}
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         name: Install Python
         with:
           python-version: "3.11"
       - name: Install Rust ${{ matrix.platform.target }}
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
           target: ${{ matrix.platform.target }}
-          profile: minimal
           toolchain: stable
 
       - name: Install cross
-        uses: actions-rs/install@v0.1
+        uses: taiki-e/install-action@v2
         with:
-          crate: cross
-          version: latest
+          tool: cross
 
       - name: Install setuptools and setuptools-rust
         run: |
@@ -146,24 +145,26 @@ jobs:
       - name: Build bdist
         run: python setup.py bdist_wheel --py-limited-api=cp38 --plat-name ${{ matrix.platform.name }}
         env:
-            CARGO_BUILD_TARGET: ${{ matrix.platform.target }}
-      - uses: actions/upload-artifact@v3
+          CARGO_BUILD_TARGET: ${{ matrix.platform.target }}
+      - uses: actions/upload-artifact@v4
         with:
-          name: wheel
+          name: wheel-${{ matrix.platform.target }}
           path: dist/*.whl
+          overwrite: true
 
   upload_pypi:
     needs: [build_wheels, build_sdist, build_cc_wheels]
     runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
 
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
-          name: wheel
+          pattern: wheel-*
           path: dist
+          merge-multiple: true
 
-      - uses: pypa/gh-action-pypi-publish@master
-        if: github.event_name == 'workflow_dispatch'
+      - uses: pypa/gh-action-pypi-publish@v1.9.0
         with:
           user: __token__
           password: ${{ secrets.PYPI_ACCESS_TOKEN }}
@@ -175,14 +176,14 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.11"]
+        python-version: ["3.12"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
           fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Build docs
@@ -191,7 +192,7 @@ jobs:
           touch docs/.nojekyll
           echo "FLUVIO_PYTHON_CLIENT_VERSION=$(venv/bin/python setup.py --version 2> /dev/null)" >> $GITHUB_ENV
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: docs
           path: docs
@@ -203,13 +204,15 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
+    permissions:
+      contents: write           # 'write' access to repository contents
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
           fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: docs
           path: docs-latest
@@ -228,42 +231,7 @@ jobs:
           git commit -m "Updated Fluvio Python client docs" -a || true
 
       - name: Push changes
-        if: github.event_name == 'workflow_dispatch'
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: docs
-
-  upload_to_github_releases:
-    needs: [build_wheels, build_sdist, build_cc_wheels, build_docs]
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: wheel
-          path: dist
-
-      - uses: actions/download-artifact@v3
-        with:
-          name: docs
-          path: docs
-
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        if: github.ref == 'refs/heads/main' && github.event_name != 'workflow_dispatch'
-        with:
-          name: latest
-          prerelease: true
-          files: |
-            dist/*
-            docs
-
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        if: github.event_name == 'workflow_dispatch'
-        with:
-          name: ${{ github.FLUVIO_PYTHON_CLIENT_VERSION }}
-          files: |
-            dist/*
-            docs

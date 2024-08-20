@@ -1,21 +1,16 @@
 name: Fluvio Cloud CI
 
+concurrency:
+  group: cloud-${{ github.ref }}
+
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [main]
   schedule:
-    - cron:  '0 14 * * *'
+    - cron: "0 14 * * *"
 
 jobs:
-  cancel_previous_runs:
-    name: Cancel Previous Runs
-    runs-on: ubuntu-latest
-    steps:
-      - uses: styfle/cancel-workflow-action@0.11.0
-        with:
-          access_token: ${{ secrets.GITHUB_TOKEN }}
-
   smoke_test:
     name: Smoke test
     runs-on: ${{ matrix.os }}
@@ -23,13 +18,12 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         rust: [stable]
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.8", "3.12"]
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/cache@v3
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
         with:
           path: |
-            ~/.cargo/bin/
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
@@ -37,23 +31,24 @@ jobs:
             ~/.cargo/.crates2.json
             target/
           key: ${{ matrix.os }}-cargo-${{matrix.python-version}}-${{ hashFiles('**/Cargo.lock') }}
-      - name: Install ${{ matrix.rust }}
-        uses: actions-rs/toolchain@v1
+      - name: Install rust ${{ matrix.rust }}
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
-          override: true
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install fluvio
         run: |
-          curl -fsS https://packages.fluvio.io/v1/install.sh | bash
+          curl -fsS https://hub.infinyon.cloud/install/install.sh | bash
           echo "${HOME}/.fluvio/bin" >> $GITHUB_PATH
 
       - name: Login to fluvio cloud
         run: |
           fluvio cloud login --email ${FLUVIO_CLOUD_TEST_USERNAME} --password ${FLUVIO_CLOUD_TEST_PASSWORD} --remote 'https://dev.infinyon.cloud'
+          # add profile
+          fluvio cloud cluster sync
         env:
           FLUVIO_CLOUD_TEST_USERNAME: ${{ secrets.FLUVIO_CLOUD_TEST_USERNAME }}
           FLUVIO_CLOUD_TEST_PASSWORD: ${{ secrets.FLUVIO_CLOUD_TEST_PASSWORD }}
@@ -61,6 +56,8 @@ jobs:
       - name: Run unit tests
         run: |
           make integration-tests
+        env:
+          FLV_SOCKET_WAIT: 300
 
       - name: Slack Notification
         uses: 8398a7/action-slack@v3

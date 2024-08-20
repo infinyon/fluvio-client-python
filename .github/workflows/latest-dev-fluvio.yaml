@@ -3,9 +3,9 @@ name: Fluvio CI with latest fluvio
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [main]
   schedule:
-    - cron:  '0 14 * * *'
+    - cron: "0 14 * * *"
 
 jobs:
   smoke_test:
@@ -15,21 +15,22 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         rust: [stable]
-        python-version: ["3.11"]
+        python-version: ["3.12"]
     steps:
-      - uses: actions/checkout@v3
-      - name: Install ${{ matrix.rust }}
-        uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v4
+      - name: Install rust ${{ matrix.rust }}
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
-          override: true
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Update the fluvio client to use the latest on the fluvio master branch.
         run: |
-          cargo add fluvio --git https://github.com/infinyon/fluvio --branch master
+          # work around cargo bug
+          #cargo add fluvio --git https://github.com/infinyon/fluvio --branch master
+          sed -i.bak "s/tag = "\(.*\)"/branch = "master"/g" Cargo.toml
           git diff Cargo.toml
 
       - name: check
@@ -47,23 +48,11 @@ jobs:
       - name: Sleep 20 to ensure k3d cluster is ready
         run: sleep 20
 
-      # TODO: Ideally we'd install fluvio and start the cluster from the
-      # composite action. The composite action doesn't support installing the
-      # `--development` version of fluvio
-      # - name: Install Fluvio Cluster
-      #   uses: infinyon/fluvio@master
-      #   with:
-      #     cluster-type: local
-      #     version: latest
-
-      - name: Install fluvio
-        run: |
-          curl -fsS https://packages.fluvio.io/v1/install.sh | bash
-          echo "${HOME}/.fluvio/bin" >> $GITHUB_PATH
-      - name: Update fluvio client to development and start the local cluster.
-        run: |
-          fluvio update --develop
-          fluvio cluster start --rust-log debug --local
+      - name: Install Fluvio Cluster on k3d
+        uses: infinyon/fluvio@master
+        with:
+          cluster-type: k3d
+          version: latest
 
       - name: Sleep 10 to ensure the fluvio cluster is ready
         run: sleep 10
@@ -76,10 +65,11 @@ jobs:
           echo foo | fluvio produce foobar
           fluvio consume foobar -B -d
 
-
       - name: Test
         run: |
           make integration-tests
+        env:
+          FLV_SOCKET_WAIT: 300
 
       - name: Slack Notification
         uses: 8398a7/action-slack@v3

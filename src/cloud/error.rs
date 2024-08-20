@@ -72,3 +72,9 @@ impl From<http_types::Error> for CloudLoginError {
         Self::HttpError(HttpError { inner })
     }
 }
+
+impl From<CloudLoginError> for pyo3::PyErr {
+    fn from(err: CloudLoginError) -> pyo3::PyErr {
+        crate::PyFluvioError::new_err(err.to_string())
+    }
+}
