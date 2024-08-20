@@ -795,4 +795,3 @@ class TestFluvioAdminTopic(CommonFluvioAdminTestCase):
         self.assertNotEqual(len(all_partitions), 0)
 
         fluvio_admin.delete_topic(topic)
-
