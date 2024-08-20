@@ -61,11 +61,15 @@ class CommonAsyncFluvioSmartModuleTestCase(unittest.IsolatedAsyncioTestCase):
         if sm_path is not None:
             create_smartmodule(self.sm_name, sm_path)
 
-        self.admin.create_topic(self.topic)
+        try:
+            self.admin.create_topic(self.topic)
+        except Exception as err:
+            print("Retrying after create_topic error {}", err)
+            time.sleep(5)
+            self.admin.create_topic(self.topic)
 
         # FIXME: without this the tests fail. Some topics get created but with offset -1
         import time
-
         time.sleep(2)
 
     def setUp(self):
@@ -792,7 +796,12 @@ class TestFluvioAdminTopic(CommonFluvioAdminTestCase):
         fluvio_admin = FluvioAdmin.connect()
 
         topic = str(uuid.uuid4())
-        fluvio_admin.create_topic(topic)
+        try:
+            fluvio_admin.create_topic(topic)
+        except Exception as err:
+            print("Retrying after create_topic error {}", err)
+            time.sleep(5)
+            fluvio_admin.create_topic(topic)
 
         # list partitions
         all_partitions = fluvio_admin.list_partitions([])
