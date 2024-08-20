@@ -75,16 +75,21 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: AbsaOSS/k3d-action@v2
-        name: "Create fluvio k3d Cluster"
-        with:
-          cluster-name: "fluvio"
-      - name: Sleep 20 to ensure k3d cluster is ready
-        run: sleep 20
-      - name: Install Fluvio Cluster on k3d
+      # - uses: AbsaOSS/k3d-action@v2
+      #   name: "Create fluvio k3d Cluster"
+      #   with:
+      #     cluster-name: "fluvio"
+      # - name: Sleep 20 to ensure k3d cluster is ready
+      #   run: sleep 20
+      # - name: Install Fluvio Cluster on k3d
+      #   uses: infinyon/fluvio@master
+      #   with:
+      #     cluster-type: k3d
+      #     version: stable
+      - name: Install local Fluvio Cluster
         uses: infinyon/fluvio@master
         with:
-          cluster-type: k3d
+          cluster-type: local
           version: stable
       - name: Check Fluvio Installation
         run: |
