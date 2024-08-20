@@ -103,6 +103,8 @@ jobs:
           timeout_minutes: 15
           max_attempts: 3
           command: make integration-tests
+        env:
+          FLV_SOCKET_WAIT: 300
 
   macos_simple_tests:
     name: MacOS Simple test

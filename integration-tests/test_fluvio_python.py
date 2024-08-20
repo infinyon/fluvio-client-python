@@ -34,7 +34,12 @@ class CommonFluvioSmartModuleTestCase(unittest.TestCase):
             # FIXME: without this the tests fail. Some topics get created but with offset -1
             time.sleep(2)
 
-        self.admin.create_topic(self.topic)
+        try:
+            self.admin.create_topic(self.topic)
+        except Exception as err:
+            print("Retrying after create_topic error {}", err)
+            time.sleep(5)
+            self.admin.create_topic(self.topic)
 
     def setUp(self):
         self.common_setup()
