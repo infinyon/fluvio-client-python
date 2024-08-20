@@ -76,6 +76,7 @@ class CommonAsyncFluvioSmartModuleTestCase(unittest.IsolatedAsyncioTestCase):
 
     def tearDown(self):
         self.admin.delete_topic(self.topic)
+        time.sleep(1)
         if self.sm_path is not None:
             self.admin.delete_smartmodule(self.sm_name)
 
