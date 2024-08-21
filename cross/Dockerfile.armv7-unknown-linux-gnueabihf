@@ -1,3 +1,1 @@
-FROM rustembedded/cross:armv7-unknown-linux-gnueabihf
-
-RUN apt-get update && apt-get install python3 -y && rm -rf /var/lib/apt/lists/*
+FROM ghcr.io/cross-rs/armv7-unknown-linux-gnueabihf:main
