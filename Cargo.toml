@@ -17,6 +17,7 @@ anyhow = "1.0"
 async-h1 = "2.3.3"
 async-lock = "3.3.0"
 async-std = "1.6.5"
+aws-lc-rs = { version = "1", features = ["bindgen"] }
 cc = "=1.1.12"
 dirs = "5.0.1"
 futures = "0.3.30"
