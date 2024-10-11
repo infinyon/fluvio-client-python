@@ -1,6 +1,6 @@
 [package]
 name = "_fluvio_python"
-version = "0.16.3"
+version = "0.16.4"
 edition = "2021"
 authors = ["Fluvio Contributors <team@fluvio.io>"]
 
@@ -38,7 +38,10 @@ url = "2.5.0"
 webbrowser = "1.0.0"
 
 fluvio-future = { version = "0.7.0", features = ["task", "io", "native_tls", "subscriber"] }
-fluvio = { features = ["admin", "rustls"], git = "https://github.com/infinyon/fluvio.git", tag = "v0.11.11" }
-fluvio-types = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.11.11" }
-fluvio-sc-schema = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.11.11" }
-fluvio-controlplane-metadata = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.11.11" }
+fluvio = { features = ["admin", "rustls"], git = "https://github.com/infinyon/fluvio.git", tag = "v0.12.0" }
+fluvio-types = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.12.0" }
+fluvio-sc-schema = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.12.0" }
+fluvio-controlplane-metadata = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.12.0" }
+
+# transitive version selection
+parking_lot = "0.12.3"
