@@ -30,13 +30,14 @@ from fluvio import Fluvio
 fluvio = Fluvio.connect()
 producer = fluvio.topic_producer('my-topic')
 producer.send_string("FOOBAR")
+producer.flush()
 ```
 
 ## Consumer
 ```python
 from fluvio import (Fluvio, Offset)
 fluvio = Fluvio.connect()
-consumer = fluvio.partition_consumer('my-topic-while', 0)
+consumer = fluvio.partition_consumer('my-topic', 0)
 stream = consumer.stream(Offset.beginning())
 
 for i in stream:
