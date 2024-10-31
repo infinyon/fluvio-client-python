@@ -112,6 +112,7 @@ class ProduceOutput:
         """
         return await self._inner.async_wait()
 
+
 class Offset:
     """Describes the location of an event stored in a Fluvio partition."""
 

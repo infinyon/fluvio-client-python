@@ -1,11 +1,10 @@
-from string import ascii_lowercase
-from fluvio import Fluvio, Offset, ConsumerConfig, SmartModuleKind, FluvioConfig
-from fluvio import FluvioAdmin, TopicSpec
+from fluvio import Fluvio, Offset, FluvioConfig
+from fluvio import FluvioAdmin
 import unittest
 import uuid
-import os
 import itertools
 import time
+
 
 def create_smartmodule(sm_name, sm_path):
     # Normally it would be this code, but bare wasm smartmodules
@@ -22,7 +21,7 @@ def create_smartmodule(sm_name, sm_path):
 
 class CommonFluvioSetup(unittest.TestCase):
     def common_setup(self, sm_path=None):
-        """ Optionally create a smartmodule if sm_path is provided """
+        """Optionally create a smartmodule if sm_path is provided"""
         self.admin = FluvioAdmin.connect()
         self.topic = str(uuid.uuid4())
         self.sm_name = str(uuid.uuid4())
@@ -117,7 +116,7 @@ class TestFluvioProduceAsync(unittest.IsolatedAsyncioTestCase, CommonFluvioSetup
             ret.wait()
 
     async def test_async_produce_async_wait(self):
-        """ simple test, test_async_produce_record_metadata is more comprehensive """
+        """simple test, test_async_produce_record_metadata is more comprehensive"""
         fluvio = Fluvio.connect()
 
         producer = fluvio.topic_producer(self.topic)
@@ -158,4 +157,3 @@ class TestFluvioProduceAsync(unittest.IsolatedAsyncioTestCase, CommonFluvioSetup
         for produce_output in produce_outputs:
             # subsequent calls to po.wait shall return None
             self.assertEqual(produce_output.wait(), None)
-
