@@ -2,6 +2,87 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.16.5]
+
+### Bug Fixes
+
+- Produce output async_wait result misconversion always resulted in None
+
+### Miscellaneous Tasks
+
+- Python 3.8 EOL
+- Update CHANGELOG.md
+- README.md update
+- Make lint refresh and fmt fixes
+
+## [0.16.4] - 2024-10-11
+
+### Miscellaneous Tasks
+
+- Update to fluvio 0.12.0 (#495)
+- Fix readme examples (#465)
+- Bump pypa/gh-action-pypi-publish from 1.9.0 to 1.10.0 (#469)
+- Update cc requirement from =1.1.12 to =1.1.15 (#467)
+
+## [0.16.3] - 2024-08-21
+
+### Bug Fixes
+
+- Switch to rustls (#376)
+- Wrap multiple-partition-consumer correctly
+- Change to recommended dev build (#396)
+- Bindgen dependency when cross compilation (#463)
+- Publish build wheels (#464)
+
+### Features
+
+- Release GIL for most "run_block_on" calls
+- Add python realization of ProduceOutput and RecordMetadata
+
+### Miscellaneous Tasks
+
+- Ci update outdated deps (#372)
+- Use fixed version of cc (#379)
+- Fluvio-cloud-ci fix profile cfg
+- Update to fluvio 0.11.5
+- Bump cargo.toml minor ver
+- Bump black from 24.1.1 to 24.3.0 (#395)
+- Bump setuptools-rust from 1.8.1 to 1.9.0 (#374)
+- Bump cibuildwheel from 2.16.0 to 2.17.0 (#391)
+- Bump pypa/cibuildwheel from 2.16.5 to 2.17.0 (#392)
+- Update async-lock requirement from 2.4.0 to 3.3.0 (#387)
+- Bump black from 24.3.0 to 24.4.0 (#401)
+- Bump fluvio-types from v0.11.5 to v0.11.6 (#402)
+- Update webbrowser requirement from 0.8.2 to 1.0.0 (#405)
+- Update to fluvio 0.11.8
+- Ci, publish, add toolchain
+- Bump pip version
+- Bump cibuildwheel from 2.18.1 to 2.19.0 (#428)
+- Bump pypa/cibuildwheel from 2.18.1 to 2.19.0 (#427)
+- Bump fluvio-types from v0.11.8 to v0.11.9 (#425)
+- Update fluvio (#432)
+- Update cc requirement from =1.0.83 to =1.1.0 (#433)
+- Refresh docs
+- Ci, push docs on tag event
+- Bump black from 24.4.0 to 24.8.0 (#450)
+- Bump setuptools-rust from 1.9.0 to 1.10.1 (#449)
+- Bump cibuildwheel from 2.19.0 to 2.20.0 (#446)
+- Bump pypa/cibuildwheel from 2.19.0 to 2.20.0 (#451)
+- Fluvio update to 0.11.11 (#445)
+- Ci cloud fix (#456)
+- Update cc requirement from =1.1.5 to =1.1.11 (#459)
+- Update cc requirement from =1.1.11 to =1.1.12 (#460)
+- Use admin module instead of cli in tests (#457)
+
+### Build
+
+- Bump pypa/gh-action-pypi-publish from 1.8.11 to 1.9.0 (#431)
+- Update cc requirement from =1.1.0 to =1.1.5 (#434)
+
+## [0.16.1] [v0.16.2]
+
+- publishing fix releases
+
 ## [0.16.0] - 2023-01-31
 
 ### Miscellaneous Tasks

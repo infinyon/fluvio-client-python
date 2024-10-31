@@ -52,10 +52,16 @@ use std::sync::Arc;
 use tracing::info;
 use url::Host;
 mod cloud;
+
 // use crate::error::FluvioError;
 mod error;
+mod produce_output;
+
+pub use produce_output::ProduceOutput;
+
 use cloud::{CloudClient, CloudLoginError};
 use error::FluvioError;
+
 use pyo3::exceptions::{PyException, PyValueError};
 use pyo3::prelude::*;
 use pyo3::types::PyList;
@@ -638,50 +644,7 @@ impl ProducerBatchRecord {
     }
 }
 
-#[pyclass]
-pub struct ProduceOutput {
-    // inner is placed into an Option because the native ProduceOutput
-    // is consumed by the `wait` method, which is not possible on the python interface
-    // (only `&self` or `&mut self` is allowed)
-    pub inner: Option<NativeProduceOutput>,
-}
-
-#[pymethods]
-impl ProduceOutput {
-    fn wait(&mut self, py: Python) -> Result<Option<RecordMetadata>, FluvioError> {
-        // wait on `inner` consumes `self`, but we only have a `&mut self` reference
-        // so we take it out of the `Option` and consume it that way
-        // a subsequent call to `wait` will return `None`
-        let inner = self.inner.take();
-        Ok(inner
-            .map(|produce_output| {
-                run_block_on(produce_output.wait())
-                    .map(|metadata| RecordMetadata { inner: metadata })
-            })
-            .transpose()?)
-    }
-
-    fn async_wait<'b>(&'b mut self, py: Python<'b>) -> PyResult<&'b PyAny> {
-        let inner = self.inner.take();
-        pyo3_asyncio::async_std::future_into_py(py, async move {
-            let record_metadata = match inner {
-                Some(produce_output) => Some(
-                    produce_output
-                        .wait()
-                        .await
-                        .map(|metadata| RecordMetadata { inner: metadata })
-                        .map_err(FluvioError::FluvioErr)?,
-                ),
-                None => None,
-            };
-            Ok(match record_metadata {
-                Some(record_metadata) => Python::with_gil(|py| record_metadata.into_py(py)),
-                None => Python::with_gil(|py| py.None()),
-            })
-        })
-    }
-}
-
+#[derive(Debug)]
 #[pyclass]
 pub struct RecordMetadata {
     pub inner: NativeRecordMetadata,
