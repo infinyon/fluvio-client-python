@@ -33,9 +33,7 @@ class CommonFluvioSetup(unittest.TestCase):
         try:
             self.admin.create_topic(self.topic)
         except Exception as err:
-            print("Retrying after create_topic error {}", err)
-            time.sleep(5)
-            self.admin.create_topic(self.topic)
+            print("create_topic error {}, will try to verify", err)
 
         # list topics to verify topic was created
         max_retries = 100
