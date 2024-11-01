@@ -3,7 +3,7 @@ from setuptools_rust import Binding, RustExtension, Strip
 
 setup(
     name="fluvio",
-    version="0.16.4",
+    version="0.16.5",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     author="Fluvio Contributors",
@@ -28,7 +28,6 @@ setup(
         # that you indicate you support Python 3. These classifiers are *not*
         # checked by 'pip install'. See instead 'python_requires' below.
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",

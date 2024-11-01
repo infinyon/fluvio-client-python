@@ -97,6 +97,7 @@ class ProduceOutput:
 
         This is a blocking call and may only return a `RecordMetadata` once.
         Any subsequent call to `wait` will return a `None` value.
+        Errors will be raised as exceptions of type `FluvioError`.
         """
         res = self._inner.wait()
         if res is None:
@@ -109,10 +110,7 @@ class ProduceOutput:
         This may only return a `RecordMetadata` once.
         Any subsequent call to `wait` will return a `None` value.
         """
-        res = await self._inner.async_wait()
-        if res is None:
-            return None
-        return RecordMetadata(res)
+        return await self._inner.async_wait()
 
 
 class Offset:

@@ -46,11 +46,11 @@ for i in stream:
 
 # Developer Notes
 
-This project uses [flapigen](https://github.com/Dushistov/flapigen-rs) to
-genate the C static library and
-[setuptools-rust](https://github.com/PyO3/setuptools-rust) to bundle it into a
+This project uses [PyO3](https://pyo3.rs) to wrap the fluvio crate.
+
+[setuptools-rust](https://github.com/PyO3/setuptools-rust) bundles it into a
 python package. For cross platform builds,
-       [cibuildwheel](https://github.com/joerick/cibuildwheel) is used.
+[cibuildwheel](https://github.com/joerick/cibuildwheel) is used.
 
 Running the tests locally require having already setup a [fluvio
 locally](https://www.fluvio.io/docs/getting-started/fluvio-local/) or on
