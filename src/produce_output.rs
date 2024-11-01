@@ -31,7 +31,7 @@ impl ProduceOutput {
             .map(|produce_output| {
                 run_block_on(produce_output.wait())
                     .map(|metadata| RecordMetadata { inner: metadata })
-                    .map_err(|err| FluvioError::FluvioErr(err))
+                    .map_err(FluvioError::FluvioErr)
             })
             .transpose()
     }
@@ -45,7 +45,7 @@ impl ProduceOutput {
                         .wait()
                         .await
                         .map(|metadata| RecordMetadata { inner: metadata })
-                        .map_err(|err| FluvioError::FluvioErr(err))?;
+                        .map_err(FluvioError::FluvioErr)?;
                     Some(pout)
                 }
                 None => None,
