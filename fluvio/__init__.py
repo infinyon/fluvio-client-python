@@ -2,6 +2,9 @@ from ._fluvio_python import (
     Fluvio as _Fluvio,
     FluvioConfig as _FluvioConfig,
     ConsumerConfig as _ConsumerConfig,
+    ConsumerConfigExt,
+    ConsumerConfigExtBuilder,
+    OffsetManagementStrategy,
     PartitionConsumer as _PartitionConsumer,
     MultiplePartitionConsumer as _MultiplePartitionConsumer,
     PartitionSelectionStrategy as _PartitionSelectionStrategy,
@@ -13,7 +16,7 @@ from ._fluvio_python import (
     ProducerBatchRecord as _ProducerBatchRecord,
     SmartModuleKind as _SmartModuleKind,
     Record as _Record,
-    Offset as _Offset,
+    Offset,
     FluvioAdmin as _FluvioAdmin,
     TopicSpec as _TopicSpec,
     PartitionMap as _PartitionMap,
@@ -33,6 +36,8 @@ from enum import Enum
 from ._fluvio_python import Error as FluviorError  # noqa: F401
 import typing
 
+# typing experiment
+from ._fluvio_python import fluvio_consumer_with_config
 
 class Record:
     """The individual record for a given stream."""
@@ -113,42 +118,42 @@ class ProduceOutput:
         return await self._inner.async_wait()
 
 
-class Offset:
-    """Describes the location of an event stored in a Fluvio partition."""
+# class Offset:
+#     """Describes the location of an event stored in a Fluvio partition."""
 
-    _inner: _Offset
+#     _inner: _Offset
 
-    @classmethod
-    def absolute(cls, index: int):
-        """Creates an absolute offset with the given index"""
-        return cls(_Offset.absolute(index))
+#     @classmethod
+#     def absolute(cls, index: int):
+#         """Creates an absolute offset with the given index"""
+#         return cls(_Offset.absolute(index))
 
-    @classmethod
-    def beginning(cls):
-        """Creates a relative offset starting at the beginning of the saved log"""
-        return cls(_Offset.beginning())
+#     @classmethod
+#     def beginning(cls):
+#         """Creates a relative offset starting at the beginning of the saved log"""
+#         return cls(_Offset.beginning())
 
-    @classmethod
-    def end(cls):
-        """Creates a relative offset pointing to the newest log entry"""
-        return cls(_Offset.end())
+#     @classmethod
+#     def end(cls):
+#         """Creates a relative offset pointing to the newest log entry"""
+#         return cls(_Offset.end())
 
-    @classmethod
-    def from_beginning(cls, offset: int):
-        """Creates a relative offset a fixed distance after the oldest log
-        entry
-        """
-        return cls(_Offset.from_beginning(offset))
+#     @classmethod
+#     def from_beginning(cls, offset: int):
+#         """Creates a relative offset a fixed distance after the oldest log
+#         entry
+#         """
+#         return cls(_Offset.from_beginning(offset))
 
-    @classmethod
-    def from_end(cls, offset: int):
-        """Creates a relative offset a fixed distance before the newest log
-        entry
-        """
-        return cls(_Offset.from_end(offset))
+#     @classmethod
+#     def from_end(cls, offset: int):
+#         """Creates a relative offset a fixed distance before the newest log
+#         entry
+#         """
+#         return cls(_Offset.from_end(offset))
 
-    def __init__(self, inner: _Offset):
-        self._inner = inner
+#     def __init__(self, inner: _Offset):
+#         self._inner = inner
 
 
 class SmartModuleKind(Enum):
@@ -169,6 +174,10 @@ class ConsumerConfig:
 
     def __init__(self):
         self._inner = _ConsumerConfig()
+
+    def disable_continuous(self, val: bool = True):
+        """Disable continuous mode after fetching specified records"""
+        self._inner.disable_continuous(val)
 
     def smartmodule(
         self,
@@ -257,7 +266,7 @@ class PartitionConsumer:
         using an Offset and periodically receive events, either individually or
         in batches.
         """
-        return self._generator(self._inner.stream(offset._inner))
+        return self._generator(self._inner.stream(offset))
 
     async def async_stream(self, offset: Offset) -> typing.AsyncIterator[Record]:
         """
@@ -271,7 +280,7 @@ class PartitionConsumer:
         using an Offset and periodically receive events, either individually or
         in batches.
         """
-        return self._async_generator(await self._inner.async_stream(offset._inner))
+        return self._async_generator(await self._inner.async_stream(offset))
 
     def stream_with_config(
         self, offset: Offset, config: ConsumerConfig
@@ -305,7 +314,7 @@ class PartitionConsumer:
 
         """
         return self._generator(
-            self._inner.stream_with_config(offset._inner, config._inner)
+            self._inner.stream_with_config(offset, config._inner)
         )
 
     async def async_stream_with_config(
@@ -332,15 +341,11 @@ class PartitionConsumer:
             wmp = os.path.abspath("somefilter.wasm")
             config = ConsumerConfig()
             config.smartmodule(path=wmp)
-            async for i in await consumer.async_stream_with_config(Offset.beginning(), config):
-                # do something with i
-
-        Returns:
             `AsyncIterator[Record]`
 
         """
         return self._async_generator(
-            await self._inner.async_stream_with_config(offset._inner, config._inner)
+            await self._inner.async_stream_with_config(offset, config._inner)
         )
 
     def _generator(self, stream: _PartitionConsumerStream) -> typing.Iterator[Record]:
@@ -387,7 +392,7 @@ class MultiplePartitionConsumer:
         using an Offset and periodically receive events, either individually or
         in batches.
         """
-        return self._generator(self._inner.stream(offset._inner))
+        return self._generator(self._inner.stream(offset))
 
     async def async_stream(self, offset: Offset) -> typing.AsyncIterator[Record]:
         """
@@ -401,7 +406,7 @@ class MultiplePartitionConsumer:
         using an Offset and periodically receive events, either individually or
         in batches.
         """
-        return self._async_generator(await self._inner.async_stream(offset._inner))
+        return self._async_generator(await self._inner.async_stream(offset))
 
     def stream_with_config(
         self, offset: Offset, config: ConsumerConfig
@@ -470,7 +475,7 @@ class MultiplePartitionConsumer:
 
         """
         return self._async_generator(
-            await self._inner.async_stream_with_config(offset._inner, config._inner)
+            await self._inner.async_stream_with_config(offset, config._inner)
         )
 
     def _generator(self, stream: _PartitionConsumerStream) -> typing.Iterator[Record]:
@@ -659,6 +664,25 @@ class Fluvio:
         """Creates a new Fluvio client using the given configuration"""
         return cls(_Fluvio.connect_with_config(config._inner))
 
+    def consumer_with_config(self, config: ConsumerConfigExt) -> typing.Iterator[Record]:
+        """Creates consumer with settings defined in config
+
+        This is the recommended way to create a consume records.
+        """
+        return self._generator(
+            self._inner.consumer_with_config(config)
+        )
+
+    def topic_producer(self, topic: str) -> TopicProducer:
+        """
+        Creates a new `TopicProducer` for the given topic name.
+
+        Currently, producers are scoped to a specific Fluvio topic. That means
+        when you send events via a producer, you must specify which partition
+        each event should go to.
+        """
+        return TopicProducer(self._inner.topic_producer(topic))
+
     def partition_consumer(self, topic: str, partition: int) -> PartitionConsumer:
         """Creates a new `PartitionConsumer` for the given topic and partition
 
@@ -693,16 +717,11 @@ class Fluvio:
             self._inner.multi_partition_consumer(strategy._inner)
         )
 
-    def topic_producer(self, topic: str) -> TopicProducer:
-        """
-        Creates a new `TopicProducer` for the given topic name.
-
-        Currently, producers are scoped to a specific Fluvio topic. That means
-        when you send events via a producer, you must specify which partition
-        each event should go to.
-        """
-        return TopicProducer(self._inner.topic_producer(topic))
-
+    def _generator(self, stream: _PartitionConsumerStream) -> typing.Iterator[Record]:
+        item = stream.next()
+        while item is not None:
+            yield Record(item)
+            item = stream.next()
 
 class PartitionMap:
     _inner: _PartitionMap
