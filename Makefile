@@ -34,6 +34,12 @@ build-dev: venv-pip
 integration-tests: build-dev
 	cd integration-tests/ && $(PYTHON) -m unittest
 
+test-produce: build-dev
+	cd integration-tests/ &&  $(PYTHON) -m unittest test_produce.py
+
+test-consume: build-dev
+	cd integration-tests/ &&  $(PYTHON) -m unittest test_consume.py
+
 macos-ci-tests: build-dev
 	cd macos-ci-tests && $(PYTHON) -m unittest
 
