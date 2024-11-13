@@ -111,24 +111,3 @@ impl OffsetManagementStrategy {
         inner: NativeOffsetManagementStrategy::Auto,
     };
 }
-
-// Test build of w/ consumer_with_config
-use crate::PartitionConsumerStream;
-use fluvio_future::task::run_block_on;
-
-#[pyfunction]
-pub fn fluvio_consumer_with_config(
-    fluvio: &Fluvio,
-    config: &ConsumerConfigExt,
-    py: Python,
-) -> PyResult<PartitionConsumerStream> {
-    let stream = py.allow_threads(move || {
-        run_block_on(async {
-            Python::with_gil(|py| {
-                fluvio.consumer_with_config(&config, py)
-                // .map_err(error_to_py_err)
-            })
-        })
-    })?;
-    Ok(stream)
-}

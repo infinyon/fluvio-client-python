@@ -1,7 +1,3 @@
-from string import ascii_lowercase
-from fluvio import Fluvio, Offset, ConsumerConfig, SmartModuleKind, FluvioConfig
-from fluvio import FluvioAdmin, TopicSpec
-
 import itertools
 import logging
 import os
@@ -9,6 +5,9 @@ import time
 import unittest
 import uuid
 
+from string import ascii_lowercase
+from fluvio import Fluvio, Offset, ConsumerConfig, SmartModuleKind, FluvioConfig
+from fluvio import FluvioAdmin, TopicSpec
 
 
 def create_smartmodule(sm_name, sm_path):

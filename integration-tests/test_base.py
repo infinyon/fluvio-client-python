@@ -1,9 +1,9 @@
-from fluvio import Fluvio, Offset, FluvioConfig
-from fluvio import FluvioAdmin
 import unittest
 import uuid
-import itertools
 import time
+
+from fluvio import FluvioAdmin
+
 
 def create_smartmodule(sm_name, sm_path):
     # Normally it would be this code, but bare wasm smartmodules
@@ -53,4 +53,3 @@ class CommonFluvioSetup(unittest.TestCase):
         time.sleep(1)
         if self.sm_path is not None:
             self.admin.delete_smartmodule(self.sm_name)
-

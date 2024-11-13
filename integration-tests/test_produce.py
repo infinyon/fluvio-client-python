@@ -1,11 +1,9 @@
 import unittest
-import uuid
 import itertools
-import time
 
 from fluvio import Fluvio, Offset, FluvioConfig
-from fluvio import FluvioAdmin
 from test_base import CommonFluvioSetup
+
 
 class TestFluvioProduce(CommonFluvioSetup):
     def test_connect(self):

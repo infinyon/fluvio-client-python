@@ -1,15 +1,7 @@
-
-import unittest
-import uuid
-import itertools
-import time
-
 from string import ascii_lowercase
 
-from fluvio import ConsumerConfig, Fluvio, FluvioConfig, Offset
+from fluvio import ConsumerConfig, Fluvio, Offset
 from fluvio import ConsumerConfigExtBuilder
-from fluvio import FluvioAdmin
-from fluvio import OffsetManagementStrategy
 from test_base import CommonFluvioSetup
 
 
@@ -83,7 +75,7 @@ class TestFluvioConsumer(CommonFluvioSetup):
         self.assertEqual(records[0], "record-y")
 
     def test_consume_at_offset_from_end(self):
-        """ consume from offset::from_end(1) """
+        """consume from offset::from_end(1)"""
         fluvio = Fluvio.connect()
 
         # configure consumer to start from end
@@ -99,7 +91,7 @@ class TestFluvioConsumer(CommonFluvioSetup):
         self.assertEqual(records[0], "record-a")
 
     def test_consume_at_offset_absolute(self):
-        """ consume from offset::absolute(1) """
+        """consume from offset::absolute(1)"""
         fluvio = Fluvio.connect()
 
         # configure consumer to start from end
@@ -115,7 +107,7 @@ class TestFluvioConsumer(CommonFluvioSetup):
         self.assertEqual(records[0], "record-m")
 
     def test_consume_disconnect(self):
-        """ Non-waiting fetch of two records from offset::from_end(1)
+        """Non-waiting fetch of two records from offset::from_end(1)
 
         Without the builder.disable_continuous() call, the consumer will
         hang waiting for the next record to be produced
@@ -160,6 +152,3 @@ class TestFluvioConsumer(CommonFluvioSetup):
         self.assertEqual(len(records), 2)
         self.assertEqual(records[0], "record-z")
         self.assertEqual(records[1], "record-y")
-
-
-

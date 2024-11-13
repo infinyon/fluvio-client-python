@@ -63,10 +63,7 @@ pub use produce_output::ProduceOutput;
 use cloud::{CloudClient, CloudLoginError};
 use error::FluvioError;
 
-use consumer::{
-    fluvio_consumer_with_config, ConsumerConfigExt, ConsumerConfigExtBuilder,
-    OffsetManagementStrategy,
-};
+use consumer::{ConsumerConfigExt, ConsumerConfigExtBuilder, OffsetManagementStrategy};
 
 use pyo3::exceptions::{PyException, PyValueError};
 use pyo3::prelude::*;
@@ -110,8 +107,6 @@ fn _fluvio_python(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<MetaUpdateSmartModuleSpec>()?;
     m.add_class::<MetadataPartitionSpec>()?;
     m.add("Error", py.get_type::<PyFluvioError>())?;
-
-    m.add_function(wrap_pyfunction!(fluvio_consumer_with_config, m)?)?;
     Ok(())
 }
 
@@ -430,31 +425,38 @@ pub enum SmartModuleContextData {
 }
 
 /// Describes the location of a record stored in a Fluvio partition.
+///
+/// A topic is composed of one or more partitions.
 #[pyclass]
 struct Offset(NativeOffset);
 
 #[pymethods]
 impl Offset {
+    /// Specifies an absolute offset with the given index within the partition
     #[staticmethod]
     fn absolute(index: i64) -> Result<Offset, FluvioError> {
         Ok(Offset(NativeOffset::absolute(index)?))
     }
 
+    /// Specifies an offset starting at the beginning of the partition
     #[staticmethod]
     fn beginning() -> Offset {
         Offset(NativeOffset::beginning())
     }
 
+    /// Specifies an offset relative to the beginning of the partition
     #[staticmethod]
     fn from_beginning(offset: u32) -> Offset {
         Offset(NativeOffset::from_beginning(offset))
     }
 
+    /// Specifies an offset relative to the beginning of the partition
     #[staticmethod]
     fn end() -> Offset {
         Offset(NativeOffset::end())
     }
 
+    /// Specifies an offset relative to the beginning of the partition
     #[staticmethod]
     fn from_end(offset: u32) -> Offset {
         Offset(NativeOffset::from_end(offset))
