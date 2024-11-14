@@ -54,6 +54,7 @@ use url::Host;
 mod cloud;
 
 // use crate::error::FluvioError;
+mod consumer;
 mod error;
 mod produce_output;
 
@@ -61,6 +62,8 @@ pub use produce_output::ProduceOutput;
 
 use cloud::{CloudClient, CloudLoginError};
 use error::FluvioError;
+
+use consumer::{ConsumerConfigExt, ConsumerConfigExtBuilder, OffsetManagementStrategy};
 
 use pyo3::exceptions::{PyException, PyValueError};
 use pyo3::prelude::*;
@@ -73,6 +76,9 @@ fn _fluvio_python(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Fluvio>()?;
     m.add_class::<FluvioConfig>()?;
     m.add_class::<ConsumerConfig>()?;
+    m.add_class::<ConsumerConfigExt>()?;
+    m.add_class::<ConsumerConfigExtBuilder>()?;
+    m.add_class::<OffsetManagementStrategy>()?;
     m.add_class::<PartitionConsumer>()?;
     m.add_class::<PartitionConsumerStream>()?;
     m.add_class::<AsyncPartitionConsumerStream>()?;
@@ -128,6 +134,20 @@ impl Fluvio {
         Ok(Fluvio(py.allow_threads(move || {
             run_block_on(NativeFluvio::connect_with_config(&config.inner)).map_err(error_to_py_err)
         })?))
+    }
+
+    fn consumer_with_config(
+        &self,
+        config: &ConsumerConfigExt,
+        py: Python,
+    ) -> PyResult<PartitionConsumerStream> {
+        let inner = py.allow_threads(move || {
+            run_block_on(self.0.consumer_with_config(config.inner.to_owned()))
+                .map_err(error_to_py_err)
+        })?;
+        Ok(PartitionConsumerStream {
+            inner: Box::pin(inner),
+        })
     }
 
     fn partition_consumer(
@@ -289,6 +309,10 @@ impl ConsumerConfig {
         self.builder.max_bytes(max_bytes);
     }
 
+    fn disable_continuous(&mut self, setting: bool) {
+        self.builder.disable_continuous(setting);
+    }
+
     #[allow(clippy::too_many_arguments)]
     #[pyo3(signature = (name, path, kind, param_keys, param_values, aggregate_accumulator, context=None, join_param=None, join_topic=None, join_derived_stream=None))]
     fn smartmodule(
@@ -400,31 +424,39 @@ pub enum SmartModuleContextData {
     JoinStream,
 }
 
+/// Describes the location of a record stored in a Fluvio partition.
+///
+/// A topic is composed of one or more partitions.
 #[pyclass]
 struct Offset(NativeOffset);
 
 #[pymethods]
 impl Offset {
+    /// Specifies an absolute offset with the given index within the partition
     #[staticmethod]
     fn absolute(index: i64) -> Result<Offset, FluvioError> {
         Ok(Offset(NativeOffset::absolute(index)?))
     }
 
+    /// Specifies an offset starting at the beginning of the partition
     #[staticmethod]
     fn beginning() -> Offset {
         Offset(NativeOffset::beginning())
     }
 
+    /// Specifies an offset relative to the beginning of the partition
     #[staticmethod]
     fn from_beginning(offset: u32) -> Offset {
         Offset(NativeOffset::from_beginning(offset))
     }
 
+    /// Specifies an offset relative to the beginning of the partition
     #[staticmethod]
     fn end() -> Offset {
         Offset(NativeOffset::end())
     }
 
+    /// Specifies an offset relative to the beginning of the partition
     #[staticmethod]
     fn from_end(offset: u32) -> Offset {
         Offset(NativeOffset::from_end(offset))
@@ -586,11 +618,15 @@ pub struct PartitionConsumerStream {
 #[pymethods]
 impl PartitionConsumerStream {
     fn next(&mut self, py: Python) -> Result<Option<Record>, PyErr> {
-        Ok(Some(Record(py.allow_threads(move || {
-            run_block_on(self.inner.next())
-                .unwrap()
-                .map_err(|err| PyException::new_err(err.to_string()))
-        })?)))
+        let rec_val = py.allow_threads(move || run_block_on(self.inner.next()));
+        match rec_val {
+            Some(Ok(rec)) => Ok(Some(Record(rec))),
+            Some(Err(err)) => match err {
+                ErrorCode::OffsetOutOfRange => return Ok(None),
+                err => Err(PyException::new_err(err.to_string())),
+            },
+            None => Ok(None),
+        }
     }
 }
 

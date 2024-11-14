@@ -1,11 +1,13 @@
+import itertools
+import logging
+import os
+import time
+import unittest
+import uuid
+
 from string import ascii_lowercase
 from fluvio import Fluvio, Offset, ConsumerConfig, SmartModuleKind, FluvioConfig
 from fluvio import FluvioAdmin, TopicSpec
-import unittest
-import uuid
-import os
-import itertools
-import time
 
 
 def create_smartmodule(sm_name, sm_path):
@@ -23,6 +25,9 @@ def create_smartmodule(sm_name, sm_path):
 
 class CommonFluvioSmartModuleTestCase(unittest.TestCase):
     def common_setup(self, sm_path=None):
+        # silence asyncio test message noise
+        logging.basicConfig(level=logging.ERROR)
+
         self.admin = FluvioAdmin.connect()
         self.topic = str(uuid.uuid4())
         self.sm_name = str(uuid.uuid4())
@@ -774,7 +779,7 @@ class TestFluvioAdminTopic(CommonFluvioAdminTestCase):
 
         # list partitions
         all_partitions = fluvio_admin.list_partitions([])
-        print(all_partitions)
+        # print(all_partitions)
         self.assertNotEqual(len(all_partitions), 0)
 
         fluvio_admin.delete_topic(topic)
