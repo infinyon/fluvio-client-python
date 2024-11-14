@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.17.0
+
+### Add
+
+- add ConsumerConfigExt as a recommended way of starting a consumer (#511)
+
+### Miscellaneous Tasks
+
+- Refactor for better code modules & docs
+
 ## [0.16.5]
 
 ### Bug Fixes
