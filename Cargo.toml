@@ -42,7 +42,7 @@ fluvio = { features = ["admin", "rustls"], git = "https://github.com/infinyon/fl
 fluvio-protocol = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.12.1" }
 fluvio-types = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.12.1" }
 fluvio-sc-schema = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.12.1" }
-fluvio-controlplane-metadata = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.12.1" }
+fluvio-controlplane-metadata = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.13.0" }
 
 # transitive version selection
 parking_lot = "0.12.3"
