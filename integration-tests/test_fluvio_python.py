@@ -7,7 +7,7 @@ import uuid
 
 from string import ascii_lowercase
 from fluvio import Fluvio, Offset, ConsumerConfig, SmartModuleKind, FluvioConfig
-from fluvio import FluvioAdmin, TopicSpec
+from fluvio import FluvioAdmin, NewTopic
 
 
 def create_smartmodule(sm_name, sm_path):
@@ -706,10 +706,16 @@ class TestFluvioAdminTopic(CommonFluvioAdminTestCase):
 
     def test_admin_topic(self):
         fluvio_admin = FluvioAdmin.connect()
-        topic_spec = TopicSpec.new_computed(3, 1, False)
 
         # create topic
-        fluvio_admin.create_topic_spec(self.topic, False, topic_spec)
+        topic_spec = (
+            NewTopic.create()
+            .with_max_partition_size("1Gb")
+            .with_retention_time(3600)
+            .with_segment_size("10M")
+            .build()
+        )
+        fluvio_admin.create_topic(self.topic, topic_spec)
 
         # watch topic
         stream = fluvio_admin.watch_topic()

@@ -72,6 +72,7 @@ from ._fluvio_python import (
 
 from ._fluvio_python import Error as FluviorError  # noqa: F401
 
+from .new_topic import NewTopic, CompressionType, TopicMode
 from .record import Record, RecordMetadata
 from .specs import (
     # support types
@@ -97,6 +98,11 @@ __all__ = [
     "Fluvio",
     "FluvioConfig",
     "FluvioAdmin",
+    # new_topic
+    "NewTopic",
+    "CompressionType",
+    "TopicMode",
+    # record
     "Record",
     "RecordMetadata",
     "Offset",
@@ -731,17 +737,17 @@ class FluvioAdmin:
     def connect_with_config(config: FluvioConfig):
         return FluvioAdmin(_FluvioAdmin.connect_with_config(config._inner))
 
-    def create_topic(self, topic: str):
-
+    def create_topic(self, topic: str, spec: typing.Optional[TopicSpec] = None):
         partitions = 1
         replication = 1
         ignore_rack = True
-        spec = _TopicSpec.new_computed(partitions, replication, ignore_rack)
         dry_run = False
-        return self._inner.create_topic(topic, dry_run, spec)
-
-    def create_topic_spec(self, topic: str, dry_run: bool, spec: TopicSpec):
-        return self._inner.create_topic(topic, dry_run, spec._inner)
+        spec_inner = (
+            spec._inner
+            if spec is not None
+            else _TopicSpec.new_computed(partitions, replication, ignore_rack)
+        )
+        return self._inner.create_topic(topic, dry_run, spec_inner)
 
     def create_topic_with_config(
         self, topic: str, req: CommonCreateRequest, spec: TopicSpec
