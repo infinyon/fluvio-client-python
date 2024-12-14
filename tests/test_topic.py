@@ -10,7 +10,7 @@ class TestTopicSpec(unittest.TestCase):
         self.assertEqual(topic.mode, TopicMode.COMPUTED)
         self.assertEqual(topic.partitions, 1)
         self.assertEqual(topic.replications, 1)
-        self.assertFalse(topic.ignore_rack)
+        self.assertTrue(topic.ignore_rack)
         self.assertIsNone(topic.replica_assignment)
         self.assertIsNone(topic.retention_time)
         self.assertIsNone(topic.segment_size)

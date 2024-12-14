@@ -27,13 +27,17 @@ class TopicSpec:
     mode: TopicMode = TopicMode.COMPUTED
     partitions: int = 1
     replications: int = 1
-    ignore_rack: bool = False
+    ignore_rack: bool = True
     replica_assignment: Optional[List[PartitionMap]] = None
     retention_time: Optional[int] = None
     segment_size: Optional[int] = None
     compression_type: Optional[CompressionType] = None
     max_partition_size: Optional[int] = None
     system: bool = False
+
+    @classmethod
+    def new(cls, partitions: int = 1, replication: int = 1, ignore: bool = True):
+        return cls(_TopicSpec.new_computed(partitions, replication, ignore))
 
     @classmethod
     def create(cls) -> "TopicSpec":

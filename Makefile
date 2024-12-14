@@ -31,6 +31,9 @@ install-wheel: build-wheel
 build-dev: venv-pip
 	$(PYTHON) setup.py develop
 
+unit-tests: build-dev
+	cd tests/ && $(PYTHON) -m unittest
+
 integration-tests: build-dev
 	cd integration-tests/ && $(PYTHON) -m unittest
 

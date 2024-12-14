@@ -1133,7 +1133,7 @@ impl TopicSpec {
         self.inner.set_system(system);
     }
 
-    pub fn set_retation_time(&mut self, time_in_seconds: i64) {
+    pub fn set_retention_time(&mut self, time_in_seconds: i64) {
         self.inner
             .set_cleanup_policy(CleanupPolicy::Segment(SegmentBasedPolicy {
                 time_in_seconds: time_in_seconds as u32,
@@ -1154,20 +1154,23 @@ impl TopicSpec {
         self.inner.set_storage(storage);
     }
 
-    pub fn set_compression_type(&mut self, compression: String) {
-        if compression == "none" {
-            self.inner.set_compression_type(CompressionAlgorithm::None);
-        } else if compression == "gzip" {
-            self.inner.set_compression_type(CompressionAlgorithm::Gzip);
-        } else if compression == "snappy" {
-            self.inner
-                .set_compression_type(CompressionAlgorithm::Snappy);
-        } else if compression == "lz4" {
-            self.inner.set_compression_type(CompressionAlgorithm::Lz4);
-        } else if compression == "zstd" {
-            self.inner.set_compression_type(CompressionAlgorithm::Zstd);
-        }
-        self.inner.set_compression_type(CompressionAlgorithm::Any);
+    pub fn set_compression_type(&mut self, compression: &str) -> PyResult<()> {
+        let compression = match compression {
+            "none" => CompressionAlgorithm::None,
+            "gzip" => CompressionAlgorithm::Gzip,
+            "snappy" => CompressionAlgorithm::Snappy,
+            "lz4" => CompressionAlgorithm::Lz4,
+            "zstd" => CompressionAlgorithm::Zstd,
+            _ => {
+                return Err(PyValueError::new_err(format!(
+                    "Invalid compression type: {}",
+                    compression
+                )))
+            }
+        };
+
+        self.inner.set_compression_type(compression);
+        Ok(())
     }
 }
 
