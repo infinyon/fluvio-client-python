@@ -1125,6 +1125,10 @@ impl TopicSpec {
         }
     }
 
+    pub fn set_partition(&mut self, system: bool) {
+        self.inner.set_system(system);
+    }
+
     pub fn set_system(&mut self, system: bool) {
         self.inner.set_system(system);
     }

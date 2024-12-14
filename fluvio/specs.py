@@ -11,7 +11,6 @@ from ._fluvio_python import (
     MetaUpdateTopicSpec as _MetaUpdateTopicSpec,
     MetaUpdateSmartModuleSpec as _MetaUpdateSmartModuleSpec,
     SmartModuleSpec as _SmartModuleSpec,
-    TopicSpec as _TopicSpec,
 )
 
 
@@ -24,44 +23,6 @@ class PartitionMap:
     @classmethod
     def new(cls, partition: int, replicas: typing.List[int]):
         return cls(_PartitionMap.new(partition, replicas))
-
-
-class TopicSpec:
-    _inner: _TopicSpec
-
-    def __init__(self, inner: _TopicSpec):
-        self._inner = inner
-
-    @classmethod
-    def new(cls):
-        return cls(_TopicSpec.new_computed(1, 1, True))
-
-    @classmethod
-    def new_assigned(cls, partition_maps: typing.List[PartitionMap]):
-        partition_maps = [x._inner for x in partition_maps]
-        return cls(_TopicSpec.new_assigned(partition_maps))
-
-    @classmethod
-    def new_computed(cls, partitions: int, replications: int, ignore: bool):
-        return cls(_TopicSpec.new_computed(partitions, replications, ignore))
-
-    @classmethod
-    def new_mirror(cls):
-        return cls(_TopicSpec.new_mirror())
-
-    def set_storage(
-        self, partition_size: typing.Optional[int], segment: typing.Optional[int]
-    ):
-        self._inner.set_storage(partition_size, segment)
-
-    def set_system(self, system: bool):
-        self._inner.set_system(system)
-
-    def set_retention_time(self, retention: int):
-        self._inner.set_retation_time(retention)
-
-    def set_compression_type(self, compression: str):
-        self._inner.set_compression_type(compression)
 
 
 class CommonCreateRequest:

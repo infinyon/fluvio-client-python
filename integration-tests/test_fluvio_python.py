@@ -7,7 +7,7 @@ import uuid
 
 from string import ascii_lowercase
 from fluvio import Fluvio, Offset, ConsumerConfig, SmartModuleKind, FluvioConfig
-from fluvio import FluvioAdmin, NewTopic
+from fluvio import FluvioAdmin, TopicSpec
 
 
 def create_smartmodule(sm_name, sm_path):
@@ -709,7 +709,7 @@ class TestFluvioAdminTopic(CommonFluvioAdminTestCase):
 
         # create topic
         topic_spec = (
-            NewTopic.create()
+            TopicSpec.create()
             .with_max_partition_size("1Gb")
             .with_retention_time(3600)
             .with_segment_size("10M")

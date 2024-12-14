@@ -72,7 +72,7 @@ from ._fluvio_python import (
 
 from ._fluvio_python import Error as FluviorError  # noqa: F401
 
-from .new_topic import NewTopic, CompressionType, TopicMode
+from .topic import TopicSpec, CompressionType, TopicMode
 from .record import Record, RecordMetadata
 from .specs import (
     # support types
@@ -80,7 +80,6 @@ from .specs import (
     PartitionMap,
     # specs
     SmartModuleSpec,
-    TopicSpec,
     MessageMetadataTopicSpec,
     MetadataPartitionSpec,
     MetadataSmartModuleSpec,
@@ -98,8 +97,8 @@ __all__ = [
     "Fluvio",
     "FluvioConfig",
     "FluvioAdmin",
-    # new_topic
-    "NewTopic",
+    # topic
+    "TopicSpec",
     "CompressionType",
     "TopicMode",
     # record
@@ -737,22 +736,22 @@ class FluvioAdmin:
     def connect_with_config(config: FluvioConfig):
         return FluvioAdmin(_FluvioAdmin.connect_with_config(config._inner))
 
-    def create_topic(self, topic: str, spec: typing.Optional[TopicSpec] = None):
+    def create_topic(self, topic: str, spec: typing.Optional[_TopicSpec] = None):
         partitions = 1
         replication = 1
         ignore_rack = True
         dry_run = False
-        spec_inner = (
-            spec._inner
+        spec = (
+            spec
             if spec is not None
             else _TopicSpec.new_computed(partitions, replication, ignore_rack)
         )
-        return self._inner.create_topic(topic, dry_run, spec_inner)
+        return self._inner.create_topic(topic, dry_run, spec)
 
     def create_topic_with_config(
-        self, topic: str, req: CommonCreateRequest, spec: TopicSpec
+        self, topic: str, req: CommonCreateRequest, spec: _TopicSpec
     ):
-        return self._inner.create_topic_with_config(topic, req._inner, spec._inner)
+        return self._inner.create_topic_with_config(topic, req._inner, spec)
 
     def delete_topic(self, topic: str):
         return self._inner.delete_topic(topic)
