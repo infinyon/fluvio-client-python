@@ -41,7 +41,7 @@ fluvio-future = { version = "0.7.0", features = ["task", "io", "native_tls", "su
 fluvio = { features = ["admin", "rustls"], git = "https://github.com/infinyon/fluvio.git", tag = "v0.12.1" }
 fluvio-protocol = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.12.1" }
 fluvio-types = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.12.1" }
-fluvio-sc-schema = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.12.1" }
+fluvio-sc-schema = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.14.0" }
 fluvio-controlplane-metadata = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.12.1" }
 
 # transitive version selection
