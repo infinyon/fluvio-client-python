@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.18.0
+
+### Add
+
+- improve topic creation api (#528)
+
 ## 0.17.0
 
 ### Add
