@@ -5,6 +5,29 @@ streaming platform.
 This module builds on top of the Fluvio Client Rust Crate and provides a
 pythonic access to the API.
 
+
+Creating a topic with default settings is as simple as:
+
+```python
+fluvio_admin = FluvioAdmin.connect()
+fluvio_admin.create_topic("a_topic")
+```
+
+Or just create a topic with custom settings:
+
+```python
+import fluvio
+
+fluvio_admin = FluvioAdmin.connect()
+topic_spec = (
+    TopicSpec.create()
+    .with_retention_time("1h")
+    .with_segment_size("10M")
+    .build()
+)
+fluvio_admin.create_topic("a_topic", topic_spec)
+```
+
 Producing data to a topic in a Fluvio cluster is as simple as:
 
 ```python

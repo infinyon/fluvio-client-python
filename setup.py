@@ -6,7 +6,7 @@ with open('requirements.txt') as f:
 
 setup(
     name="fluvio",
-    version="0.17.0",
+    version="0.18.0",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     author="Fluvio Contributors",
