@@ -35,8 +35,11 @@ use fluvio_sc_schema::objects::{
     MetadataUpdate as NativeMetadataUpdate, WatchResponse as NativeWatchResponse,
 };
 use fluvio_sc_schema::smartmodule::SmartModuleSpec as NativeSmartModuleSpec;
-use fluvio_sc_schema::topic::PartitionMaps as NativePartitionMaps;
-use fluvio_types::PartitionId;
+use fluvio_sc_schema::topic::{
+    CleanupPolicy, CompressionAlgorithm, Deduplication, HomeMirrorConfig, MirrorConfig,
+    PartitionMaps as NativePartitionMaps, ReplicaSpec, SegmentBasedPolicy, TopicStorageConfig,
+};
+use fluvio_types::{compression, PartitionId};
 use fluvio_types::{
     IgnoreRackAssignment as NativeIgnoreRackAssignment, PartitionCount as NativePartitionCount,
     PartitionId as NativePartitionId, ReplicationFactor as NativeReplicationFactor,
@@ -53,7 +56,6 @@ use tracing::info;
 use url::Host;
 mod cloud;
 
-// use crate::error::FluvioError;
 mod consumer;
 mod error;
 mod produce_output;
@@ -1110,6 +1112,65 @@ impl TopicSpec {
         TopicSpec {
             inner: NativeTopicSpec::new_computed(partitions, replications, ignore),
         }
+    }
+
+    #[staticmethod]
+    pub fn new_mirror() -> TopicSpec {
+        let mut home_mirror = HomeMirrorConfig::from(vec![]);
+        //TODO: when update to 0.13.0
+        //home_mirror.source = home_to_remote;
+        let mirror_map = MirrorConfig::Home(home_mirror);
+        TopicSpec {
+            inner: NativeTopicSpec::new_mirror(mirror_map),
+        }
+    }
+
+    pub fn set_partition(&mut self, system: bool) {
+        self.inner.set_system(system);
+    }
+
+    pub fn set_system(&mut self, system: bool) {
+        self.inner.set_system(system);
+    }
+
+    pub fn set_retention_time(&mut self, time_in_seconds: i64) {
+        self.inner
+            .set_cleanup_policy(CleanupPolicy::Segment(SegmentBasedPolicy {
+                time_in_seconds: time_in_seconds as u32,
+            }));
+    }
+
+    pub fn set_storage(&mut self, max_partition_size: Option<i64>, segment_size: Option<i64>) {
+        let mut storage = TopicStorageConfig::default();
+
+        if let Some(segment_size) = segment_size {
+            storage.segment_size = Some(segment_size as u32);
+        }
+
+        if let Some(max_partition_size) = max_partition_size {
+            storage.max_partition_size = Some(max_partition_size as u64);
+        }
+
+        self.inner.set_storage(storage);
+    }
+
+    pub fn set_compression_type(&mut self, compression: &str) -> PyResult<()> {
+        let compression = match compression {
+            "none" => CompressionAlgorithm::None,
+            "gzip" => CompressionAlgorithm::Gzip,
+            "snappy" => CompressionAlgorithm::Snappy,
+            "lz4" => CompressionAlgorithm::Lz4,
+            "zstd" => CompressionAlgorithm::Zstd,
+            _ => {
+                return Err(PyValueError::new_err(format!(
+                    "Invalid compression type: {}",
+                    compression
+                )))
+            }
+        };
+
+        self.inner.set_compression_type(compression);
+        Ok(())
     }
 }
 

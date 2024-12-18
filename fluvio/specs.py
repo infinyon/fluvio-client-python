@@ -11,7 +11,6 @@ from ._fluvio_python import (
     MetaUpdateTopicSpec as _MetaUpdateTopicSpec,
     MetaUpdateSmartModuleSpec as _MetaUpdateSmartModuleSpec,
     SmartModuleSpec as _SmartModuleSpec,
-    TopicSpec as _TopicSpec,
 )
 
 
@@ -24,22 +23,6 @@ class PartitionMap:
     @classmethod
     def new(cls, partition: int, replicas: typing.List[int]):
         return cls(_PartitionMap.new(partition, replicas))
-
-
-class TopicSpec:
-    _inner: _TopicSpec
-
-    def __init__(self, inner: _TopicSpec):
-        self._inner = inner
-
-    @classmethod
-    def new_assigned(cls, partition_maps: typing.List[PartitionMap]):
-        partition_maps = [x._inner for x in partition_maps]
-        return cls(_TopicSpec.new_computed(partition_maps))
-
-    @classmethod
-    def new_computed(cls, partitions: int, replication: int, ignore: bool):
-        return cls(_TopicSpec.new_computed(partitions, replication, ignore))
 
 
 class CommonCreateRequest:

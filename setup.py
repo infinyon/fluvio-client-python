@@ -1,9 +1,12 @@
 from setuptools import setup, find_namespace_packages
 from setuptools_rust import Binding, RustExtension, Strip
 
+with open('requirements.txt') as f:
+    requirements = f.read().splitlines()
+
 setup(
     name="fluvio",
-    version="0.17.0",
+    version="0.18.0",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     author="Fluvio Contributors",
@@ -43,6 +46,7 @@ setup(
         )
     ],
     packages=["fluvio"],
+    install_requires=requirements,
     # rust extensions are not zip safe, just like C-extensions.
     zip_safe=False,
 )

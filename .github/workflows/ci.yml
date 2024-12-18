@@ -21,10 +21,11 @@ jobs:
         python-version: ["39", "310", "311", "312"]
     env:
       CIBW_SKIP: "cp36-* pp* *-win32"
-      CIBW_ARCHS_MACOS: x86_64 universal2
+      CIBW_ARCHS_MACOS: x86_64 universal2 arm64
       CIBW_ARCHS_LINUX: auto aarch64
       CIBW_BEFORE_ALL_LINUX: "{package}/tools/cibw_before_all_linux.sh"
       CIBW_BUILD_VERBOSITY: 1
+      MACOSX_DEPLOYMENT_TARGET: 10.13
 
     steps:
       - uses: actions/checkout@v4
@@ -65,7 +66,7 @@ jobs:
           platforms: all
 
       - name: Build wheels for ${{matrix.python-version}} on ${{matrix.os}}
-        uses: pypa/cibuildwheel@v2.20.0
+        uses: pypa/cibuildwheel@v2.22.0
         env:
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
           CIBW_BUILD: "cp${{matrix.python-version}}-manylinux_x86_64 cp${{matrix.python-version}}-macosx_x86_64 cp${{matrix.python-version}}-macosx_universal2 cp${{matrix.python-version}}-macosx_arm64"
@@ -215,7 +216,15 @@ jobs:
       - name: Build
         run: |
           make build-dev
-      - name: Test
+      - name: Unit Tests
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 15
+          max_attempts: 3
+          command: make unit-tests
+        env:
+          FLV_SOCKET_WAIT: 300
+      - name: Integration Tests
         uses: nick-fields/retry@v3
         with:
           timeout_minutes: 15
