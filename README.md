@@ -24,6 +24,28 @@ This will get the wheel for the os/architecture of the installation system if av
 
 # Example Usage
 
+## Creating a Topic
+
+```python
+fluvio_admin = FluvioAdmin.connect()
+fluvio_admin.create_topic("a_topic")
+```
+
+Or just create a topic with custom settings:
+
+```python
+import fluvio
+
+fluvio_admin = FluvioAdmin.connect()
+topic_spec = (
+    TopicSpec.create()
+    .with_retention_time("1h")
+    .with_segment_size("10M")
+    .build()
+)
+fluvio_admin.create_topic("a_topic", topic_spec)
+```
+
 ## Producer
 ```python
 from fluvio import Fluvio
