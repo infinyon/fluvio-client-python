@@ -757,9 +757,7 @@ class Fluvio:
         """Creates a new Fluvio client using the given configuration"""
         return cls(_Fluvio.connect_with_config(config._inner))
 
-    def consumer_with_config(
-        self, config: ConsumerConfigExt
-    ) -> ConsumerIterator:
+    def consumer_with_config(self, config: ConsumerConfigExt) -> ConsumerIterator:
         """Creates consumer with settings defined in config
 
         This is the recommended way to create a consume records.
