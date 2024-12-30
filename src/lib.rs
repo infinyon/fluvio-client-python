@@ -3,6 +3,7 @@
 use fluvio::config::{ConfigFile, Profile, TlsCerts, TlsConfig, TlsPaths, TlsPolicy};
 use fluvio::consumer::{
     ConsumerConfig as NativeConsumerConfig, ConsumerConfigBuilder,
+    ConsumerOffset as NativeConsumerOffset, ConsumerStream,
     SmartModuleContextData as NativeSmartModuleContextData, SmartModuleExtraParams,
     SmartModuleInvocation, SmartModuleInvocationWasm, SmartModuleKind as NativeSmartModuleKind,
 };
@@ -92,6 +93,7 @@ fn _fluvio_python(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Record>()?;
     m.add_class::<Offset>()?;
     m.add_class::<Cloud>()?;
+    m.add_class::<ConsumerOffset>()?;
     m.add_class::<MultiplePartitionConsumer>()?;
     m.add_class::<PartitionSelectionStrategy>()?;
     m.add_class::<FluvioAdmin>()?;
@@ -180,6 +182,41 @@ impl Fluvio {
             run_block_on(self.0.topic_producer(topic)).map_err(error_to_py_err)
         })?;
         Ok(TopicProducer(Arc::new(native_prod)))
+    }
+
+    fn consumer_offsets(&self, py: Python) -> PyResult<Vec<ConsumerOffset>> {
+        Ok(py.allow_threads(move || {
+            run_block_on(self.0.consumer_offsets())
+                .map(|offsets| offsets.into_iter().map(ConsumerOffset::from).collect())
+                .map_err(error_to_py_err)
+        })?)
+    }
+}
+
+#[pyclass]
+#[derive(Debug, Clone)]
+pub struct ConsumerOffset {
+    #[pyo3(get)]
+    consumer_id: String,
+    #[pyo3(get)]
+    topic: String,
+    #[pyo3(get)]
+    partition: u32,
+    #[pyo3(get)]
+    offset: i64,
+    #[pyo3(get)]
+    modified_time: u64,
+}
+
+impl From<NativeConsumerOffset> for ConsumerOffset {
+    fn from(offset: NativeConsumerOffset) -> Self {
+        ConsumerOffset {
+            consumer_id: offset.consumer_id,
+            topic: offset.topic,
+            partition: offset.partition,
+            offset: offset.offset,
+            modified_time: offset.modified_time,
+        }
     }
 }
 
@@ -476,9 +513,9 @@ impl Clone for PartitionConsumer {
 
 #[pymethods]
 impl PartitionConsumer {
-    fn stream(&self, offset: &Offset) -> Result<PartitionConsumerStream, FluvioError> {
+    fn stream(&self, offset: &Offset) -> Result<PartitionConsumerIterator, FluvioError> {
         #[allow(deprecated)]
-        Ok(PartitionConsumerStream {
+        Ok(PartitionConsumerIterator {
             inner: Box::pin(run_block_on(self.0.stream(offset.0.clone()))?),
         })
     }
@@ -501,14 +538,12 @@ impl PartitionConsumer {
         offset: &Offset,
         config: &mut ConsumerConfig,
         py: Python,
-    ) -> Result<PartitionConsumerStream, FluvioError> {
-        // let config = config.build()?;
+    ) -> Result<PartitionConsumerIterator, FluvioError> {
         let config: NativeConsumerConfig = config.build()?.0;
-
         Ok(py.allow_threads(move || {
             #[allow(deprecated)]
             run_block_on(self.0.stream_with_config(offset.0.clone(), config)).map(|stream| {
-                PartitionConsumerStream {
+                PartitionConsumerIterator {
                     inner: Box::pin(stream),
                 }
             })
@@ -547,9 +582,13 @@ impl Clone for MultiplePartitionConsumer {
 
 #[pymethods]
 impl MultiplePartitionConsumer {
-    fn stream(&self, offset: &Offset, py: Python) -> Result<PartitionConsumerStream, FluvioError> {
+    fn stream(
+        &self,
+        offset: &Offset,
+        py: Python,
+    ) -> Result<PartitionConsumerIterator, FluvioError> {
         #[allow(deprecated)]
-        Ok(PartitionConsumerStream {
+        Ok(PartitionConsumerIterator {
             inner: Box::pin(
                 py.allow_threads(move || run_block_on(self.0.stream(offset.0.clone())))?,
             ),
@@ -574,14 +613,13 @@ impl MultiplePartitionConsumer {
         offset: &Offset,
         config: &mut ConsumerConfig,
         py: Python,
-    ) -> Result<PartitionConsumerStream, FluvioError> {
-        // let config = config.build()?;
+    ) -> Result<PartitionConsumerIterator, FluvioError> {
         let config: NativeConsumerConfig = config.build()?.0;
 
         Ok(py.allow_threads(move || {
             #[allow(deprecated)]
             run_block_on(self.0.stream_with_config(offset.0.clone(), config)).map(|stream| {
-                PartitionConsumerStream {
+                PartitionConsumerIterator {
                     inner: Box::pin(stream),
                 }
             })
@@ -613,8 +651,31 @@ type PartitionConsumerIteratorInner =
     Pin<Box<dyn Stream<Item = Result<NativeRecord, ErrorCode>> + Send>>;
 
 #[pyclass]
-pub struct PartitionConsumerStream {
+pub struct PartitionConsumerIterator {
     pub inner: PartitionConsumerIteratorInner,
+}
+
+#[pymethods]
+impl PartitionConsumerIterator {
+    fn next(&mut self, py: Python) -> Result<Option<Record>, PyErr> {
+        let rec_val = py.allow_threads(move || run_block_on(self.inner.next()));
+        match rec_val {
+            Some(Ok(rec)) => Ok(Some(Record(rec))),
+            Some(Err(err)) => match err {
+                ErrorCode::OffsetOutOfRange => return Ok(None),
+                err => Err(PyException::new_err(err.to_string())),
+            },
+            None => Ok(None),
+        }
+    }
+}
+
+type PartitionConsumerStreamInner =
+    Pin<Box<dyn ConsumerStream<Item = Result<NativeRecord, ErrorCode>> + Send>>;
+
+#[pyclass]
+pub struct PartitionConsumerStream {
+    pub inner: PartitionConsumerStreamInner,
 }
 
 #[pymethods]
@@ -629,6 +690,17 @@ impl PartitionConsumerStream {
             },
             None => Ok(None),
         }
+    }
+
+    fn offset_commit(&mut self, py: Python) -> Result<(), PyErr> {
+        self.inner
+            .offset_commit()
+            .map_err(|err| PyException::new_err(err.to_string()))
+    }
+
+    fn offset_flush(&mut self, py: Python) -> Result<(), PyErr> {
+        py.allow_threads(move || run_block_on(self.inner.offset_flush()))
+            .map_err(|err| PyException::new_err(err.to_string()))
     }
 }
 

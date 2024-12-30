@@ -1,6 +1,6 @@
 from string import ascii_lowercase
 
-from fluvio import ConsumerConfig, Fluvio, Offset
+from fluvio import ConsumerConfig, Fluvio, Offset, OffsetManagementStrategy
 from fluvio import ConsumerConfigExtBuilder
 from test_base import CommonFluvioSetup
 
@@ -58,6 +58,36 @@ class TestFluvioConsumer(CommonFluvioSetup):
         self.assertEqual(len(records), 2)
         self.assertEqual(records[0], "record-z")
         self.assertEqual(records[1], "record-y")
+
+    def test_consume_at_offset_begin_manual(self):
+        """
+        Manual offset management test
+        """
+        fluvio = Fluvio.connect()
+
+        builder = ConsumerConfigExtBuilder(self.topic)
+        builder.offset_start(Offset.beginning())
+        builder.offset_strategy(OffsetManagementStrategy.MANUAL)
+        builder.offset_consumer("test-consumer")
+
+        config = builder.build()
+        stream = fluvio.consumer_with_config(config)
+
+        num_items = 2
+        records = [bytearray(next(stream).value()).decode() for _ in range(num_items)]
+
+        stream.offset_commit()
+        stream.offset_flush()
+
+        self.assertEqual(len(records), 2)
+        self.assertEqual(records[0], "record-z")
+        self.assertEqual(records[1], "record-y")
+
+        consumers = fluvio.consumer_offsets()
+        self.assertEqual(len(consumers), 1)
+        self.assertEqual(consumers[0].topic, self.topic)
+        self.assertEqual(consumers[0].partition, 0)
+        self.assertEqual(consumers[0].offset, 1)
 
     def test_consume_at_offset_from_begin(self):
         fluvio = Fluvio.connect()
