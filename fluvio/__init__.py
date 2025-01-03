@@ -58,6 +58,28 @@ num_items = 2
 records = [bytearray(next(stream).value()).decode() for _ in range(num_items)]
 ```
 
+Also you can consume usign offset management:
+
+```python
+import fluvio
+
+fluvio = Fluvio.connect()
+
+topic = "a_topic"
+builder = ConsumerConfigExtBuilder(topic)
+builder.offset_start(Offset.beginning())
+builder.offset_strategy(OffsetManagementStrategy.MANUAL)
+builder.offset_consumer("a-consumer")
+config = builder.build()
+stream = fluvio.consumer_with_config(config)
+
+num_items = 2
+records = [bytearray(next(stream).value()).decode() for _ in range(num_items)]
+
+stream.offset_commit()
+stream.offset_flush()
+```
+
 For more examples see the integration tests in the fluvio-python repository.
 
 [test_produce.py](https://github.com/infinyon/fluvio-client-python/blob/main/integration-tests/test_produce.py)
@@ -82,6 +104,8 @@ from ._fluvio_python import (
     PartitionSelectionStrategy as _PartitionSelectionStrategy,
     PartitionConsumerStream as _PartitionConsumerStream,
     AsyncPartitionConsumerStream as _AsyncPartitionConsumerStream,
+    OffsetManagementStrategy,
+    ConsumerOffset as _ConsumerOffset,
     # producer types
     TopicProducer as _TopicProducer,
     ProduceOutput as _ProduceOutput,
@@ -137,6 +161,8 @@ __all__ = [
     "ConsumerConfig",
     "PartitionConsumer",
     "MultiplePartitionConsumer",
+    "OffsetManagementStrategy",
+    "ConsumerOffset",
     # specs
     "CommonCreateRequest",
     "SmartModuleSpec",
@@ -260,6 +286,26 @@ class ConsumerConfig:
             None,
             None,
         )
+
+
+class ConsumerIterator:
+    def __init__(self, stream: _PartitionConsumerStream):
+        self.stream = stream
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        item = self.stream.next()
+        if item is None:
+            raise StopIteration
+        return Record(item)
+
+    def offset_commit(self):
+        self.stream.offset_commit()
+
+    def offset_flush(self):
+        self.stream.offset_flush()
 
 
 class PartitionConsumer:
@@ -614,6 +660,30 @@ class PartitionSelectionStrategy:
         return cls(_PartitionSelectionStrategy.with_multiple(topic))
 
 
+class ConsumerOffset:
+    """Consumer offset"""
+
+    _inner: _ConsumerOffset
+
+    def __init__(self, inner: _ConsumerOffset):
+        self._inner = inner
+
+    def consumer_id(self) -> str:
+        return self._inner.consumer_id()
+
+    def topic(self) -> str:
+        return self._inner.topic()
+
+    def partition(self) -> int:
+        return self._inner.partition()
+
+    def offset(self) -> int:
+        return self._inner.offset()
+
+    def modified_time(self) -> int:
+        return self._inner.modified_time()
+
+
 class FluvioConfig:
     """Configuration for Fluvio client"""
 
@@ -687,14 +757,12 @@ class Fluvio:
         """Creates a new Fluvio client using the given configuration"""
         return cls(_Fluvio.connect_with_config(config._inner))
 
-    def consumer_with_config(
-        self, config: ConsumerConfigExt
-    ) -> typing.Iterator[Record]:
+    def consumer_with_config(self, config: ConsumerConfigExt) -> ConsumerIterator:
         """Creates consumer with settings defined in config
 
         This is the recommended way to create a consume records.
         """
-        return self._generator(self._inner.consumer_with_config(config))
+        return ConsumerIterator(self._inner.consumer_with_config(config))
 
     def topic_producer(self, topic: str) -> TopicProducer:
         """
@@ -739,6 +807,14 @@ class Fluvio:
         return MultiplePartitionConsumer(
             self._inner.multi_partition_consumer(strategy._inner)
         )
+
+    def consumer_offsets(self) -> typing.List[ConsumerOffset]:
+        """Fetch the current offsets of the consumer"""
+        return self._inner.consumer_offsets()
+
+    def delete_consumer_offset(self, consumer: str, topic: str, partition: int):
+        """Delete the consumer offset"""
+        return self._inner.delete_consumer_offset(consumer, topic, partition)
 
     def _generator(self, stream: _PartitionConsumerStream) -> typing.Iterator[Record]:
         item = stream.next()
