@@ -812,6 +812,10 @@ class Fluvio:
         """Fetch the current offsets of the consumer"""
         return self._inner.consumer_offsets()
 
+    def delete_consumer_offset(self, consumer: str, topic: str, partition: int):
+        """Delete the consumer offset"""
+        return self._inner.delete_consumer_offset(consumer, topic, partition)
+
     def _generator(self, stream: _PartitionConsumerStream) -> typing.Iterator[Record]:
         item = stream.next()
         while item is not None:

@@ -191,6 +191,19 @@ impl Fluvio {
                 .map_err(error_to_py_err)
         })?)
     }
+
+    fn delete_consumer_offset(
+        &self,
+        consumer_id: String,
+        topic: String,
+        partition: u32,
+    ) -> PyResult<()> {
+        run_block_on(
+            self.0
+                .delete_consumer_offset(consumer_id, (topic, partition)),
+        )
+        .map_err(error_to_py_err)
+    }
 }
 
 #[pyclass]
