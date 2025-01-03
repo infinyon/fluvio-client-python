@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.18.1
+
+### Add
+
+- Add offset management integration to consumer stream (#541)
+
+### Miscellaneous Tasks
+
+- Update python docs with creating topic (#537)
+
 ## 0.18.0
 
 ### Add
