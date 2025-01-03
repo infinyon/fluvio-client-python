@@ -2,7 +2,7 @@ import unittest
 import uuid
 import time
 
-from fluvio import FluvioAdmin
+from fluvio import FluvioAdmin, Fluvio
 
 
 def create_smartmodule(sm_name, sm_path):
@@ -22,7 +22,9 @@ class CommonFluvioSetup(unittest.TestCase):
     def common_setup(self, sm_path=None):
         """Optionally create a smartmodule if sm_path is provided"""
         self.admin = FluvioAdmin.connect()
+        self.fluvio = Fluvio.connect()
         self.topic = str(uuid.uuid4())
+        self.consumer_id = str(uuid.uuid4())
         self.sm_name = str(uuid.uuid4())
         self.sm_path = sm_path
 
@@ -50,6 +52,9 @@ class CommonFluvioSetup(unittest.TestCase):
 
     def tearDown(self):
         self.admin.delete_topic(self.topic)
+        # TODO: we can remove this delete_consumer_offset after to fix
+        # this bug: https://github.com/infinyon/fluvio/issues/4308
+        self.fluvio.delete_consumer_offset(self.consumer_id, self.topic, 0)
         time.sleep(1)
         if self.sm_path is not None:
             self.admin.delete_smartmodule(self.sm_name)
