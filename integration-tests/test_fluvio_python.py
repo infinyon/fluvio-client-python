@@ -577,7 +577,8 @@ class TestFluvioMethods(CommonFluvioSmartModuleTestCase):
             self.assertEqual(bytearray(i.value()).decode(), "record-%s" % count)
             self.assertEqual(i.value_string(), "record-%s" % count)
             self.assertEqual(i.key_string(), "foo")
-            self.assertEqual(i.key(), list("foo".encode()))
+            # self.assertEqual(i.key(), list("foo".encode()))
+            self.assertEqual(i.key(), b'foo')
 
     def test_record_timestamp(self):
         fluvio = Fluvio.connect()
@@ -606,7 +607,7 @@ class TestFluvioMethods(CommonFluvioSmartModuleTestCase):
             self.assertEqual(bytearray(i.value()).decode(), "record-%s" % count)
             self.assertEqual(i.value_string(), "record-%s" % count)
             self.assertEqual(i.key_string(), ("%s" % count))
-            self.assertEqual(i.key(), list(("%s" % count).encode()))
+            self.assertEqual(i.key(), ("%s" % count).encode())
 
 
 class TestFluvioErrors(CommonFluvioSmartModuleTestCase):

@@ -27,6 +27,8 @@ use fluvio_controlplane_metadata::smartmodule::{
 use fluvio_controlplane_metadata::topic::{
     PartitionMap as NativePartitionMap, TopicSpec as NativeTopicSpec,
 };
+use fluvio_future::io::FutureExt;
+use fluvio_future::timer::sleep;
 use fluvio_future::{
     io::{Stream, StreamExt},
     task::run_block_on,
@@ -49,10 +51,14 @@ use fluvio_types::{
 use futures::future::BoxFuture;
 use futures::pin_mut;
 use futures::TryFutureExt;
+use std::future::Future;
 use std::io::{self, Error as IoError, Write};
 use std::pin::Pin;
 use std::string::FromUtf8Error;
 use std::sync::Arc;
+use std::time::Duration;
+use tokio::select;
+use tokio::sync::mpsc;
 use tracing::info;
 use url::Host;
 mod cloud;
@@ -69,13 +75,13 @@ use error::FluvioError;
 use consumer::{ConsumerConfigExt, ConsumerConfigExtBuilder, OffsetManagementStrategy};
 
 use pyo3::exceptions::{PyException, PyValueError};
-use pyo3::prelude::*;
 use pyo3::types::PyList;
+use pyo3::{prelude::*, IntoPyObjectExt};
 
 pyo3::create_exception!(mymodule, PyFluvioError, PyException);
 
 #[pymodule]
-fn _fluvio_python(py: Python<'_>, m: &PyModule) -> PyResult<()> {
+fn _fluvio_python(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Fluvio>()?;
     m.add_class::<FluvioConfig>()?;
     m.add_class::<ConsumerConfig>()?;
@@ -185,11 +191,11 @@ impl Fluvio {
     }
 
     fn consumer_offsets(&self, py: Python) -> PyResult<Vec<ConsumerOffset>> {
-        Ok(py.allow_threads(move || {
+        py.allow_threads(move || {
             run_block_on(self.0.consumer_offsets())
                 .map(|offsets| offsets.into_iter().map(ConsumerOffset::from).collect())
                 .map_err(error_to_py_err)
-        })?)
+        })
     }
 
     fn delete_consumer_offset(
@@ -255,7 +261,7 @@ impl PartitionSelectionStrategy {
     }
 
     #[staticmethod]
-    fn with_multiple(selections: Vec<(&str, PartitionId)>) -> Self {
+    fn with_multiple(selections: Vec<(String, PartitionId)>) -> Self {
         let vals = selections
             .into_iter()
             .map(|(topic, partitions)| (topic.to_owned(), partitions))
@@ -455,8 +461,8 @@ impl ConsumerConfig {
     }
 }
 
-#[derive(Clone)]
-#[pyclass]
+#[derive(Debug, Clone, PartialEq)]
+#[pyclass(eq, eq_int)]
 pub enum SmartModuleKind {
     Filter,
     Map,
@@ -468,8 +474,8 @@ pub enum SmartModuleKind {
     Generic,
 }
 
-#[derive(Debug, Clone)]
-#[pyclass]
+#[derive(Debug, Clone, PartialEq)]
+#[pyclass(eq, eq_int)]
 pub enum SmartModuleContextData {
     Aggregate,
     Join,
@@ -532,10 +538,10 @@ impl PartitionConsumer {
             inner: Box::pin(run_block_on(self.0.stream(offset.0.clone()))?),
         })
     }
-    fn async_stream<'b>(&'b self, offset: &Offset, py: Python<'b>) -> PyResult<&PyAny> {
+    fn async_stream<'b>(&'b self, offset: &Offset, py: Python<'b>) -> PyResult<Bound<'b, PyAny>> {
         let sl = self.clone();
         let offset = offset.0.clone();
-        pyo3_asyncio::async_std::future_into_py(py, async move {
+        pyo3_async_runtimes::async_std::future_into_py(py, async move {
             #[allow(deprecated)]
             let stream =
                 sl.0.stream(offset)
@@ -567,11 +573,11 @@ impl PartitionConsumer {
         offset: &Offset,
         config: &mut ConsumerConfig,
         py: Python<'b>,
-    ) -> PyResult<&PyAny> {
+    ) -> PyResult<Bound<'b, PyAny>> {
         let sl = self.clone();
         let offset = offset.0.clone();
         let config: NativeConsumerConfig = config.build()?.0;
-        pyo3_asyncio::async_std::future_into_py(py, async move {
+        pyo3_async_runtimes::async_std::future_into_py(py, async move {
             #[allow(deprecated)]
             let stream =
                 sl.0.stream_with_config(offset, config)
@@ -607,11 +613,11 @@ impl MultiplePartitionConsumer {
             ),
         })
     }
-    fn async_stream<'b>(&'b self, offset: &Offset, py: Python<'b>) -> PyResult<&PyAny> {
+    fn async_stream<'b>(&'b self, offset: &Offset, py: Python<'b>) -> PyResult<Bound<'b, PyAny>> {
         let sl = self.clone();
         let offset = offset.0.clone();
         #[allow(deprecated)]
-        pyo3_asyncio::async_std::future_into_py(py, async move {
+        pyo3_async_runtimes::async_std::future_into_py(py, async move {
             let stream =
                 sl.0.stream(offset)
                     .await
@@ -643,11 +649,11 @@ impl MultiplePartitionConsumer {
         offset: &Offset,
         config: &mut ConsumerConfig,
         py: Python<'b>,
-    ) -> PyResult<&PyAny> {
+    ) -> PyResult<Bound<'b, PyAny>> {
         let sl = self.clone();
         let offset = offset.0.clone();
         let config: NativeConsumerConfig = config.build()?.0;
-        pyo3_asyncio::async_std::future_into_py(py, async move {
+        pyo3_async_runtimes::async_std::future_into_py(py, async move {
             #[allow(deprecated)]
             let stream =
                 sl.0.stream_with_config(offset, config)
@@ -663,7 +669,7 @@ impl MultiplePartitionConsumer {
 type PartitionConsumerIteratorInner =
     Pin<Box<dyn Stream<Item = Result<NativeRecord, ErrorCode>> + Send>>;
 
-#[pyclass]
+#[pyclass(unsendable)]
 pub struct PartitionConsumerIterator {
     pub inner: PartitionConsumerIteratorInner,
 }
@@ -671,14 +677,14 @@ pub struct PartitionConsumerIterator {
 #[pymethods]
 impl PartitionConsumerIterator {
     fn next(&mut self, py: Python) -> Result<Option<Record>, PyErr> {
-        let rec_val = py.allow_threads(move || run_block_on(self.inner.next()));
-        match rec_val {
-            Some(Ok(rec)) => Ok(Some(Record(rec))),
-            Some(Err(err)) => match err {
-                ErrorCode::OffsetOutOfRange => return Ok(None),
+        match run_future_checking_signals(self.inner.next(), py) {
+            Ok(Some(Ok(rec))) => Ok(Some(Record(rec))),
+            Ok(Some(Err(err))) => match err {
+                ErrorCode::OffsetOutOfRange => Ok(None),
                 err => Err(PyException::new_err(err.to_string())),
             },
-            None => Ok(None),
+            Ok(None) => Ok(None),
+            Err(err) => Err(PyException::new_err(err.to_string())),
         }
     }
 }
@@ -686,7 +692,7 @@ impl PartitionConsumerIterator {
 type PartitionConsumerStreamInner =
     Pin<Box<dyn ConsumerStream<Item = Result<NativeRecord, ErrorCode>> + Send>>;
 
-#[pyclass]
+#[pyclass(unsendable)]
 pub struct PartitionConsumerStream {
     pub inner: PartitionConsumerStreamInner,
 }
@@ -694,14 +700,14 @@ pub struct PartitionConsumerStream {
 #[pymethods]
 impl PartitionConsumerStream {
     fn next(&mut self, py: Python) -> Result<Option<Record>, PyErr> {
-        let rec_val = py.allow_threads(move || run_block_on(self.inner.next()));
-        match rec_val {
-            Some(Ok(rec)) => Ok(Some(Record(rec))),
-            Some(Err(err)) => match err {
-                ErrorCode::OffsetOutOfRange => return Ok(None),
+        match run_future_checking_signals(self.inner.next(), py) {
+            Ok(Some(Ok(rec))) => Ok(Some(Record(rec))),
+            Ok(Some(Err(err))) => match err {
+                ErrorCode::OffsetOutOfRange => Ok(None),
                 err => Err(PyException::new_err(err.to_string())),
             },
-            None => Ok(None),
+            Ok(None) => Ok(None),
+            Err(err) => Err(PyException::new_err(err.to_string())),
         }
     }
 
@@ -736,9 +742,9 @@ impl AsyncPartitionConsumerStream {
 
 #[pymethods]
 impl AsyncPartitionConsumerStream {
-    pub fn async_next<'b>(&mut self, py: Python<'b>) -> PyResult<&'b PyAny> {
+    pub fn async_next<'b>(&mut self, py: Python<'b>) -> PyResult<Bound<'b, PyAny>> {
         let sl = self.clone();
-        pyo3_asyncio::async_std::future_into_py(py, async move {
+        pyo3_async_runtimes::async_std::future_into_py(py, async move {
             let record = sl
                 .inner
                 .lock()
@@ -802,9 +808,9 @@ impl TopicProducer {
         key: Vec<u8>,
         value: Vec<u8>,
         py: Python<'b>,
-    ) -> PyResult<&'b PyAny> {
+    ) -> PyResult<Bound<'b, PyAny>> {
         let sl = self.clone();
-        pyo3_asyncio::async_std::future_into_py(py, async move {
+        pyo3_async_runtimes::async_std::future_into_py(py, async move {
             let produce_output =
                 sl.0.send(key, value)
                     .await
@@ -841,9 +847,9 @@ impl TopicProducer {
         &'b self,
         records: Vec<ProducerBatchRecord>,
         py: Python<'b>,
-    ) -> PyResult<&'b PyAny> {
+    ) -> PyResult<Bound<'b, PyAny>> {
         let sl = self.clone();
-        pyo3_asyncio::async_std::future_into_py(py, async move {
+        pyo3_async_runtimes::async_std::future_into_py(py, async move {
             let produce_outputs =
                 sl.0.send_all(
                     records
@@ -854,23 +860,26 @@ impl TopicProducer {
                 .map_err(FluvioError::AnyhowError)?;
 
             Ok(Python::with_gil(|py| {
-                let lst: Py<PyList> = PyList::new(
+                let lst = PyList::new(
                     py,
                     produce_outputs
                         .into_iter()
-                        .map(|po| ProduceOutput { inner: Some(po) }.into_py(py)),
-                )
-                .into();
-                lst
+                        .map(|po| ProduceOutput { inner: Some(po) }),
+                );
+
+                match lst {
+                    Ok(lst) => lst.into(),
+                    Err(_) => py.None(),
+                }
             }))
         })
     }
     fn flush(&self, py: Python) -> Result<(), FluvioError> {
         Ok(py.allow_threads(move || run_block_on(self.0.flush()))?)
     }
-    fn async_flush<'b>(&'b self, py: Python<'b>) -> PyResult<&PyAny> {
+    fn async_flush<'b>(&'b self, py: Python<'b>) -> PyResult<Bound<'b, PyAny>> {
         let sl = self.clone();
-        pyo3_asyncio::async_std::future_into_py(py, async move {
+        pyo3_async_runtimes::async_std::future_into_py(py, async move {
             sl.0.flush().map_err(FluvioError::AnyhowError).await?;
             Ok(Python::with_gil(|py| py.None()))
         })
@@ -1458,7 +1467,7 @@ impl From<NativeMessage<NativeMetadata<NativeSmartModuleSpec>>> for MessageMetad
 type WatchTopicIteratorInner =
     Pin<Box<dyn Stream<Item = Result<NativeWatchResponse<NativeTopicSpec>, IoError>> + Send>>;
 
-#[pyclass]
+#[pyclass(unsendable)]
 pub struct WatchTopicStream {
     pub inner: WatchTopicIteratorInner,
 }
@@ -1543,7 +1552,7 @@ impl From<NativeWatchResponse<NativeSmartModuleSpec>> for WatchResponseSmartModu
 type WatchSmartModuleIteratorInner =
     Pin<Box<dyn Stream<Item = Result<NativeWatchResponse<NativeSmartModuleSpec>, IoError>> + Send>>;
 
-#[pyclass]
+#[pyclass(unsendable)]
 pub struct WatchSmartModuleStream {
     pub inner: WatchSmartModuleIteratorInner,
 }
@@ -1592,4 +1601,34 @@ impl From<NativeMetadata<NativePartitionSpec>> for MetadataPartitionSpec {
     fn from(data: NativeMetadata<NativePartitionSpec>) -> Self {
         MetadataPartitionSpec { inner: data }
     }
+}
+
+/// Runs the given future to completion, checking for Python signals periodically.
+fn run_future_checking_signals<'a, T>(
+    future: impl Future<Output = T> + Send + 'a,
+    py: Python<'a>,
+) -> PyResult<T> {
+    // Pin the future to ensure it has a stable address in memory
+    let mut future_pin = Box::pin(future);
+
+    // Define the asynchronous task that handles the future and signal checking
+    let res = async {
+        loop {
+            select! {
+                // Poll the pinned future by mutable reference
+                res = &mut future_pin => {
+                    return Ok(res);
+                }
+
+                // Sleep for 1 second intervals to periodically check for signals
+                _ = sleep(Duration::from_secs(1)) => {
+                    // Check for Python signals (like KeyboardInterrupt)
+                    py.check_signals()?;
+                }
+            }
+        }
+    };
+
+    // Run the asynchronous task to completion
+    run_block_on(res)
 }

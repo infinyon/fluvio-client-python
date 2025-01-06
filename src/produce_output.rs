@@ -36,9 +36,9 @@ impl ProduceOutput {
             .transpose()
     }
 
-    fn async_wait<'b>(&'b mut self, py: Python<'b>) -> PyResult<&'b PyAny> {
+    fn async_wait<'b>(&'b mut self, py: Python<'b>) -> PyResult<Bound<'b, PyAny>> {
         let inner = self.inner.take();
-        pyo3_asyncio::async_std::future_into_py(py, async move {
+        pyo3_async_runtimes::async_std::future_into_py(py, async move {
             let record_metadata = match inner {
                 Some(produce_output) => {
                     let pout = produce_output
