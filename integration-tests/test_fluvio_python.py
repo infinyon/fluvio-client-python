@@ -578,7 +578,7 @@ class TestFluvioMethods(CommonFluvioSmartModuleTestCase):
             self.assertEqual(i.value_string(), "record-%s" % count)
             self.assertEqual(i.key_string(), "foo")
             # self.assertEqual(i.key(), list("foo".encode()))
-            self.assertEqual(i.key(), b'foo')
+            self.assertEqual(i.key(), b"foo")
 
     def test_record_timestamp(self):
         fluvio = Fluvio.connect()
