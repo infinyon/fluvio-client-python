@@ -684,7 +684,7 @@ impl PartitionConsumerIterator {
                 err => Err(PyException::new_err(err.to_string())),
             },
             Ok(None) => Ok(None),
-            Err(err) => Err(PyException::new_err(err.to_string())),
+            Err(err) => Err(err), // Python exception
         }
     }
 }
@@ -707,7 +707,7 @@ impl PartitionConsumerStream {
                 err => Err(PyException::new_err(err.to_string())),
             },
             Ok(None) => Ok(None),
-            Err(err) => Err(PyException::new_err(err.to_string())),
+            Err(err) => Err(err), // Python exception
         }
     }
 
@@ -1620,8 +1620,8 @@ fn run_future_checking_signals<'a, T>(
                     return Ok(res);
                 }
 
-                // Sleep for 1 second intervals to periodically check for signals
-                _ = sleep(Duration::from_secs(1)) => {
+                // Sleep for 100 ms to periodically check for signals
+                _ = sleep(Duration::from_millis(100)) => {
                     // Check for Python signals (like KeyboardInterrupt)
                     py.check_signals()?;
                 }
