@@ -66,6 +66,11 @@ def consumer_process(topic, control_queue, consumer_mode: ConsumerMode):
 class TestFluvioConsumerSignals(CommonFluvioSetup):
     def setUp(self):
         self.common_setup()
+        # Generate a set of test data for the topic
+        producer = self.fluvio.topic_producer(self.topic)
+        for i in range(2):
+            producer.send_string(f"record-{i}")
+        producer.flush()
 
     def test_consume_with_sigterm(self):
         """
