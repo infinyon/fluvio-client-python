@@ -15,7 +15,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         rust: [stable]
-        python-version: ["3.12"]
+        python-version: ["3.13"]
     steps:
       - uses: actions/checkout@v4
       - name: Install rust ${{ matrix.rust }}

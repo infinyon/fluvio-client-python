@@ -11,7 +11,7 @@ setup(
     long_description_content_type="text/markdown",
     author="Fluvio Contributors",
     description="Python client library for Fluvio",
-    python_requires=">=3.8",
+    python_requires=">=3.9",
     url="https://www.fluvio.io/",
     keywords=["fluvio", "streaming", "stream"],
     license="APACHE",
@@ -35,6 +35,7 @@ setup(
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "Programming Language :: Python :: 3 :: Only",
     ],
     rust_extensions=[
