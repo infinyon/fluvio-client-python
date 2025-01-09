@@ -45,7 +45,6 @@ def consumer_process(topic, control_queue, consumer_mode: ConsumerMode):
         try:
             record = next(stream)
             records.append(bytearray(record.value()).decode())
-            print("1")
         except StopIteration:
             # No more records in the stream
             print("No more records to consume.")

@@ -86,7 +86,6 @@ class TestFluvioConsumerSignalsAsync(unittest.IsolatedAsyncioTestCase):
         self.admin = FluvioAdmin.connect()
         self.fluvio = Fluvio.connect()
         self.topic = str(uuid.uuid4())
-        self.consumer_id = str(uuid.uuid4())
         self.sm_name = str(uuid.uuid4())
 
         try:
@@ -113,8 +112,6 @@ class TestFluvioConsumerSignalsAsync(unittest.IsolatedAsyncioTestCase):
 
     def tearDown(self):
         self.admin.delete_topic(self.topic)
-        # Remove consumer offset if needed
-        self.fluvio.delete_consumer_offset(self.consumer_id, self.topic, 0)
         time.sleep(1)
 
     def test_consume_with_sigterm_async(self):
