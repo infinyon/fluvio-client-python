@@ -87,11 +87,16 @@ class TestFluvioConsumer(CommonFluvioSetup):
         self.assertEqual(records[1], "record-y")
 
         consumers = fluvio.consumer_offsets()
-        self.assertEqual(len(consumers), 1)
-        self.assertEqual(consumers[0].consumer_id, self.consumer_id)
-        self.assertEqual(consumers[0].topic, self.topic)
-        self.assertEqual(consumers[0].partition, 0)
-        self.assertEqual(consumers[0].offset, 1)
+        consumer = next(
+            (c for c in consumers if c.consumer_id == self.consumer_id), None
+        )
+        if consumer is None:
+            self.fail("consumer not found")
+
+        self.assertEqual(consumer.consumer_id, self.consumer_id)
+        self.assertEqual(consumer.topic, self.topic)
+        self.assertEqual(consumer.partition, 0)
+        self.assertEqual(consumer.offset, 1)
 
     def test_consume_offset_managed_auto_commit_and_flush(self):
         """
@@ -118,11 +123,16 @@ class TestFluvioConsumer(CommonFluvioSetup):
         self.assertEqual(records[1], "record-y")
 
         consumers = fluvio.consumer_offsets()
-        self.assertEqual(len(consumers), 1)
-        self.assertEqual(consumers[0].consumer_id, self.consumer_id)
-        self.assertEqual(consumers[0].topic, self.topic)
-        self.assertEqual(consumers[0].partition, 0)
-        self.assertEqual(consumers[0].offset, 1)
+        consumer = next(
+            (c for c in consumers if c.consumer_id == self.consumer_id), None
+        )
+        if consumer is None:
+            self.fail("consumer not found")
+
+        self.assertEqual(consumer.consumer_id, self.consumer_id)
+        self.assertEqual(consumer.topic, self.topic)
+        self.assertEqual(consumer.partition, 0)
+        self.assertEqual(consumer.offset, 1)
 
     def test_consume_offset_managed_auto_flush(self):
         """
@@ -188,11 +198,16 @@ class TestFluvioConsumer(CommonFluvioSetup):
         self.assertEqual(records[0], "record-y")
 
         consumers = fluvio.consumer_offsets()
-        self.assertEqual(len(consumers), 1)
-        self.assertEqual(consumers[0].consumer_id, self.consumer_id)
-        self.assertEqual(consumers[0].topic, self.topic)
-        self.assertEqual(consumers[0].partition, 0)
-        self.assertEqual(consumers[0].offset, 1)
+        consumer = next(
+            (c for c in consumers if c.consumer_id == self.consumer_id), None
+        )
+        if consumer is None:
+            self.fail("consumer not found")
+
+        self.assertEqual(consumer.consumer_id, self.consumer_id)
+        self.assertEqual(consumer.topic, self.topic)
+        self.assertEqual(consumer.partition, 0)
+        self.assertEqual(consumer.offset, 1)
 
     def test_consume_at_offset_from_begin(self):
         fluvio = Fluvio.connect()

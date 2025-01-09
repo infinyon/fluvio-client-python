@@ -37,6 +37,12 @@ unit-tests: build-dev
 integration-tests: build-dev
 	cd integration-tests/ && $(PYTHON) -m unittest
 
+test-signals: build-dev
+	cd integration-tests/ && $(PYTHON) -m unittest test_signals.py
+
+test-signals-async: build-dev
+	cd integration-tests/ && $(PYTHON) -m unittest test_signals_async.py
+
 test-produce: build-dev
 	cd integration-tests/ &&  $(PYTHON) -m unittest test_produce.py
 

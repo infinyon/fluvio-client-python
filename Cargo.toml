@@ -1,6 +1,6 @@
 [package]
 name = "_fluvio_python"
-version = "0.18.1"
+version = "0.19.0"
 edition = "2021"
 authors = ["Fluvio Contributors <team@fluvio.io>"]
 
@@ -24,8 +24,8 @@ futures = "0.3.30"
 hex = "0.4.2"
 http-types = "2.6.0"
 md-5 = "0.10.0"
-pyo3 = { version = "0.20.2", features = ["extension-module"] }
-pyo3-asyncio = { version = "0.20.0", features = ["testing", "attributes", "async-std-runtime"] }
+pyo3 = { version = "0.23.3", features = ["extension-module"] }
+pyo3-async-runtimes = { version = "0.23", features = ["attributes", "async-std-runtime"] }
 rpassword = "7.3.1"
 serde = "1.0.117"
 serde_json = "1.0.59"
@@ -38,11 +38,11 @@ url = "2.5.0"
 webbrowser = "1.0.0"
 
 fluvio-future = { version = "0.7.0", features = ["task", "io", "native_tls", "subscriber"] }
-fluvio = { features = ["admin", "rustls"], git = "https://github.com/infinyon/fluvio.git", brach ="offset_flush_box" }
-fluvio-protocol = { git = "https://github.com/infinyon/fluvio.git", brach ="offset_flush_box" }
-fluvio-types = { git = "https://github.com/infinyon/fluvio.git", brach ="offset_flush_box" }
-fluvio-sc-schema = { git = "https://github.com/infinyon/fluvio.git", brach ="offset_flush_box" }
-fluvio-controlplane-metadata = { git = "https://github.com/infinyon/fluvio.git", brach ="offset_flush_box" }
+fluvio = { features = ["admin", "rustls"], git = "https://github.com/infinyon/fluvio.git", tag = "v0.14.1" }
+fluvio-protocol = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.14.1" }
+fluvio-types = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.14.1" }
+fluvio-sc-schema = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.14.1" }
+fluvio-controlplane-metadata = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.14.1" }
 
 # transitive version selection
 parking_lot = "0.12.3"
