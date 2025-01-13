@@ -19,7 +19,7 @@ async-lock = "3.3.0"
 async-std = "1.6.5"
 aws-lc-rs = { version = "1", features = ["bindgen"] }
 cc = "=1.1.15"
-dirs = "5.0.1"
+dirs = "6.0.0"
 futures = "0.3.30"
 hex = "0.4.2"
 http-types = "2.6.0"
