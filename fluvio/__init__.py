@@ -58,6 +58,30 @@ num_items = 2
 records = [bytearray(next(stream).value()).decode() for _ in range(num_items)]
 ```
 
+Producing with a custom configuration:
+
+```python
+import fluvio
+
+fluvio = Fluvio.connect()
+
+topic = "a_topic"
+builder = (
+    TopicProducerConfigBuilder()
+    .batch_size(32768)
+    .linger(100)
+    .compression(Compression.Gzip)
+    .max_request_size(33554432)
+    .timeout(600000)
+    .isolation(Isolation.ReadCommitted)
+    .delivery_semantic(DeliverySemantic.AtLeastOnce)
+)
+producer = fluvio.topic_producer_with_config(self.topic, config)
+
+for i in range(10):
+    producer.send_string("Hello %s " % i)
+```
+
 Also you can consume usign offset management:
 
 ```python
@@ -108,6 +132,11 @@ from ._fluvio_python import (
     ConsumerOffset as _ConsumerOffset,
     # producer types
     TopicProducer as _TopicProducer,
+    TopicProducerConfig,
+    TopicProducerConfigBuilder,
+    Compression,
+    DeliverySemantic,
+    Isolation,
     ProduceOutput as _ProduceOutput,
     ProducerBatchRecord as _ProducerBatchRecord,
     # admin and misc types
@@ -154,6 +183,11 @@ __all__ = [
     "Offset",
     # producer
     "TopicProducer",
+    "TopicProducerConfig",
+    "TopicProducerConfigBuilder",
+    "Compression",
+    "DeliverySemantic",
+    "Isolation",
     "ProduceOutput",
     # consumer
     "ConsumerConfigExt",
@@ -763,6 +797,10 @@ class Fluvio:
         This is the recommended way to create a consume records.
         """
         return ConsumerIterator(self._inner.consumer_with_config(config))
+
+    def topic_producer_with_config(self, topic: str, config: TopicProducerConfig):
+        """Creates a new `TopicProducer` for the given topic name with config"""
+        return TopicProducer(self._inner.topic_producer_with_config(topic, config))
 
     def topic_producer(self, topic: str) -> TopicProducer:
         """

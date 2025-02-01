@@ -1,8 +1,16 @@
+from test_base import CommonFluvioSetup
 import unittest
 import itertools
 
-from fluvio import Fluvio, Offset, FluvioConfig
-from test_base import CommonFluvioSetup
+from fluvio import (
+    Fluvio,
+    Offset,
+    FluvioConfig,
+    TopicProducerConfigBuilder,
+    Compression,
+    Isolation,
+    DeliverySemantic,
+)
 
 
 class TestFluvioProduce(CommonFluvioSetup):
@@ -13,6 +21,25 @@ class TestFluvioProduce(CommonFluvioSetup):
     def test_connect_with_config(self):
         config = FluvioConfig.load()
         Fluvio.connect_with_config(config)
+
+    def test_produce_config(self):
+        fluvio = Fluvio.connect()
+
+        config = (
+            TopicProducerConfigBuilder()
+            .batch_size(1000)
+            .linger(100)
+            .compression(Compression.Gzip)
+            .max_request_size(1000000)
+            .timeout(600000)
+            .isolation(Isolation.ReadCommitted)
+            .delivery_semantic(DeliverySemantic.AtLeastOnce)
+            .build()
+        )
+
+        producer = fluvio.topic_producer_with_config(self.topic, config)
+        for i in range(10):
+            producer.send_string("FOOBAR %s " % i)
 
     def test_produce(self):
         fluvio = Fluvio.connect()
