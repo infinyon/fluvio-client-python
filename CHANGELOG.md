@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.20.0 - 2025-02-06
+
+### 🚀 Features
+
+- Add producer with parameters (#561)
+
+### ⚙️ Miscellaneous Tasks
+
+- Changelog for v0.19.0
+
 ## 0.19.0 - 2025-01-09
 
 ### Add
