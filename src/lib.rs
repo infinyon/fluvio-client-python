@@ -13,10 +13,13 @@ use fluvio::{
     ProduceOutput as NativeProduceOutput, RecordMetadata as NativeRecordMetadata,
 };
 use fluvio::{
-    FluvioConfig as NativeFluvioConfig,
+    Compression as NativeCompression, DeliverySemantic as NativeDeliverySemantic,
+    FluvioConfig as NativeFluvioConfig, Isolation as NativeIsolation,
     MultiplePartitionConsumer as NativeMultiplePartitionConsumer, Offset as NativeOffset,
     PartitionConsumer as NativePartitionConsumer,
-    PartitionSelectionStrategy as NativePartitionSelectionStrategy,
+    PartitionSelectionStrategy as NativePartitionSelectionStrategy, RetryPolicy,
+    TopicProducerConfig as NativeTopicProducerConfig,
+    TopicProducerConfigBuilder as NativeTopicProducerConfigBuilder,
     TopicProducerPool as NativeTopicProducer,
 };
 use fluvio_controlplane_metadata::message::{Message as NativeMessage, MsgType as NativeMsgType};
@@ -92,6 +95,11 @@ fn _fluvio_python(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PartitionConsumerStream>()?;
     m.add_class::<AsyncPartitionConsumerStream>()?;
     m.add_class::<TopicProducer>()?;
+    m.add_class::<TopicProducerConfig>()?;
+    m.add_class::<TopicProducerConfigBuilder>()?;
+    m.add_class::<Compression>()?;
+    m.add_class::<Isolation>()?;
+    m.add_class::<DeliverySemantic>()?;
     m.add_class::<ProduceOutput>()?;
     m.add_class::<RecordMetadata>()?;
     m.add_class::<ProducerBatchRecord>()?;
@@ -181,6 +189,18 @@ impl Fluvio {
         Ok(MultiplePartitionConsumer(py.allow_threads(move || {
             run_block_on(self.0.consumer(strategy.into_inner())).map_err(error_to_py_err)
         })?))
+    }
+
+    fn topic_producer_with_config(
+        &self,
+        topic: String,
+        config: TopicProducerConfig,
+        py: Python,
+    ) -> PyResult<TopicProducer> {
+        Ok(TopicProducer(Arc::new(py.allow_threads(move || {
+            run_block_on(self.0.topic_producer_with_config(topic, config.0))
+                .map_err(error_to_py_err)
+        })?)))
     }
 
     fn topic_producer(&self, topic: String, py: Python) -> PyResult<TopicProducer> {
@@ -790,6 +810,121 @@ impl RecordMetadata {
     }
 }
 
+#[pyclass(module = "fluvio.__init__", name = "TopicProducerConfig")]
+#[derive(Clone)]
+struct TopicProducerConfig(NativeTopicProducerConfig);
+
+#[pyclass(module = "fluvio.__init__", name = "TopicProducerConfigBuilder")]
+#[derive(Clone)]
+struct TopicProducerConfigBuilder(NativeTopicProducerConfigBuilder);
+
+#[pymethods]
+impl TopicProducerConfigBuilder {
+    #[new]
+    fn new() -> Self {
+        Self(NativeTopicProducerConfigBuilder::default())
+    }
+
+    fn batch_size(&mut self, batch_size: usize) -> Self {
+        self.0.batch_size(batch_size);
+        self.clone()
+    }
+
+    fn max_request_size(&mut self, max_request_size: usize) -> Self {
+        self.0.max_request_size(max_request_size);
+        self.clone()
+    }
+
+    fn batch_queue_size(&mut self, batch_queue_size: usize) -> Self {
+        self.0.batch_queue_size(batch_queue_size);
+        self.clone()
+    }
+
+    fn linger(&mut self, linger: u64) -> Self {
+        self.0.linger(Duration::from_millis(linger));
+        self.clone()
+    }
+
+    fn set_specific_partitioner(&mut self, partitioner: u32) -> Self {
+        self.0.set_specific_partitioner(partitioner);
+        self.clone()
+    }
+
+    fn compression(&mut self, compression: Compression) -> Self {
+        match compression {
+            Compression::None_ => self.0.compression(NativeCompression::None),
+            Compression::Gzip => self.0.compression(NativeCompression::Gzip),
+            Compression::Snappy => self.0.compression(NativeCompression::Snappy),
+            Compression::Zstd => self.0.compression(NativeCompression::Zstd),
+            Compression::Lz4 => self.0.compression(NativeCompression::Lz4),
+        };
+
+        self.clone()
+    }
+
+    fn timeout(&mut self, timeout: u64) -> Self {
+        self.0.timeout(Duration::from_millis(timeout));
+        self.clone()
+    }
+
+    fn isolation(&mut self, isolation: Isolation) -> Self {
+        match isolation {
+            Isolation::ReadCommitted => self.0.isolation(NativeIsolation::ReadCommitted),
+            Isolation::ReadUncommitted => self.0.isolation(NativeIsolation::ReadUncommitted),
+        };
+
+        self.clone()
+    }
+
+    fn delivery_semantic(&mut self, semantics: DeliverySemantic) -> Self {
+        match semantics {
+            DeliverySemantic::AtMostOnce => {
+                self.0.delivery_semantic(NativeDeliverySemantic::AtMostOnce)
+            }
+            DeliverySemantic::AtLeastOnce => self
+                .0
+                .delivery_semantic(NativeDeliverySemantic::AtLeastOnce(RetryPolicy::default())),
+        };
+
+        self.clone()
+    }
+
+    //TODO: Implement smartmodule
+    //TODO: Implement callback
+
+    fn build(&mut self) -> PyResult<TopicProducerConfig> {
+        Ok(TopicProducerConfig(
+            self.0
+                .build()
+                .map_err(|err| FluvioError::AnyhowError(err.into()))?,
+        ))
+    }
+}
+
+#[pyclass(eq, eq_int, module = "fluvio.__init__", name = "Isolation")]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum Isolation {
+    ReadCommitted,
+    ReadUncommitted,
+}
+
+#[pyclass(eq, eq_int, module = "fluvio.__init__", name = "DeliverySemantic")]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum DeliverySemantic {
+    AtMostOnce,
+    AtLeastOnce,
+}
+
+#[pyclass(eq, eq_int, module = "fluvio.__init__", name = "Compression")]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum Compression {
+    None_,
+    Gzip,
+    Snappy,
+    Lz4,
+    Zstd,
+}
+
 #[derive(Clone)]
 #[pyclass]
 struct TopicProducer(Arc<NativeTopicProducer>);
@@ -1248,23 +1383,16 @@ impl TopicSpec {
         self.inner.set_storage(storage);
     }
 
-    pub fn set_compression_type(&mut self, compression: &str) -> PyResult<()> {
-        let compression = match compression {
-            "none" => CompressionAlgorithm::None,
-            "gzip" => CompressionAlgorithm::Gzip,
-            "snappy" => CompressionAlgorithm::Snappy,
-            "lz4" => CompressionAlgorithm::Lz4,
-            "zstd" => CompressionAlgorithm::Zstd,
-            _ => {
-                return Err(PyValueError::new_err(format!(
-                    "Invalid compression type: {}",
-                    compression
-                )))
-            }
-        };
-
-        self.inner.set_compression_type(compression);
-        Ok(())
+    pub fn set_compression_type(&mut self, compression: Compression) {
+        match compression {
+            Compression::None_ => self.inner.set_compression_type(CompressionAlgorithm::None),
+            Compression::Gzip => self.inner.set_compression_type(CompressionAlgorithm::Gzip),
+            Compression::Snappy => self
+                .inner
+                .set_compression_type(CompressionAlgorithm::Snappy),
+            Compression::Lz4 => self.inner.set_compression_type(CompressionAlgorithm::Lz4),
+            Compression::Zstd => self.inner.set_compression_type(CompressionAlgorithm::Zstd),
+        }
     }
 }
 

@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.20.0 - 2025-02-06
+
+### 🚀 Features
+
+- Add producer with parameters (#561)
+
+### ⚙️ Miscellaneous Tasks
+
+- Changelog for v0.19.0
+
+## 0.19.0 - 2025-01-09
+
+### Add
+
+- Python compatibility with 3.13 (#545)
+
+### Bug Fixes
+
+- Add graceful shutdown (#545)
+
+### Miscellaneous Tasks
+
+- Update pyo3 dependencies (#545)
+
+### Testing
+
+- Fix for cloud cases using old consumers (#546)
+
 ## 0.18.1
 
 ### Add
