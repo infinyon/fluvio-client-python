@@ -5,6 +5,6 @@ pycodestyle==2.12.1
 pyflakes==3.2.0
 black==25.1.0
 semantic-version==2.10.0
-setuptools-rust==1.10.1
+setuptools-rust==1.11.0
 toml==0.10.2
 humanfriendly==10.0
