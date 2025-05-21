@@ -32,8 +32,18 @@ dynamic = ["dependencies"]
 "Bug Reports" = "https://github.com/infinyon/fluvio-client-python/issues"
 "Source" = "https://github.com/infinyon/fluvio-client-python"
 
+[tool.setuptools]
+packages = ["fluvio"]
+
 [[tool.setuptools-rust.ext-modules]]
 target = "fluvio._fluvio_python"
 path = "Cargo.toml"
 binding = "PyO3" 
 quiet = true
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "flake8>=7",
+    "cibuildwheel>=2.22",
+]

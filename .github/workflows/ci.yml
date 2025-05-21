@@ -56,7 +56,7 @@ jobs:
       - if: runner.os != 'Linux'
         name: Setup env when not using docker
         run: |
-          python -m pip install --upgrade wheel setuptools setuptools-rust
+          python -m pip install --upgrade build wheel setuptools setuptools-rust
 
       - if: runner.os == 'Linux'
         name: Set up QEMU
@@ -116,16 +116,18 @@ jobs:
 
       - name: Install setuptools and setuptools-rust
         run: |
-          python -m pip install --upgrade wheel setuptools setuptools-rust
+          python -m pip install --upgrade build wheel setuptools setuptools-rust
       - name: Build cross image
         run: |
           docker build -f cross/Dockerfile.${{ matrix.platform.target }} -t  fluvio-cross-python:${{ matrix.platform.target }} cross
 
-      - name: Build bdist
-        run: |
-          python setup.py bdist_wheel --py-limited-api=cp38 --plat-name ${{ matrix.platform.name }}
+      - name: Build wheel
         env:
           CARGO_BUILD_TARGET: ${{ matrix.platform.target }}
+          CARGO_BUILD_TARGET_ARCH: ${{ matrix.platform.target }}
+          PYO3_CROSS: 1
+          PYO3_CROSS_PYTHON_VERSION: 3.8
+        run: python -m build --wheel --no-isolation
   check_fmt:
     name: check formatting
     runs-on: ${{ matrix.os }}
