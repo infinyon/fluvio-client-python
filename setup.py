@@ -1,12 +1,12 @@
-from setuptools import setup, find_namespace_packages
-from setuptools_rust import Binding, RustExtension, Strip
+from setuptools import setup
+from setuptools_rust import Binding, RustExtension
 
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
 setup(
     name="fluvio",
-    version="0.20.0",
+    version="0.21.0",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     author="Fluvio Contributors",
@@ -14,9 +14,7 @@ setup(
     python_requires=">=3.9",
     url="https://www.fluvio.io/",
     keywords=["fluvio", "streaming", "stream"],
-    license="APACHE",
     author_email="team@fluvio.io",
-    setup_requires=["wheel"],
     project_urls={  # Optional
         "Bug Reports": "https://github.com/infinyon/fluvio-client-python/issues",
         "Source": "https://github.com/infinyon/fluvio-client-python",
@@ -25,8 +23,6 @@ setup(
     classifiers=[  # Optional
         # Indicate who your project is intended for
         "Intended Audience :: Developers",
-        # Pick your license as you wish
-        "License :: OSI Approved :: Apache Software License",
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate you support Python 3. These classifiers are *not*
         # checked by 'pip install'. See instead 'python_requires' below.
@@ -43,7 +39,7 @@ setup(
             "fluvio._fluvio_python",
             path="Cargo.toml",
             binding=Binding.PyO3,
-            debug=False,
+            quiet=True, 
         )
     ],
     packages=["fluvio"],

@@ -169,6 +169,7 @@ class TestFluvioConsumer(CommonFluvioSetup):
             records.append(bytearray(next(stream).value()).decode())
         self.assertEqual(len(records), 2)
         self.assertEqual(records[0], "record-z")
+        self.assertEqual(records[1], "record-y")
         # ensure offset is flushed
         # with Auto, this normally happens with advancement of the stream and/or
         # closure of the client
@@ -195,7 +196,7 @@ class TestFluvioConsumer(CommonFluvioSetup):
         for _ in range(1):
             records.append(bytearray(next(stream).value()).decode())
         self.assertEqual(len(records), 1)
-        self.assertEqual(records[0], "record-y")
+        self.assertEqual(records[0], "record-x")
 
         consumers = fluvio.consumer_offsets()
         consumer = next(

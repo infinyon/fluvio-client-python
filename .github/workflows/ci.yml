@@ -111,9 +111,8 @@ jobs:
           toolchain: stable
 
       - name: Install cross
-        uses: taiki-e/install-action@v2
-        with:
-          tool: cross
+        run: |
+          cargo install cross --git https://github.com/fraidev/cross
 
       - name: Install setuptools and setuptools-rust
         run: |
@@ -121,6 +120,7 @@ jobs:
       - name: Build cross image
         run: |
           docker build -f cross/Dockerfile.${{ matrix.platform.target }} -t  fluvio-cross-python:${{ matrix.platform.target }} cross
+
       - name: Build bdist
         run: |
           python setup.py bdist_wheel --py-limited-api=cp38 --plat-name ${{ matrix.platform.name }}

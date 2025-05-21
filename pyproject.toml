@@ -1,2 +1,39 @@
 [build-system]
 requires = ["setuptools", "wheel", "setuptools-rust"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "fluvio"
+version = "0.21.0"
+description = "Python client library for Fluvio"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "Apache-2.0"
+authors = [
+    { name = "Fluvio Contributors", email = "team@fluvio.io" }
+]
+keywords = ["fluvio", "streaming", "stream"]
+
+classifiers = [
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3 :: Only"
+]
+
+dynamic = ["dependencies"]
+
+[project.urls]
+"Bug Reports" = "https://github.com/infinyon/fluvio-client-python/issues"
+"Source" = "https://github.com/infinyon/fluvio-client-python"
+
+[[tool.setuptools-rust.ext-modules]]
+target = "fluvio._fluvio_python"
+path = "Cargo.toml"
+binding = "PyO3" 
+quiet = true

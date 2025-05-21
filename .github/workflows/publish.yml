@@ -134,9 +134,8 @@ jobs:
           toolchain: stable
 
       - name: Install cross
-        uses: taiki-e/install-action@v2
-        with:
-          tool: cross
+        run: |
+          cargo install cross --git https://github.com/fraidev/cross
 
       - name: Install setuptools and setuptools-rust
         run: |
