@@ -46,12 +46,12 @@ jobs:
 
       - name: Login to fluvio cloud
         run: |
-          fluvio cloud login --email ${FLUVIO_CLOUD_TEST_USERNAME} --password ${FLUVIO_CLOUD_TEST_PASSWORD} --remote 'https://dev.infinyon.cloud'
+          fluvio cloud login --email ${CLOUD_USER_EMAIL} --password ${CLOUD_USER_PASSWORD} --remote 'https://dev.infinyon.cloud'
           # add profile
           fluvio cloud cluster sync
         env:
-          FLUVIO_CLOUD_TEST_USERNAME: ${{ secrets.FLUVIO_CLOUD_TEST_USERNAME }}
-          FLUVIO_CLOUD_TEST_PASSWORD: ${{ secrets.FLUVIO_CLOUD_TEST_PASSWORD }}
+          CLOUD_USER_EMAIL: ${{ secrets.ORG_CLOUD_SERVICE_EMAIL }}
+          CLOUD_USER_PASSWORD: ${{ secrets.ORG_CLOUD_SERVICE_PASSWD_DEV }}
 
       - name: Unit Tests
         env:
