@@ -732,8 +732,7 @@ impl PartitionConsumerStream {
     }
 
     fn offset_commit(&mut self, py: Python) -> Result<(), PyErr> {
-        self.inner
-            .offset_commit()
+        py.allow_threads(move || run_block_on(self.inner.offset_commit()))
             .map_err(|err| PyException::new_err(err.to_string()))
     }
 

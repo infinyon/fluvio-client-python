@@ -1,6 +1,6 @@
 [package]
 name = "_fluvio_python"
-version = "0.20.0"
+version = "0.21.0"
 edition = "2021"
 authors = ["Fluvio Contributors <team@fluvio.io>"]
 
@@ -17,14 +17,13 @@ anyhow = "1.0"
 async-h1 = "2.3.3"
 async-lock = "3.3.0"
 async-std = "1.6.5"
-aws-lc-rs = { version = "1", features = ["bindgen"] }
-cc = "=1.2.10"
 dirs = "5.0.1"
 futures = "0.3.30"
+futures-util = { version = "0.3.31", default-features = false }
 hex = "0.4.2"
 http-types = "2.6.0"
 md-5 = "0.10.0"
-pyo3 = { version = "0.23.3", features = ["extension-module"] }
+pyo3 = { version = "0.23.3", features = ["extension-module", "abi3-py38"] }
 pyo3-async-runtimes = { version = "0.23", features = ["attributes", "async-std-runtime"] }
 rpassword = "7.3.1"
 serde = "1.0.117"
@@ -35,17 +34,14 @@ tokio = { version = "1.36.0", default-features = false, features = ["macros"] }
 toml = "0.8.1"
 tracing = "0.1.37"
 url = "2.5.0"
-webbrowser = "1.0.0"
 
-fluvio-future = { version = "0.7.0", features = ["task", "io", "native_tls", "subscriber"] }
-fluvio = { features = ["admin", "rustls"], git = "https://github.com/infinyon/fluvio.git", tag = "v0.15.2" }
-fluvio-protocol = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.15.2" }
-fluvio-types = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.15.2" }
-fluvio-sc-schema = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.15.2" }
-fluvio-controlplane-metadata = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.15.2" }
+fluvio-future = { version = "0.7.2", features = ["task", "io", "native_tls", "subscriber"] }
+fluvio = { features = ["admin", "rustls"], git = "https://github.com/infinyon/fluvio.git", tag = "v0.17.3" }
+fluvio-protocol = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.17.3" }
+fluvio-types = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.17.3" }
+fluvio-sc-schema = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.17.3" }
+fluvio-controlplane-metadata = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.17.3" }
 
 # transitive version selection
-parking_lot = "0.12.3"
-bytes = { version = "1.8.0" }
-futures-util = { version = "0.3.6", default-features = false }
-dotenv = "0.15.0"
+aws-lc-rs = { version = "1", features = ["bindgen"] }
+cc = "=1.2.10"
