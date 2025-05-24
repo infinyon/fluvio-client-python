@@ -8,7 +8,7 @@ venv:
 
 venv-pip: venv
 	$(PIP) install -U pip build setuptools pdoc flake8 ipdb
-	$(PIP) install -r requirements.txt
+	$(PIP) install .
 	$(PYTHON) --version
 	$(PIP) --version
 
@@ -29,7 +29,11 @@ install-wheel: build-wheel
 	$(PIP) install --upgrade --force-reinstall --no-index --pre --find-links=dist/ fluvio
 
 build-dev: venv-pip
-	$(PYTHON) -m pip install --no-build-isolation -e .[dev]
+	$(PYTHON) -m pip install -e .[dev]
+
+build-sdist: venv-pip
+	rm -rf ./fluvio.egg-info/
+	$(PYTHON) -m build --sdist
 
 unit-tests: build-dev
 	cd tests/ && PYTHONPATH=.. $(PYTHON) -m unittest

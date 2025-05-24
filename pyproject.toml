@@ -14,7 +14,6 @@ authors = [
     { name = "Fluvio Contributors", email = "team@fluvio.io" }
 ]
 keywords = ["fluvio", "streaming", "stream"]
-
 classifiers = [
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
@@ -25,8 +24,25 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3 :: Only"
 ]
+dependencies = [
+  "msgpack==1.0.4",
+  "semantic-version==2.10.0",
+  "humanfriendly==10.0"
+]
 
-dynamic = ["dependencies"]
+[project.optional-dependencies]
+dev = [
+  "flake8==7.1.1",
+  "mccabe==0.7.0",
+  "pycodestyle==2.12.1",
+  "pyflakes==3.2.0",
+  "black==25.1.0",
+  "setuptools-rust==1.11.1",
+  "toml==0.10.2",
+  "build==1.2.2.post1",
+  "pytest>=8",
+  "cibuildwheel>=2.22",
+]
 
 [project.urls]
 "Bug Reports" = "https://github.com/infinyon/fluvio-client-python/issues"
@@ -40,10 +56,3 @@ target = "fluvio._fluvio_python"
 path = "Cargo.toml"
 binding = "PyO3" 
 quiet = true
-
-[project.optional-dependencies]
-dev = [
-    "pytest>=8",
-    "flake8>=7",
-    "cibuildwheel>=2.22",
-]

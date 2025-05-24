@@ -87,7 +87,7 @@ jobs:
         run: |
           python -m pip install --upgrade build wheel setuptools setuptools-rust
       - name: Build wheel
-        run: python -m build --wheel --no-isolation
+        run: make build-sdist
 
       - uses: actions/upload-artifact@v4
         with:
@@ -191,6 +191,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Install rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
       - name: Build docs
         run: |
           make docs-build
