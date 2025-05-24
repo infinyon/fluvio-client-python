@@ -29,7 +29,7 @@ install-wheel: build-wheel
 	$(PIP) install --upgrade --force-reinstall --no-index --pre --find-links=dist/ fluvio
 
 build-dev: venv-pip
-	$(PYTHON) -m pip install --no-build-isolation -e .[dev]
+	$(PYTHON) -m pip install -e .[dev]
 
 build-sdist: venv-pip
 	rm -rf ./fluvio.egg-info/
