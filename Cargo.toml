@@ -45,3 +45,4 @@ fluvio-controlplane-metadata = { git = "https://github.com/infinyon/fluvio.git",
 # transitive version selection
 aws-lc-rs = { version = "1", features = ["bindgen"] }
 cc = "=1.2.10"
+openssl-src = "=300.4.2+3.4.1" # https://github.com/infinyon/fluvio/issues/4502
