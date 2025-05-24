@@ -149,7 +149,12 @@ jobs:
           CARGO_BUILD_TARGET_ARCH: ${{ matrix.platform.target }}
           PYO3_CROSS: 1
           PYO3_CROSS_PYTHON_VERSION: 3.8
-        run: python -m build --wheel --no-isolation
+        run: |
+          python -m build \
+            --wheel \
+            --no-isolation \
+            -C--build-option=--py-limited-api=cp38 \
+            -C--build-option=--plat-name=${{ matrix.platform.name }}
 
       - uses: actions/upload-artifact@v4
         with:
