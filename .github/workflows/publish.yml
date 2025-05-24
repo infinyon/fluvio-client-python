@@ -87,13 +87,7 @@ jobs:
         run: |
           python -m pip install --upgrade build wheel setuptools setuptools-rust
       - name: Build wheel
-        env:
-          CARGO_BUILD_TARGET: ${{ matrix.platform.target }}
-          CARGO_BUILD_TARGET_ARCH: ${{ matrix.platform.target }}
-          PYO3_CROSS: 1
-          PYO3_CROSS_PYTHON_VERSION: 3.8
         run: python -m build --wheel --no-isolation
-
 
       - uses: actions/upload-artifact@v4
         with:
