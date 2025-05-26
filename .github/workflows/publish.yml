@@ -167,8 +167,17 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
 
     steps:
+      # Wheel
       - uses: actions/download-artifact@v4
         with:
+          pattern: "wheel-*"
+          path: dist
+          merge-multiple: true
+
+      # Sdist
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: "*.tar.gz"
           path: dist
           merge-multiple: true
 
