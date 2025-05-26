@@ -90,8 +90,8 @@ jobs:
         run: make build-sdist
 
       - uses: actions/upload-artifact@v4
-        name: build-sdist
         with:
+          name: build-sdist
           path: dist/*.tar.gz
 
   build_cc_wheels:
