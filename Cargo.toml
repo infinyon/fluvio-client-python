@@ -40,7 +40,7 @@ fluvio = { features = ["admin", "rustls"], git = "https://github.com/infinyon/fl
 fluvio-protocol = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.17.3" }
 fluvio-types = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.17.3" }
 fluvio-sc-schema = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.17.3" }
-fluvio-controlplane-metadata = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.17.3" }
+fluvio-controlplane-metadata = { git = "https://github.com/infinyon/fluvio.git", tag = "v0.18.0" }
 
 # transitive version selection
 aws-lc-rs = { version = "1", features = ["bindgen"] }
