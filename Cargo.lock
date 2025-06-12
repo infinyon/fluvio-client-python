@@ -16,7 +16,7 @@ dependencies = [
  "env_logger",
  "fluvio",
  "fluvio-controlplane-metadata",
- "fluvio-future",
+ "fluvio-future 0.8.2",
  "fluvio-protocol",
  "fluvio-sc-schema",
  "fluvio-types",
@@ -247,6 +247,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "async-fs"
+version = "2.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ebcd09b382f40fcd159c2d695175b2ae620ffa5f3bd6f664131efff4e8b9e04a"
+dependencies = [
+ "async-lock 3.4.0",
+ "blocking",
+ "futures-lite 2.6.0",
+]
+
+[[package]]
 name = "async-global-executor"
 version = "2.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -262,6 +273,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "async-global-executor"
+version = "3.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "13f937e26114b93193065fd44f507aa2e9169ad0cdabbb996920b1fe1ddea7ba"
+dependencies = [
+ "async-channel 2.3.1",
+ "async-executor",
+ "async-io 2.4.0",
+ "async-lock 3.4.0",
+ "blocking",
+ "futures-lite 2.6.0",
+ "tokio",
+]
+
+[[package]]
 name = "async-h1"
 version = "2.3.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -269,7 +295,7 @@ checksum = "5d1d1dae8cb2c4258a79d6ed088b7fb9b4763bf4e9b22d040779761e046a2971"
 dependencies = [
  "async-channel 1.9.0",
  "async-dup",
- "async-global-executor",
+ "async-global-executor 2.4.1",
  "async-io 1.13.0",
  "futures-lite 1.13.0",
  "http-types",
@@ -404,7 +430,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "730294c1c08c2e0f85759590518f6333f0d5a0a766a27d519c1b244c3dfd8a24"
 dependencies = [
  "async-channel 1.9.0",
- "async-global-executor",
+ "async-global-executor 2.4.1",
  "async-io 2.4.0",
  "async-lock 3.4.0",
  "async-process",
@@ -1146,7 +1172,7 @@ dependencies = [
  "dirs 6.0.0",
  "event-listener 5.4.0",
  "fluvio-compression",
- "fluvio-future",
+ "fluvio-future 0.7.2",
  "fluvio-protocol",
  "fluvio-sc-schema",
  "fluvio-smartmodule",
@@ -1217,7 +1243,6 @@ checksum = "aeb6426efa0dc4cc12226634b5b2657237b67028837e79ef4ad4706c4f211bd9"
 dependencies = [
  "anyhow",
  "async-io 2.4.0",
- "async-native-tls",
  "async-net",
  "async-std",
  "async-trait",
@@ -1226,15 +1251,43 @@ dependencies = [
  "futures-lite 2.6.0",
  "futures-rustls",
  "futures-util",
- "native-tls",
  "openssl",
  "openssl-sys",
  "pin-project",
  "rustls-pemfile",
- "socket2 0.5.9",
+ "socket2 0.5.10",
  "thiserror 2.0.12",
  "tracing",
+ "ws_stream_wasm",
+]
+
+[[package]]
+name = "fluvio-future"
+version = "0.8.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b4611137eb94e35831ce58a7b05f0a8efb394d12fb816a4462b145a22263ea53"
+dependencies = [
+ "anyhow",
+ "async-fs",
+ "async-global-executor 3.1.0",
+ "async-io 2.4.0",
+ "async-native-tls",
+ "async-net",
+ "async-task",
+ "async-trait",
+ "cfg-if",
+ "fluvio-wasm-timer",
+ "futures-lite 2.6.0",
+ "futures-util",
+ "native-tls",
+ "openssl",
+ "pin-project",
+ "socket2 0.5.10",
+ "thiserror 2.0.12",
+ "tokio",
+ "tracing",
  "tracing-subscriber",
+ "wasm-bindgen-futures",
  "ws_stream_wasm",
 ]
 
@@ -1249,7 +1302,7 @@ dependencies = [
  "crc32c",
  "eyre",
  "fluvio-compression",
- "fluvio-future",
+ "fluvio-future 0.7.2",
  "fluvio-protocol-derive",
  "fluvio-types",
  "flv-util",
@@ -1322,7 +1375,7 @@ dependencies = [
  "bytes",
  "cfg-if",
  "event-listener 5.4.0",
- "fluvio-future",
+ "fluvio-future 0.7.2",
  "fluvio-protocol",
  "futures-util",
  "nix",
@@ -1344,7 +1397,7 @@ dependencies = [
  "derive_builder",
  "educe",
  "flate2",
- "fluvio-future",
+ "fluvio-future 0.7.2",
  "fluvio-protocol",
  "fluvio-smartmodule",
  "fluvio-types",
@@ -1363,7 +1416,7 @@ dependencies = [
  "async-lock 3.4.0",
  "async-trait",
  "cfg-if",
- "fluvio-future",
+ "fluvio-future 0.7.2",
  "fluvio-stream-model",
  "fluvio-types",
  "futures-util",
@@ -3279,9 +3332,9 @@ dependencies = [
 
 [[package]]
 name = "socket2"
-version = "0.5.9"
+version = "0.5.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f5fd57c80058a56cf5c777ab8a126398ece8e442983605d280a44ce79d0edef"
+checksum = "e22376abed350d73dd1cd119b57ffccad95b4e585a7cda43e286245ce23c0678"
 dependencies = [
  "libc",
  "windows-sys 0.52.0",
