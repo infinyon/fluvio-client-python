@@ -36,7 +36,7 @@ jobs:
           key: ${{ matrix.os }}-cargo-${{matrix.python-version}}-${{ hashFiles('**/Cargo.lock') }}
 
       # Used to host cibuildwheel
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
 
@@ -78,7 +78,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         name: Install Python
         with:
           python-version: "3.13"
@@ -123,7 +123,7 @@ jobs:
             ~/.cargo/.crates2.json
             target/
           key: ${{ matrix.platform.target }}-cargo-${{ matrix.platform.name }}-${{ hashFiles('**/Cargo.lock') }}
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         name: Install Python
         with:
           python-version: "3.13"
@@ -193,7 +193,7 @@ jobs:
           persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
           fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install rust
